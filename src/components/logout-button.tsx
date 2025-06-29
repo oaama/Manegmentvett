@@ -1,7 +1,7 @@
 'use client';
 
 import { LogOut } from 'lucide-react';
-import { useRouter } from 'next/navigation';
+import { logout } from '@/app/login/actions';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -16,20 +16,7 @@ import {
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
 
-async function logout() {
-  'use server';
-  const { cookies } = await import('next/headers');
-  cookies().delete('auth_token');
-}
-
 export function LogoutButton() {
-  const router = useRouter();
-
-  const handleLogout = async () => {
-    await logout();
-    router.push('/login');
-  };
-
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>
@@ -47,7 +34,7 @@ export function LogoutButton() {
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel>Cancel</AlertDialogCancel>
-          <AlertDialogAction onClick={handleLogout}>Logout</AlertDialogAction>
+          <AlertDialogAction onClick={() => logout()}>Logout</AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>

@@ -23,3 +23,8 @@ export async function login(prevState: any, formData: FormData) {
     message: "Invalid email or password",
   }
 }
+
+export async function logout() {
+  cookies().delete('auth_token');
+  redirect('/login');
+}
