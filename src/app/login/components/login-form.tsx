@@ -1,7 +1,7 @@
 "use client"
 
-import { useEffect } from "react"
-import { useFormState, useFormStatus } from "react-dom"
+import { useEffect, useActionState } from "react"
+import { useFormStatus } from "react-dom"
 import { useRouter } from "next/navigation"
 import { login } from "../actions"
 
@@ -31,7 +31,7 @@ const initialState = {
 export function LoginForm() {
   const router = useRouter()
   const { toast } = useToast()
-  const [state, formAction] = useFormState(login, initialState)
+  const [state, formAction] = useActionState(login, initialState)
 
   useEffect(() => {
     if (state.success) {
