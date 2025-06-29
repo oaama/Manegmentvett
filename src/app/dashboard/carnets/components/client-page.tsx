@@ -100,7 +100,7 @@ export function CarnetClientPage<TData extends CarnetRequest, TValue>({
             ) : (
               <TableRow>
                 <TableCell colSpan={columns.length} className="h-24 text-center">
-                  No pending requests.
+                  No requests found for this status.
                 </TableCell>
               </TableRow>
             )}

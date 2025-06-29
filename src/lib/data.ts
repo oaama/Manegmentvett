@@ -12,7 +12,7 @@ export const users: User[] = [
 ];
 
 export const carnetRequests: CarnetRequest[] = users
-  .filter(u => u.carnetStatus === 'pending' || u.carnetStatus === 'rejected')
+  .filter(u => u.role === 'student' && ['pending', 'approved', 'rejected'].includes(u.carnetStatus))
   .map(u => ({
     id: u.id,
     user: { id: u.id, name: u.name, email: u.email, academicYear: u.academicYear },

@@ -13,7 +13,7 @@ export default async function CoursesPage() {
         <AddCourseDialog instructors={instructors} />
       </DashboardHeader>
       <div className="p-1">
-        <CourseClientPage data={data} />
+        <CourseClientPage data={data} instructors={instructors} />
       </div>
     </>
   )

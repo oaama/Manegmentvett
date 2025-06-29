@@ -27,6 +27,7 @@ import { useToast } from "@/hooks/use-toast"
 import { User } from "@/lib/types"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Wand2, Loader2, Send } from "lucide-react"
+import { analyzeNotification } from "@/ai/flows/analyzeNotification"
 
 const formSchema = z.object({
   target: z.string().min(1, "Target is required"),
@@ -63,6 +64,7 @@ export function NotificationForm({ users }: NotificationFormProps) {
   const watchTarget = form.watch("target")
 
   function onSubmit(values: z.infer<typeof formSchema>) {
+    // TODO: connect to /admin/notify (POST)
     console.log(values)
     toast({
       title: "Notification Sent!",
@@ -71,17 +73,42 @@ export function NotificationForm({ users }: NotificationFormProps) {
     form.reset()
   }
 
-  const handleAnalyze = () => {
+  const handleAnalyze = async () => {
+    const { title, message } = form.getValues();
+    if (!title || !message) {
+      toast({
+        title: "Analysis Failed",
+        description: "Please provide a title and message to analyze.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setIsAnalyzing(true);
-    setTimeout(() => {
-        setIsAnalyzing(false);
+    try {
+      const result = await analyzeNotification({ title, message });
+      if (result.isSafe) {
         toast({
-            title: "Analysis Complete",
-            description: "No sensitive topics found.",
-            variant: "default",
-            style: { '--accent': 'hsl(122 39% 76%)' } as React.CSSProperties
+          title: "Analysis Complete",
+          description: result.reason,
         });
-    }, 1500);
+      } else {
+        toast({
+          title: "Content Warning",
+          description: result.reason,
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      console.error("AI analysis failed:", error);
+      toast({
+        title: "Analysis Error",
+        description: "Could not analyze the content at this time.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsAnalyzing(false);
+    }
   }
 
   return (

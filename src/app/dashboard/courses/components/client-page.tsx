@@ -23,19 +23,23 @@ import {
 } from "@/components/ui/table"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { columns } from "./columns"
-import type { Course } from "@/lib/types"
+import { getColumns } from "./columns"
+import type { Course, User } from "@/lib/types"
 
 interface DataTableProps<TData, TValue> {
-  data: TData[]
+  data: TData[],
+  instructors: User[],
 }
 
 export function CourseClientPage<TData extends Course, TValue>({
   data,
+  instructors,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = React.useState<SortingState>([])
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
   const [rowSelection, setRowSelection] = React.useState({})
+
+  const columns = React.useMemo(() => getColumns({ instructors }), [instructors])
 
   const table = useReactTable({
     data,
