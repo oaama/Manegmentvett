@@ -67,6 +67,7 @@ const CourseActions = ({ course, instructors }: { course: Course, instructors: U
   const { toast } = useToast()
   const [isEditDialogOpen, setIsEditDialogOpen] = React.useState(false)
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = React.useState(false)
+  const [isSectionsDialogOpen, setIsSectionsDialogOpen] = React.useState(false)
   const [isSubmitting, setIsSubmitting] = React.useState(false)
 
   const form = useForm<z.infer<typeof editFormSchema>>({
@@ -241,6 +242,27 @@ const CourseActions = ({ course, instructors }: { course: Course, instructors: U
         </AlertDialogContent>
       </AlertDialog>
 
+      <Dialog open={isSectionsDialogOpen} onOpenChange={setIsSectionsDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Sections for {course.name}</DialogTitle>
+            <DialogDescription>
+              Here are the sections for this course. You can add or manage sections here.
+              <br/>
+              {/* TODO: Fetch sections from /admin/courses/:id/sections */}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="py-4">
+            <p className="text-sm text-muted-foreground">Section management UI will be implemented here.</p>
+          </div>
+          <DialogFooter>
+            <DialogClose asChild>
+              <Button variant="outline">Close</Button>
+            </DialogClose>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button variant="ghost" className="h-8 w-8 p-0">
@@ -250,7 +272,9 @@ const CourseActions = ({ course, instructors }: { course: Course, instructors: U
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
           <DropdownMenuLabel>Actions</DropdownMenuLabel>
-          <DropdownMenuItem>View sections</DropdownMenuItem>
+          <DropdownMenuItem onSelect={() => setIsSectionsDialogOpen(true)}>
+            View sections
+          </DropdownMenuItem>
           <DropdownMenuItem onSelect={() => setIsEditDialogOpen(true)}>Edit course</DropdownMenuItem>
           <DropdownMenuSeparator />
           <DropdownMenuItem 

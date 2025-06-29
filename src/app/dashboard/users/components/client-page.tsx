@@ -63,7 +63,7 @@ export function UserClientPage<TData extends User, TValue>({
 
   return (
     <div className="w-full">
-      <div className="flex items-center py-4 gap-2">
+      <div className="flex items-center py-4">
         <Input
           placeholder="Filter by name..."
           value={(table.getColumn("name")?.getFilterValue() as string) ?? ""}
@@ -72,35 +72,67 @@ export function UserClientPage<TData extends User, TValue>({
           }
           className="max-w-sm"
         />
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="outline" className="ml-auto">
-              Filter by Role <ChevronDown className="ml-2 h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            {['student', 'instructor', 'admin'].map((role) => {
-              const column = table.getColumn("role");
-              const isSelected = column?.getFilterValue() === role;
-              return (
-                <DropdownMenuCheckboxItem
-                  key={role}
-                  className="capitalize"
-                  checked={isSelected}
-                  onCheckedChange={() => {
-                     if (isSelected) {
-                        column?.setFilterValue(undefined);
-                     } else {
-                        column?.setFilterValue(role);
-                     }
-                  }}
-                >
-                  {role}
-                </DropdownMenuCheckboxItem>
-              )
-            })}
-          </DropdownMenuContent>
-        </DropdownMenu>
+        <div className="ml-auto flex items-center gap-2">
+            <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+                <Button variant="outline">
+                Filter by Role <ChevronDown className="ml-2 h-4 w-4" />
+                </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+                {['student', 'instructor', 'admin'].map((role) => {
+                const column = table.getColumn("role");
+                const isSelected = column?.getFilterValue() === role;
+                return (
+                    <DropdownMenuCheckboxItem
+                    key={role}
+                    className="capitalize"
+                    checked={isSelected}
+                    onCheckedChange={() => {
+                        if (isSelected) {
+                            column?.setFilterValue(undefined);
+                        } else {
+                            column?.setFilterValue(role);
+                        }
+                    }}
+                    >
+                    {role}
+                    </DropdownMenuCheckboxItem>
+                )
+                })}
+            </DropdownMenuContent>
+            </DropdownMenu>
+
+            <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                    <Button variant="outline">
+                    Carnet Status <ChevronDown className="ml-2 h-4 w-4" />
+                    </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                    {['approved', 'pending', 'rejected'].map((status) => {
+                    const column = table.getColumn("carnetStatus");
+                    const isSelected = column?.getFilterValue() === status;
+                    return (
+                        <DropdownMenuCheckboxItem
+                        key={status}
+                        className="capitalize"
+                        checked={isSelected}
+                        onCheckedChange={() => {
+                            if (isSelected) {
+                                column?.setFilterValue(undefined);
+                            } else {
+                                column?.setFilterValue(status);
+                            }
+                        }}
+                        >
+                        {status}
+                        </DropdownMenuCheckboxItem>
+                    )
+                    })}
+                </DropdownMenuContent>
+            </DropdownMenu>
+        </div>
       </div>
       <div className="rounded-md border">
         <Table>
