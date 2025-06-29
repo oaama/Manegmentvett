@@ -10,13 +10,13 @@
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
 
-export const AnalyzeNotificationInputSchema = z.object({
+const AnalyzeNotificationInputSchema = z.object({
   title: z.string().describe('The title of the notification.'),
   message: z.string().describe('The message content of the notification.'),
 });
 export type AnalyzeNotificationInput = z.infer<typeof AnalyzeNotificationInputSchema>;
 
-export const AnalyzeNotificationOutputSchema = z.object({
+const AnalyzeNotificationOutputSchema = z.object({
   isSafe: z.boolean().describe('Whether the content is safe and appropriate for all audiences.'),
   reason: z.string().describe('A brief explanation for the safety assessment.'),
 });
