@@ -3,15 +3,8 @@
 import * as React from "react"
 import type { CarnetRequest } from "@/lib/types"
 import { ColumnDef } from "@tanstack/react-table"
-import { MoreHorizontal, ArrowUpDown, CheckCircle, XCircle, Eye } from "lucide-react"
+import { ArrowUpDown, CheckCircle, XCircle, Eye } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
 import {
   Dialog,
   DialogClose,
@@ -27,15 +20,39 @@ import { format } from "date-fns"
 import { Badge } from "@/components/ui/badge"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
+import { useToast } from "@/hooks/use-toast"
 
-const ActionButtons = ({ row }: { row: any }) => {
-    const request = row.original as CarnetRequest
+const ActionButtons = ({ row }: { row: { original: CarnetRequest } }) => {
+    const request = row.original
+    const { toast } = useToast()
     const [rejectionReason, setRejectionReason] = React.useState("");
 
+    const handleApprove = () => {
+        // TODO: connect to /admin/approve-carnet (PUT) with request.id
+        console.log("Approving carnet:", request.id);
+        toast({
+            title: "Carnet Approved",
+            description: `The carnet for ${request.user.name} has been approved.`,
+        })
+        // Here you would typically refetch the data or optimistically update the UI
+    }
+
     const handleReject = () => {
-        // Here you would typically call an API to update the status
-        console.log("Rejecting with reason:", rejectionReason);
-        // You might want to show a toast message on success
+        if (!rejectionReason.trim()) {
+            toast({
+                title: "Rejection Failed",
+                description: "Please provide a reason for rejection.",
+                variant: "destructive",
+            })
+            return;
+        }
+        // TODO: connect to /admin/reject-carnet (PUT) with request.id and rejectionReason
+        console.log("Rejecting carnet:", request.id, "Reason:", rejectionReason);
+        toast({
+            title: "Carnet Rejected",
+            description: `The carnet for ${request.user.name} has been rejected.`,
+        })
+        // Here you would typically refetch the data or optimistically update the UI
     }
 
     return (
@@ -57,16 +74,16 @@ const ActionButtons = ({ row }: { row: any }) => {
                     <Image
                         src={request.carnetImage}
                         alt={`Carnet for ${request.user.name}`}
-                        layout="fill"
-                        objectFit="contain"
+                        fill
+                        style={{ objectFit: "contain" }}
                         data-ai-hint="id card"
                     />
                 </div>
               </DialogContent>
             </Dialog>
 
-            <Button variant="outline" size="sm" className="bg-green-100 text-green-800 hover:bg-green-200 border-green-200" style={{'--accent': 'hsl(122 39% 76%)'} as React.CSSProperties}>
-                <CheckCircle className="mr-2 h-4 w-4" /> Approve
+            <Button variant="outline" size="sm" onClick={handleApprove}>
+                <CheckCircle className="mr-2 h-4 w-4 text-green-500" /> Approve
             </Button>
             
             <Dialog>
@@ -153,6 +170,6 @@ export const columns: ColumnDef<CarnetRequest>[] = [
   {
     id: "actions",
     header: "Actions",
-    cell: ActionButtons,
+    cell: ({ row }) => <ActionButtons row={row} />,
   },
 ]
