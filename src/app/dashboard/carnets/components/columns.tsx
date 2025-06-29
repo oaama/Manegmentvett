@@ -1,5 +1,6 @@
 "use client"
 
+import * as React from "react"
 import type { CarnetRequest } from "@/lib/types"
 import { ColumnDef } from "@tanstack/react-table"
 import { MoreHorizontal, ArrowUpDown, CheckCircle, XCircle, Eye } from "lucide-react"
@@ -13,8 +14,10 @@ import {
 } from "@/components/ui/dropdown-menu"
 import {
   Dialog,
+  DialogClose,
   DialogContent,
   DialogDescription,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -22,9 +25,19 @@ import {
 import Image from "next/image"
 import { format } from "date-fns"
 import { Badge } from "@/components/ui/badge"
+import { Label } from "@/components/ui/label"
+import { Textarea } from "@/components/ui/textarea"
 
 const ActionButtons = ({ row }: { row: any }) => {
     const request = row.original as CarnetRequest
+    const [rejectionReason, setRejectionReason] = React.useState("");
+
+    const handleReject = () => {
+        // Here you would typically call an API to update the status
+        console.log("Rejecting with reason:", rejectionReason);
+        // You might want to show a toast message on success
+    }
+
     return (
         <div className="space-x-2">
             <Dialog>
@@ -55,9 +68,44 @@ const ActionButtons = ({ row }: { row: any }) => {
             <Button variant="outline" size="sm" className="bg-green-100 text-green-800 hover:bg-green-200 border-green-200" style={{'--accent': 'hsl(122 39% 76%)'} as React.CSSProperties}>
                 <CheckCircle className="mr-2 h-4 w-4" /> Approve
             </Button>
-            <Button variant="destructive" size="sm">
-                <XCircle className="mr-2 h-4 w-4" /> Reject
-            </Button>
+            
+            <Dialog>
+                <DialogTrigger asChild>
+                    <Button variant="destructive" size="sm">
+                        <XCircle className="mr-2 h-4 w-4" /> Reject
+                    </Button>
+                </DialogTrigger>
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>Reject Carnet Request</DialogTitle>
+                        <DialogDescription>
+                            Please provide a reason for rejecting the carnet for {request.user.name}. This will be shown to the user.
+                        </DialogDescription>
+                    </DialogHeader>
+                    <div className="grid gap-4 py-4">
+                        <div className="grid gap-2">
+                            <Label htmlFor="reason" className="text-left">Rejection Reason</Label>
+                            <Textarea 
+                                id="reason" 
+                                placeholder="e.g., Image is blurry, name does not match."
+                                value={rejectionReason}
+                                onChange={(e) => setRejectionReason(e.target.value)}
+                                className="col-span-3"
+                            />
+                        </div>
+                    </div>
+                    <DialogFooter>
+                        <DialogClose asChild>
+                            <Button type="button" variant="secondary">
+                                Cancel
+                            </Button>
+                        </DialogClose>
+                         <DialogClose asChild>
+                            <Button type="button" onClick={handleReject} variant="destructive">Confirm Rejection</Button>
+                        </DialogClose>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
         </div>
     )
 }
