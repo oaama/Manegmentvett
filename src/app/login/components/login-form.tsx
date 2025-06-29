@@ -1,15 +1,13 @@
 "use client"
 
-import { useEffect, useActionState } from "react"
+import { useActionState } from "react"
 import { useFormStatus } from "react-dom"
-import { useRouter } from "next/navigation"
 import { login } from "../actions"
 
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { useToast } from "@/hooks/use-toast"
 import { AlertCircle, Loader2 } from "lucide-react"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 
@@ -29,19 +27,7 @@ const initialState = {
 }
 
 export function LoginForm() {
-  const router = useRouter()
-  const { toast } = useToast()
   const [state, formAction] = useActionState(login, initialState)
-
-  useEffect(() => {
-    if (state.success) {
-      toast({
-        title: "Login Successful",
-        description: "Welcome to the dashboard!",
-      })
-      router.push("/dashboard")
-    }
-  }, [state.success, router, toast])
 
   return (
     <Card>
