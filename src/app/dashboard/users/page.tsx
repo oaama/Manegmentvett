@@ -1,8 +1,7 @@
 import { DashboardHeader } from "@/components/dashboard-header"
 import { users } from "@/lib/data"
 import { UserClientPage } from "./components/client-page"
-import { Button } from "@/components/ui/button"
-import { PlusCircle } from "lucide-react"
+import { AddUserDialog } from "./components/add-user-dialog"
 
 export default async function UsersPage() {
   const data = users
@@ -10,10 +9,7 @@ export default async function UsersPage() {
   return (
     <>
       <DashboardHeader title="Users Management">
-        <Button>
-          <PlusCircle className="mr-2 h-4 w-4" />
-          Add User
-        </Button>
+        <AddUserDialog />
       </DashboardHeader>
       <div className="p-1">
         <UserClientPage data={data} />

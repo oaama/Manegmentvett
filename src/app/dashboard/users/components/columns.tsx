@@ -25,6 +25,16 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import {
@@ -61,6 +71,7 @@ const UserActions = ({ user }: { user: User }) => {
       title: "User Updated",
       description: `${name}'s profile has been updated.`,
     })
+    // In a real app, you would refetch the user list here to see the changes.
   }
 
   const handleDeleteConfirm = () => {
@@ -70,9 +81,10 @@ const UserActions = ({ user }: { user: User }) => {
     setIsDeleteDialogOpen(false)
     toast({
       title: "User Deleted",
-      description: `${name}'s account has been deleted.`,
+      description: `${user.name}'s account has been deleted.`,
       variant: "destructive",
     })
+    // In a real app, you would refetch the user list here to remove the user from the table.
   }
 
   return (
@@ -123,22 +135,22 @@ const UserActions = ({ user }: { user: User }) => {
         </DialogContent>
       </Dialog>
 
-      <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Are you sure you want to delete this user?</DialogTitle>
-            <DialogDescription>
+      <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+            <AlertDialogDescription>
               This action cannot be undone. This will permanently delete the user account for <span className="font-semibold">{user.name}</span>.
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter>
-            <DialogClose asChild>
-              <Button variant="outline">Cancel</Button>
-            </DialogClose>
-            <Button variant="destructive" onClick={handleDeleteConfirm}>Confirm Deletion</Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={handleDeleteConfirm} className="bg-destructive hover:bg-destructive/90">
+                Delete User
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
@@ -153,7 +165,6 @@ const UserActions = ({ user }: { user: User }) => {
             Copy user ID
           </DropdownMenuItem>
           <DropdownMenuSeparator />
-          <DropdownMenuItem>View user details</DropdownMenuItem>
           <DropdownMenuItem onSelect={() => setIsEditDialogOpen(true)}>
             Edit user
           </DropdownMenuItem>
