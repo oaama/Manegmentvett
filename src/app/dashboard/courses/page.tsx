@@ -1,19 +1,16 @@
 import { DashboardHeader } from "@/components/dashboard-header"
-import { courses } from "@/lib/data"
+import { courses, users } from "@/lib/data"
 import { CourseClientPage } from "./components/client-page"
-import { Button } from "@/components/ui/button"
-import { PlusCircle } from "lucide-react"
+import { AddCourseDialog } from "./components/add-course-dialog"
 
 export default async function CoursesPage() {
   const data = courses
+  const instructors = users.filter(u => u.role === 'instructor')
 
   return (
     <>
       <DashboardHeader title="Courses Management">
-        <Button>
-          <PlusCircle className="mr-2 h-4 w-4" />
-          Add Course
-        </Button>
+        <AddCourseDialog instructors={instructors} />
       </DashboardHeader>
       <div className="p-1">
         <CourseClientPage data={data} />

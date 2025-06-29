@@ -13,10 +13,12 @@ export type User = {
 
 export type Course = {
   id: string;
-  name: string;
+  name:string;
   instructor: string;
   year: number;
   sections: number;
+  price: number;
+  coverImage?: string;
   createdAt: Date;
 };
 

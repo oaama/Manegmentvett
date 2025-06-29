@@ -1,5 +1,6 @@
 "use client"
 
+import * as React from "react"
 import type { Course } from "@/lib/types"
 import { ColumnDef } from "@tanstack/react-table"
 import { MoreHorizontal, ArrowUpDown } from "lucide-react"
@@ -12,8 +13,78 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog"
 import { Checkbox } from "@/components/ui/checkbox"
 import { format } from "date-fns"
+import { useToast } from "@/hooks/use-toast"
+
+const CourseActions = ({ course }: { course: Course }) => {
+  const { toast } = useToast()
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = React.useState(false)
+
+  const handleDeleteConfirm = () => {
+    // TODO: connect to /admin/courses/:id (DELETE)
+    console.log("Deleting course:", course.id)
+    setIsDeleteDialogOpen(false)
+    toast({
+      title: "Course Deleted",
+      description: `The course "${course.name}" has been deleted.`,
+      variant: "destructive",
+    })
+  }
+  
+  return (
+    <>
+      <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This action cannot be undone. This will permanently delete the course <span className="font-semibold">"{course.name}"</span>.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={handleDeleteConfirm} className="bg-destructive hover:bg-destructive/90">
+              Delete Course
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button variant="ghost" className="h-8 w-8 p-0">
+            <span className="sr-only">Open menu</span>
+            <MoreHorizontal className="h-4 w-4" />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end">
+          <DropdownMenuLabel>Actions</DropdownMenuLabel>
+          <DropdownMenuItem>View sections</DropdownMenuItem>
+          <DropdownMenuItem>Edit course</DropdownMenuItem>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem 
+            className="text-destructive focus:text-destructive focus:bg-destructive/10"
+            onSelect={() => setIsDeleteDialogOpen(true)}
+          >
+            Delete course
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    </>
+  )
+}
+
 
 export const columns: ColumnDef<Course>[] = [
   {
@@ -58,6 +129,18 @@ export const columns: ColumnDef<Course>[] = [
     header: "Instructor",
   },
   {
+    accessorKey: "price",
+    header: "Price",
+    cell: ({ row }) => {
+      const amount = parseFloat(row.getValue("price"))
+      const formatted = new Intl.NumberFormat("en-US", {
+        style: "currency",
+        currency: "USD",
+      }).format(amount)
+      return <div className="font-medium">{formatted}</div>
+    }
+  },
+  {
     accessorKey: "year",
     header: "Year",
     cell: ({ row }) => `Year ${row.getValue("year")}`,
@@ -77,23 +160,7 @@ export const columns: ColumnDef<Course>[] = [
   {
     id: "actions",
     cell: ({ row }) => {
-      const course = row.original
-      return (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-8 w-8 p-0">
-              <span className="sr-only">Open menu</span>
-              <MoreHorizontal className="h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuLabel>Actions</DropdownMenuLabel>
-            <DropdownMenuItem>View sections</DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem className="text-destructive focus:text-destructive focus:bg-destructive/10">Delete course</DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      )
+      return <CourseActions course={row.original} />
     },
   },
 ]
