@@ -15,6 +15,7 @@ export type Course = {
   id: string;
   name:string;
   instructor: string;
+  instructorId: string;
   year: number;
   sections: number;
   price: number;

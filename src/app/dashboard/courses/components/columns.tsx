@@ -69,7 +69,7 @@ const DateCell = ({ dateValue, formatString }: { dateValue: Date | string, forma
 
 const editFormSchema = z.object({
   name: z.string().min(3, "Course name must be at least 3 characters"),
-  instructor: z.string().min(1, "Please select an instructor"),
+  instructorId: z.string().min(1, "Please select an instructor"),
   year: z.coerce.number().min(1, "Academic year is required"),
   sections: z.coerce.number().min(1, "Number of sections is required"),
   price: z.coerce.number().min(0, "Price is required"),
@@ -86,7 +86,7 @@ const CourseActions = ({ course, instructors }: { course: Course, instructors: U
     resolver: zodResolver(editFormSchema),
     defaultValues: {
       name: course.name,
-      instructor: course.instructor,
+      instructorId: course.instructorId,
       year: course.year,
       sections: course.sections,
       price: course.price,
@@ -96,7 +96,7 @@ const CourseActions = ({ course, instructors }: { course: Course, instructors: U
   React.useEffect(() => {
     form.reset({
       name: course.name,
-      instructor: course.instructor,
+      instructorId: course.instructorId,
       year: course.year,
       sections: course.sections,
       price: course.price,
@@ -158,7 +158,7 @@ const CourseActions = ({ course, instructors }: { course: Course, instructors: U
               />
               <FormField
                 control={form.control}
-                name="instructor"
+                name="instructorId"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Instructor</FormLabel>
@@ -170,7 +170,7 @@ const CourseActions = ({ course, instructors }: { course: Course, instructors: U
                       </FormControl>
                       <SelectContent>
                         {instructors.map((instructor) => (
-                          <SelectItem key={instructor.id} value={instructor.name}>
+                          <SelectItem key={instructor.id} value={instructor.id}>
                             {instructor.name}
                           </SelectItem>
                         ))}

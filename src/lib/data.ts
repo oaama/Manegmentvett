@@ -24,11 +24,11 @@ export const carnetRequests: CarnetRequest[] = users
 
 
 export const courses: Course[] = [
-  { id: 'c1', name: 'Introduction to React', instructor: 'Charlie Brown', year: 2, sections: 10, price: 150, coverImage: 'https://placehold.co/600x400.png', createdAt: new Date('2023-01-10') },
-  { id: 'c2', name: 'Advanced NodeJS', instructor: 'Frank White', year: 3, sections: 15, price: 200, coverImage: 'https://placehold.co/600x400.png', createdAt: new Date('2023-02-01') },
-  { id: 'c3', name: 'UI/UX Design Principles', instructor: 'Charlie Brown', year: 1, sections: 8, price: 120, coverImage: 'https://placehold.co/600x400.png', createdAt: new Date('2023-03-15') },
-  { id: 'c4', name: 'Database Management', instructor: 'Frank White', year: 2, sections: 12, price: 180, coverImage: 'https://placehold.co/600x400.png', createdAt: new Date('2023-04-02') },
-  { id: 'c5', name: 'Data Structures & Algorithms', instructor: 'Frank White', year: 2, sections: 20, price: 250, coverImage: 'https://placehold.co/600x400.png', createdAt: new Date('2023-01-20') },
+  { id: 'c1', name: 'Introduction to React', instructor: 'Charlie Brown', instructorId: '3', year: 2, sections: 10, price: 150, coverImage: 'https://placehold.co/600x400.png', createdAt: new Date('2023-01-10') },
+  { id: 'c2', name: 'Advanced NodeJS', instructor: 'Frank White', instructorId: '6', year: 3, sections: 15, price: 200, coverImage: 'https://placehold.co/600x400.png', createdAt: new Date('2023-02-01') },
+  { id: 'c3', name: 'UI/UX Design Principles', instructor: 'Charlie Brown', instructorId: '3', year: 1, sections: 8, price: 120, coverImage: 'https://placehold.co/600x400.png', createdAt: new Date('2023-03-15') },
+  { id: 'c4', name: 'Database Management', instructor: 'Frank White', instructorId: '6', year: 2, sections: 12, price: 180, coverImage: 'https://placehold.co/600x400.png', createdAt: new Date('2023-04-02') },
+  { id: 'c5', name: 'Data Structures & Algorithms', instructor: 'Frank White', instructorId: '6', year: 2, sections: 20, price: 250, coverImage: 'https://placehold.co/600x400.png', createdAt: new Date('2023-01-20') },
 ];
 
 export const notifications: Notification[] = [
