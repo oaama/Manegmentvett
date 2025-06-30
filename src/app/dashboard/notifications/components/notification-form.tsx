@@ -3,7 +3,7 @@
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod"
-import { Loader2, Send, ShieldAlert, ShieldCheck, Wand2 } from "lucide-react"
+import { Loader2, Send } from "lucide-react"
 import React from "react"
 
 import { Button } from "@/components/ui/button"
@@ -21,8 +21,6 @@ import { useToast } from "@/hooks/use-toast"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import api from "@/lib/api"
 import { useRouter } from "next/navigation"
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
-import { analyzeNotification, type AnalyzeNotificationOutput } from "@/ai/flows/analyzeNotification"
 
 const formSchema = z.object({
   userId: z.string().min(1, "User ID is required"),
@@ -34,8 +32,6 @@ export function NotificationForm() {
   const router = useRouter()
   const { toast } = useToast()
   const [isSubmitting, setIsSubmitting] = React.useState(false)
-  const [isAnalyzing, setIsAnalyzing] = React.useState(false)
-  const [analysisResult, setAnalysisResult] = React.useState<AnalyzeNotificationOutput | null>(null)
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -46,35 +42,6 @@ export function NotificationForm() {
     },
   })
 
-  async function handleAnalyze() {
-    const { title, message } = form.getValues();
-    if (!title || !message) {
-      toast({
-        title: "Analysis Failed",
-        description: "Please provide a title and message before analyzing.",
-        variant: "destructive",
-      });
-      return;
-    }
-    
-    setIsAnalyzing(true);
-    setAnalysisResult(null);
-    try {
-      const result = await analyzeNotification({ title, message });
-      setAnalysisResult(result);
-    } catch (error) {
-      console.error("AI analysis failed:", error);
-      toast({
-        title: "AI Analysis Error",
-        description: "Could not analyze the content. Please try again.",
-        variant: "destructive",
-      });
-    } finally {
-      setIsAnalyzing(false);
-    }
-  }
-
-
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsSubmitting(true)
     try {
@@ -84,7 +51,6 @@ export function NotificationForm() {
         description: `Your message "${values.title}" has been sent.`,
       })
       form.reset()
-      setAnalysisResult(null)
       router.refresh()
     } catch (error: any) {
       toast({
@@ -152,21 +118,9 @@ export function NotificationForm() {
                 </FormItem>
               )}
             />
-
-            {analysisResult && (
-                <Alert variant={analysisResult.isSafe ? "default" : "destructive"}>
-                {analysisResult.isSafe ? <ShieldCheck className="h-4 w-4" /> : <ShieldAlert className="h-4 w-4" />}
-                <AlertTitle>{analysisResult.isSafe ? "Content is Safe" : "Potential Issue Found"}</AlertTitle>
-                <AlertDescription>{analysisResult.reason}</AlertDescription>
-                </Alert>
-            )}
             
             <div className="flex justify-center gap-4">
-                <Button type="button" variant="outline" onClick={handleAnalyze} disabled={isSubmitting || isAnalyzing}>
-                    {isAnalyzing ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Wand2 className="mr-2 h-4 w-4" />}
-                    Analyze with AI
-                </Button>
-                <Button type="submit" disabled={isSubmitting || isAnalyzing}>
+                <Button type="submit" disabled={isSubmitting}>
                     {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Send className="mr-2 h-4 w-4" />}
                     Send Notification
                 </Button>
