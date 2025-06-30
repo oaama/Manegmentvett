@@ -46,7 +46,7 @@ export default function DashboardLayout({
           <div className="flex items-center gap-2 p-2">
             <BookOpenCheck className="w-8 h-8 text-primary" />
             <div className="flex flex-col">
-              <h2 className="text-lg font-semibold">Mr Vetgo</h2>
+              <h2 className="text-lg font-semibold">Mr Vet</h2>
               <p className="text-xs text-muted-foreground">Admin Center</p>
             </div>
           </div>
@@ -74,7 +74,7 @@ export default function DashboardLayout({
             <div className="md:hidden flex items-center justify-between mb-4">
                  <div className="flex items-center gap-2">
                     <BookOpenCheck className="w-6 h-6 text-primary" />
-                    <h2 className="text-md font-semibold">Mr Vetgo</h2>
+                    <h2 className="text-md font-semibold">Mr Vet</h2>
                 </div>
                 <SidebarTrigger />
             </div>
