@@ -17,13 +17,13 @@ export default function LoginPage() {
       </div>
       <div className="flex items-center justify-center py-12">
         <div className="mx-auto grid w-[350px] gap-6">
-          <div className="grid gap-2 text-center">
+          <div className="grid gap-4 text-center animate-in fade-in-0 slide-in-from-bottom-2 duration-500 ease-out">
              <div className="flex justify-center items-center gap-2 mb-2">
                 <BookOpenCheck className="h-8 w-8 text-primary" />
                 <h1 className="text-3xl font-bold tracking-tight">Mr Vet</h1>
              </div>
             <p className="text-balance text-muted-foreground">
-              Enter your credentials to access the Admin Center
+              Welcome back! Please enter your credentials to continue.
             </p>
           </div>
           <LoginForm />
