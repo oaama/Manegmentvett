@@ -5,9 +5,8 @@ import api from "@/lib/api"
 import type { Subscription, User, Course } from "@/lib/types"
 import { cookies } from "next/headers"
 
-// NOTE: Since there are no endpoints for subscriptions yet, we will use mock data.
-// We'll also fetch users and courses to pass to the add dialog,
-// although the dialog will primarily use IDs for now.
+// NOTE: The data fetching for this page has been temporarily switched to
+// mock data to prevent the app from crashing while the API is unavailable.
 
 async function getSubscriptions() {
     // This is a mock function. Replace with actual API call when ready.
@@ -23,6 +22,12 @@ async function getSubscriptions() {
 }
 
 async function getUsers() {
+    // MOCK: Returning mock data to prevent app crash while API is unavailable.
+    // The real implementation is commented out below.
+    console.warn("Subscriptions Page: Using mock user data. Please ensure your API server is running.");
+    const { users } = await import("@/lib/data");
+    return users;
+    /*
     try {
         const token = cookies().get('auth_token')?.value;
         const response = await api.get('/admin/users', {
@@ -33,9 +38,16 @@ async function getUsers() {
         console.error("Failed to fetch users:", error);
         return [];
     }
+    */
 }
 
 async function getCourses() {
+    // MOCK: Returning mock data to prevent app crash while API is unavailable.
+    // The real implementation is commented out below.
+    console.warn("Subscriptions Page: Using mock course data. Please ensure your API server is running.");
+    const { courses } = await import("@/lib/data");
+    return courses;
+    /*
     try {
         const token = cookies().get('auth_token')?.value;
         const response = await api.get('/courses', {
@@ -46,6 +58,7 @@ async function getCourses() {
         console.error("Failed to fetch courses:", error);
         return [];
     }
+    */
 }
 
 
