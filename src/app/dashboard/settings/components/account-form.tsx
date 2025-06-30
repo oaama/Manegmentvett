@@ -72,10 +72,7 @@ export function AccountForm() {
     const fetchAdminProfile = React.useCallback(async () => {
         setLoading(true);
         try {
-            const token = document.cookie.split('; ').find(row => row.startsWith('auth_token='))?.split('=')[1];
-            const response = await api.get('/user/me', {
-                headers: { Authorization: `Bearer ${token}` }
-            });
+            const response = await api.get('/user/me');
             const user = response.data?.user || response.data;
             if (user && user._id) {
               setAdmin(user);

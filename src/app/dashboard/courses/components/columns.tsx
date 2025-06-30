@@ -68,13 +68,12 @@ const CourseActions = ({ course, instructors }: { course: Course, instructors: P
 
   const handleEditSubmit = async () => {
     try {
-        const token = document.cookie.split('; ').find(row => row.startsWith('auth_token='))?.split('=')[1];
         await api.put(`/admin/courses/${course._id}`, {
             name,
             price,
             academicYear,
             instructorId,
-        }, { headers: { Authorization: `Bearer ${token}` } });
+        });
         toast({
             title: "Course Updated",
             description: `The course "${name}" has been successfully updated.`,
@@ -92,10 +91,7 @@ const CourseActions = ({ course, instructors }: { course: Course, instructors: P
 
   const handleDeleteConfirm = async () => {
      try {
-        const token = document.cookie.split('; ').find(row => row.startsWith('auth_token='))?.split('=')[1];
-        await api.delete(`/admin/courses/${course._id}`, {
-            headers: { Authorization: `Bearer ${token}` }
-        });
+        await api.delete(`/admin/courses/${course._id}`);
         toast({
             title: "Course Deleted",
             description: `The course "${course.name}" has been permanently deleted.`,

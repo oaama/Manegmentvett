@@ -41,10 +41,7 @@ const ActionButtons = ({ row }: { row: { original: CarnetRequest } }) => {
 
     const handleApprove = async () => {
         try {
-            const token = document.cookie.split('; ').find(row => row.startsWith('auth_token='))?.split('=')[1];
-            await api.post(`/admin/approve-carnet`, { userId: request.user._id }, {
-                headers: { Authorization: `Bearer ${token}` }
-            });
+            await api.post(`/admin/approve-carnet`, { userId: request.user._id });
             toast({
                 title: "Carnet Approved",
                 description: `The carnet for ${request.user.name} has been approved.`,
@@ -61,10 +58,7 @@ const ActionButtons = ({ row }: { row: { original: CarnetRequest } }) => {
 
     const handleReject = async () => {
         try {
-             const token = document.cookie.split('; ').find(row => row.startsWith('auth_token='))?.split('=')[1];
-            await api.post(`/admin/reject-carnet`, { userId: request.user._id }, {
-                headers: { Authorization: `Bearer ${token}` }
-            });
+            await api.post(`/admin/reject-carnet`, { userId: request.user._id });
             toast({
                 title: "Carnet Rejected",
                 description: `The carnet for ${request.user.name} has been rejected.`,

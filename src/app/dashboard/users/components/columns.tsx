@@ -77,10 +77,7 @@ const UserActions = ({ user }: { user: User }) => {
 
   const handleEditSubmit = async () => {
     try {
-        const token = document.cookie.split('; ').find(row => row.startsWith('auth_token='))?.split('=')[1];
-        await api.put(`/admin/users/${user._id}`, { name, email, role }, {
-            headers: { Authorization: `Bearer ${token}` }
-        });
+        await api.put(`/admin/users/${user._id}`, { name, email, role });
         toast({
             title: "User Updated",
             description: `${name}'s profile has been updated.`,
@@ -98,10 +95,7 @@ const UserActions = ({ user }: { user: User }) => {
 
   const handleDeleteConfirm = async () => {
     try {
-        const token = document.cookie.split('; ').find(row => row.startsWith('auth_token='))?.split('=')[1];
-        await api.delete(`/admin/users/${user._id}`, {
-            headers: { Authorization: `Bearer ${token}` }
-        });
+        await api.delete(`/admin/users/${user._id}`);
         toast({
             title: "User Deleted",
             description: `${user.name}'s account has been deleted.`,

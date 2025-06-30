@@ -68,10 +68,7 @@ function AddSectionForm({ course, onSectionAdded }: { course: Course, onSectionA
   async function onSubmit(values: z.infer<typeof sectionFormSchema>) {
     setIsSubmitting(true)
     try {
-      const token = document.cookie.split('; ').find(row => row.startsWith('auth_token='))?.split('=')[1];
-      await api.post(`/courses/${course._id}/sections`, values, {
-        headers: { Authorization: `Bearer ${token}` }
-      })
+      await api.post(`/courses/${course._id}/sections`, values)
       toast({
         title: "Section Added",
         description: `The section "${values.sectionTitle}" has been added to the course.`,
@@ -148,10 +145,7 @@ export function ManageSectionsContent({ course }: { course: Course }) {
   const fetchSections = React.useCallback(async () => {
     setIsLoading(true)
     try {
-      const token = document.cookie.split('; ').find(row => row.startsWith('auth_token='))?.split('=')[1];
-      const response = await api.get(`/courses/${course._id}/sections`, {
-          headers: { Authorization: `Bearer ${token}` }
-      })
+      const response = await api.get(`/courses/${course._id}/sections`)
       setSections(response.data.sections || [])
     } catch (error) {
         console.warn("Could not fetch sections. The endpoint GET /courses/:id/sections may be missing, or the course has no sections yet.", error)

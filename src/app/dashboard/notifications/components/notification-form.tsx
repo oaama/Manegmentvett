@@ -67,10 +67,7 @@ export function NotificationForm() {
     }
 
     try {
-      const token = document.cookie.split('; ').find(row => row.startsWith('auth_token='))?.split('=')[1];
-      await api.post('/notifications', payload, {
-          headers: { Authorization: `Bearer ${token}` }
-      });
+      await api.post('/notifications', payload);
       toast({
         title: "Notification Sent!",
         description: `Your message "${values.title}" has been sent.`,

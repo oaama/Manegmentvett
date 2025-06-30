@@ -46,10 +46,7 @@ const SubscriptionActions = ({ subscription }: { subscription: Subscription }) =
 
     const handleDelete = async () => {
         try {
-            const token = document.cookie.split('; ').find(row => row.startsWith('auth_token='))?.split('=')[1];
-            await api.delete(`/admin/subscriptions/${subscription._id}`, {
-                headers: { Authorization: `Bearer ${token}` }
-            });
+            await api.delete(`/admin/subscriptions/${subscription._id}`);
             toast({
                 title: "Subscription Deleted",
                 description: "The subscription has been removed.",

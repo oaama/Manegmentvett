@@ -53,10 +53,7 @@ export function AddSubscriptionDialog() {
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsSubmitting(true)
     try {
-        const token = document.cookie.split('; ').find(row => row.startsWith('auth_token='))?.split('=')[1];
-        await api.post('/admin/subscriptions', values, {
-            headers: { Authorization: `Bearer ${token}` }
-        });
+        await api.post('/admin/subscriptions', values);
         toast({
             title: "Subscription Added",
             description: "The student has been successfully subscribed to the course.",
