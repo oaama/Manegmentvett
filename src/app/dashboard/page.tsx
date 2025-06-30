@@ -57,14 +57,8 @@ export default function DashboardPage() {
     const fetchStats = async () => {
       try {
         setLoading(true);
-        const token = document.cookie
-            .split('; ')
-            .find((row) => row.startsWith('auth_token='))
-            ?.split('=')[1];
-            
-        const response = await api.get('/admin/stats', {
-            headers: { Authorization: `Bearer ${token}` }
-        });
+        // The Axios interceptor in `api.ts` now handles attaching the token automatically.
+        const response = await api.get('/admin/stats');
         setStats(response.data);
       } catch (error) {
         console.error("Failed to fetch dashboard stats:", error);
