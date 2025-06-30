@@ -57,7 +57,14 @@ export default function DashboardPage() {
     const fetchStats = async () => {
       try {
         setLoading(true);
-        const response = await api.get('/admin/stats');
+        const token = document.cookie
+            .split('; ')
+            .find((row) => row.startsWith('auth_token='))
+            ?.split('=')[1];
+            
+        const response = await api.get('/admin/stats', {
+            headers: { Authorization: `Bearer ${token}` }
+        });
         setStats(response.data);
       } catch (error) {
         console.error("Failed to fetch dashboard stats:", error);
