@@ -5,10 +5,9 @@ import { useFormStatus } from "react-dom"
 import { login } from "../actions"
 
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { AlertCircle, Loader2 } from "lucide-react"
+import { AlertCircle, Loader2, Mail, Lock } from "lucide-react"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 
 function SubmitButton() {
@@ -16,7 +15,7 @@ function SubmitButton() {
 
   return (
     <Button type="submit" className="w-full" disabled={pending}>
-      {pending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : "Login"}
+      {pending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : "Login to Dashboard"}
     </Button>
   )
 }
@@ -30,43 +29,43 @@ export function LoginForm() {
   const [state, formAction] = useActionState(login, initialState)
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Admin Login</CardTitle>
-        <CardDescription>Enter your credentials to access the dashboard.</CardDescription>
-      </CardHeader>
-      <CardContent>
-        <form action={formAction} className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="email">Email</Label>
+    <form action={formAction} className="grid gap-4">
+      <div className="grid gap-2">
+        <Label htmlFor="email">Email</Label>
+        <div className="relative">
+            <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
-              id="email"
-              name="email"
-              type="email"
-              placeholder="admin@elearn.com"
-              required
-              defaultValue="admin@elearn.com"
+            id="email"
+            name="email"
+            type="email"
+            placeholder="admin@elearn.com"
+            required
+            defaultValue="admin@elearn.com"
+            className="pl-10"
             />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="password">Password</Label>
+        </div>
+      </div>
+      <div className="grid gap-2">
+         <Label htmlFor="password">Password</Label>
+        <div className="relative">
+             <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input 
                 id="password" 
                 name="password" 
                 type="password" 
                 required 
                 defaultValue="admin123"
+                className="pl-10"
             />
-          </div>
-          {state?.message && !state.success && (
-            <Alert variant="destructive">
-                <AlertCircle className="h-4 w-4" />
-                <AlertDescription>{state.message}</AlertDescription>
-            </Alert>
-          )}
-          <SubmitButton />
-        </form>
-      </CardContent>
-    </Card>
+        </div>
+      </div>
+      {state?.message && !state.success && (
+        <Alert variant="destructive">
+            <AlertCircle className="h-4 w-4" />
+            <AlertDescription>{state.message}</AlertDescription>
+        </Alert>
+      )}
+      <SubmitButton />
+    </form>
   )
 }
