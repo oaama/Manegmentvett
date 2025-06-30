@@ -14,9 +14,9 @@ export type User = {
 export type Course = {
   id: string;
   name:string;
-  instructor: string;
+  instructorName: string; // Changed from 'instructor' to match API
   instructorId: string;
-  year: number;
+  academicYear: number; // Changed from 'year'
   sections: number;
   price: number;
   coverImage?: string;
@@ -48,9 +48,10 @@ export type ActivityLog = {
   timestamp: Date;
 };
 
-export type Subscription = {
-  id: string;
-  user: Pick<User, 'id' | 'name' | 'email'>;
-  course: Pick<Course, 'id' | 'name'>;
-  subscribedAt: Date;
-};
+// Subscription is no longer used as there's no API endpoint for it.
+// export type Subscription = {
+//   id: string;
+//   user: Pick<User, 'id' | 'name' | 'email'>;
+//   course: Pick<Course, 'id' | 'name'>;
+//   subscribedAt: Date;
+// };

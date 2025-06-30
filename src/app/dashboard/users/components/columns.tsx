@@ -45,6 +45,8 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { useToast } from "@/hooks/use-toast"
+import api from "@/lib/api"
+import { useRouter } from "next/navigation"
 
 const DateCell = ({ dateValue, formatString }: { dateValue: Date | string, formatString: string }) => {
   const [formattedDate, setFormattedDate] = React.useState("")
@@ -64,6 +66,7 @@ const statusVariant: Record<User["carnetStatus"], "default" | "secondary" | "des
 
 const UserActions = ({ user }: { user: User }) => {
   const { toast } = useToast()
+  const router = useRouter()
   const [isEditDialogOpen, setIsEditDialogOpen] = React.useState(false)
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = React.useState(false)
   
@@ -72,24 +75,40 @@ const UserActions = ({ user }: { user: User }) => {
   const [role, setRole] = React.useState<User['role']>(user.role)
 
   const handleEditSubmit = async () => {
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 500));
-    toast({
-      title: "User Updated (Simulation)",
-      description: `${name}'s profile has been updated.`,
-    })
-    setIsEditDialogOpen(false)
+    try {
+        await api.put(`/admin/users/${user.id}`, { name, email, role });
+        toast({
+            title: "User Updated",
+            description: `${name}'s profile has been updated.`,
+        })
+        setIsEditDialogOpen(false)
+        router.refresh()
+    } catch(error: any) {
+        toast({
+            title: "Error Updating User",
+            description: error.response?.data?.message || "An unexpected error occurred.",
+            variant: "destructive",
+        })
+    }
   }
 
   const handleDeleteConfirm = async () => {
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 500));
-    toast({
-      title: "User Deleted (Simulation)",
-      description: `${user.name}'s account has been deleted.`,
-      variant: "destructive",
-    })
-    setIsDeleteDialogOpen(false)
+    try {
+        await api.delete(`/admin/users/${user.id}`);
+        toast({
+            title: "User Deleted",
+            description: `${user.name}'s account has been deleted.`,
+            variant: "destructive", // Using default for success, but destructive title
+        })
+        setIsDeleteDialogOpen(false)
+        router.refresh()
+    } catch (error: any) {
+        toast({
+            title: "Error Deleting User",
+            description: error.response?.data?.message || "An unexpected error occurred.",
+            variant: "destructive",
+        })
+    }
   }
 
   return (
@@ -238,7 +257,10 @@ export const columns: ColumnDef<User>[] = [
             student: "outline"
         }
         return <Badge variant={variant[role]}>{role}</Badge>
-    }
+    },
+    filterFn: (row, id, value) => {
+      return value.includes(row.getValue(id))
+    },
   },
   {
     accessorKey: "academicYear",
@@ -254,7 +276,10 @@ export const columns: ColumnDef<User>[] = [
     cell: ({ row }) => {
         const status = row.getValue("carnetStatus") as User["carnetStatus"]
         return <Badge variant={statusVariant[status] || "secondary"} className="capitalize">{status}</Badge>
-    }
+    },
+     filterFn: (row, id, value) => {
+      return value.includes(row.getValue(id))
+    },
   },
   {
     accessorKey: "createdAt",

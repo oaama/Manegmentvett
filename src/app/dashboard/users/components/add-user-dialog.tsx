@@ -26,23 +26,21 @@ import {
   FormMessage,
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
 import { useToast } from "@/hooks/use-toast"
+import api from "@/lib/api"
+import { useRouter } from "next/navigation"
 
+// Schema based on /admin/create-teacher endpoint
 const formSchema = z.object({
   name: z.string().min(3, "Name must be at least 3 characters"),
   email: z.string().email("Please enter a valid email address"),
   password: z.string().min(8, "Password must be at least 8 characters"),
-  role: z.enum(["instructor", "admin", "student"]).default("instructor"),
+  phone: z.string().min(10, "Please enter a valid phone number"),
+  academicYear: z.coerce.number().min(0, "Academic year is required"),
 })
 
 export function AddUserDialog() {
+  const router = useRouter()
   const [open, setOpen] = React.useState(false)
   const [isSubmitting, setIsSubmitting] = React.useState(false)
   const { toast } = useToast()
@@ -53,30 +51,27 @@ export function AddUserDialog() {
       name: "",
       email: "",
       password: "",
-      role: "instructor",
+      phone: "",
+      academicYear: 0,
     },
   })
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsSubmitting(true)
     
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1000));
-
     try {
-      // Replace with your actual API call in the future
-      // await api.post('/admin/users', values);
+      await api.post('/admin/create-teacher', values);
       toast({
-        title: "User Created (Simulation)",
+        title: "Teacher Created",
         description: `The account for "${values.name}" has been successfully created.`,
       })
       setOpen(false)
       form.reset()
-      // In a real app, you'd likely refetch the users list here.
+      router.refresh(); // Refetch data on the page
     } catch (error: any) {
-        const errorMessage = "An unexpected error occurred.";
+        const errorMessage = error.response?.data?.message || "An unexpected error occurred.";
         toast({
-            title: "Error Creating User",
+            title: "Error Creating Teacher",
             description: errorMessage,
             variant: "destructive",
         })
@@ -90,14 +85,14 @@ export function AddUserDialog() {
       <DialogTrigger asChild>
         <Button>
           <PlusCircle className="mr-2 h-4 w-4" />
-          Add User
+          Add Teacher
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>Add New User</DialogTitle>
+          <DialogTitle>Add New Teacher</DialogTitle>
           <DialogDescription>
-            Create a new user account. An invitation will be sent to their email.
+            Create a new teacher account.
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
@@ -122,7 +117,7 @@ export function AddUserDialog() {
                 <FormItem>
                   <FormLabel>Email</FormLabel>
                   <FormControl>
-                    <Input type="email" placeholder="user@example.com" {...field} />
+                    <Input type="email" placeholder="teacher@example.com" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -143,22 +138,26 @@ export function AddUserDialog() {
             />
              <FormField
               control={form.control}
-              name="role"
+              name="phone"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Role</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select a role" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                        <SelectItem value="instructor">Instructor</SelectItem>
-                        <SelectItem value="student">Student</SelectItem>
-                        <SelectItem value="admin">Admin</SelectItem>
-                    </SelectContent>
-                  </Select>
+                  <FormLabel>Phone</FormLabel>
+                  <FormControl>
+                    <Input placeholder="e.g. 123-456-7890" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+             <FormField
+              control={form.control}
+              name="academicYear"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Academic Year</FormLabel>
+                  <FormControl>
+                     <Input type="number" {...field} />
+                  </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
@@ -171,7 +170,7 @@ export function AddUserDialog() {
                 </DialogClose>
                 <Button type="submit" disabled={isSubmitting}>
                     {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                    Create User
+                    Create Teacher
                 </Button>
             </DialogFooter>
           </form>

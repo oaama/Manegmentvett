@@ -34,22 +34,25 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { useToast } from "@/hooks/use-toast"
-import { User } from "@/lib/types"
+import type { User } from "@/lib/types"
+import api from "@/lib/api"
+import { useRouter } from "next/navigation"
 
 const formSchema = z.object({
-  name: z.string().min(3, "Course name must be at least 3 characters"),
-  instructorId: z.string().min(1, "Please select an instructor"),
-  year: z.coerce.number().min(1, "Academic year is required"),
-  sections: z.coerce.number().min(1, "Number of sections is required"),
+  courseName: z.string().min(3, "Course name must be at least 3 characters"),
+  instructorName: z.string().min(1, "Please select an instructor"),
+  academicYear: z.coerce.number().min(1, "Academic year is required"),
+  sections: z.string().min(1, "Number of sections is required"),
   price: z.coerce.number().min(0, "Price is required"),
-  coverImage: z.any().optional(),
+  coverImage: z.instanceof(FileList).refine(files => files.length > 0, "Cover image is required."),
 })
 
 type AddCourseDialogProps = {
-  instructors: User[];
+  instructors: Pick<User, 'id' | 'name'>[];
 }
 
 export function AddCourseDialog({ instructors }: AddCourseDialogProps) {
+  const router = useRouter()
   const [open, setOpen] = React.useState(false)
   const [isSubmitting, setIsSubmitting] = React.useState(false)
   const { toast } = useToast()
@@ -57,42 +60,45 @@ export function AddCourseDialog({ instructors }: AddCourseDialogProps) {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      name: "",
-      instructorId: "",
-      year: 1,
-      sections: 10,
+      courseName: "",
+      instructorName: "",
+      academicYear: 1,
+      sections: "10",
       price: 0,
     },
   })
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsSubmitting(true)
-    await new Promise(resolve => setTimeout(resolve, 1000));
     
+    const formData = new FormData();
+    formData.append('courseName', values.courseName);
+    formData.append('instructorName', values.instructorName);
+    formData.append('academicYear', String(values.academicYear));
+    // The endpoint expects sections as a JSON string, we are sending it as a plain string for now.
+    // This might need adjustment based on backend implementation.
+    formData.append('sections', values.sections);
+    formData.append('price', String(values.price));
+    if (values.coverImage && values.coverImage.length > 0) {
+      formData.append('coverImage', values.coverImage[0]);
+    }
+
     try {
-      // In the future, you will use a real API call like this:
-      // const formData = new FormData();
-      // Object.entries(values).forEach(([key, value]) => {
-      //   if (key === 'coverImage' && value instanceof FileList && value.length > 0) {
-      //     formData.append(key, value[0]);
-      //   } else {
-      //     formData.append(key, String(value));
-      //   }
-      // });
-      // await api.post('/admin/courses', formData, { 
-      //   headers: { 'Content-Type': 'multipart/form-data' } 
-      // });
+      await api.post('/courses/upload', formData, { 
+        headers: { 'Content-Type': 'multipart/form-data' } 
+      });
 
       toast({
-        title: "Course Created (Simulation)",
-        description: `The course "${values.name}" has been successfully created.`,
+        title: "Course Created",
+        description: `The course "${values.courseName}" has been successfully created.`,
       })
       setOpen(false)
       form.reset()
-    } catch (error) {
+      router.refresh()
+    } catch (error: any) {
       toast({
         title: "Error Creating Course",
-        description: "An unexpected error occurred. Please try again.",
+        description: error.response?.data?.message || "An unexpected error occurred.",
         variant: "destructive",
       })
     } finally {
@@ -119,7 +125,7 @@ export function AddCourseDialog({ instructors }: AddCourseDialogProps) {
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
             <FormField
               control={form.control}
-              name="name"
+              name="courseName"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Course Name</FormLabel>
@@ -132,7 +138,7 @@ export function AddCourseDialog({ instructors }: AddCourseDialogProps) {
             />
             <FormField
               control={form.control}
-              name="instructorId"
+              name="instructorName"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Instructor</FormLabel>
@@ -144,7 +150,7 @@ export function AddCourseDialog({ instructors }: AddCourseDialogProps) {
                     </FormControl>
                     <SelectContent>
                       {instructors.map((instructor) => (
-                        <SelectItem key={instructor.id} value={instructor.id}>
+                        <SelectItem key={instructor.id} value={instructor.name}>
                           {instructor.name}
                         </SelectItem>
                       ))}
@@ -157,7 +163,7 @@ export function AddCourseDialog({ instructors }: AddCourseDialogProps) {
             <div className="grid grid-cols-3 gap-4">
               <FormField
                 control={form.control}
-                name="year"
+                name="academicYear"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Year</FormLabel>

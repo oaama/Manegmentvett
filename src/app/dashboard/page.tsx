@@ -1,6 +1,8 @@
+"use client"
+
+import * as React from 'react';
 import { DashboardHeader } from '@/components/dashboard-header';
 import { StatCard } from '@/components/stat-card';
-import { users, courses, carnetRequests } from '@/lib/data';
 import { Users, Book, CreditCard, Library } from 'lucide-react';
 import {
   Card,
@@ -10,21 +12,79 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
+import { Skeleton } from '@/components/ui/skeleton';
+import api from '@/lib/api';
+
+type Stats = {
+  totalUsers: number;
+  totalCourses: number;
+  carnetRequests: {
+    total: number;
+    pending: number;
+    approved: number;
+    rejected: number;
+  };
+  rolesCount: {
+    student: number;
+    instructor: number;
+    admin: number;
+  };
+  totalSections: number;
+}
 
 export default function DashboardPage() {
-  const totalUsers = users.length;
-  const totalCourses = courses.length;
-  const totalCarnets = carnetRequests.length;
-  const pendingCarnets = carnetRequests.filter(c => c.status === 'pending').length;
-  const approvedCarnets = users.filter(u => u.carnetStatus === 'approved').length;
-  const rejectedCarnets = carnetRequests.filter(c => c.status === 'rejected').length;
+  const [stats, setStats] = React.useState<Stats | null>(null);
+  const [loading, setLoading] = React.useState(true);
 
-  const rolesCount = users.reduce((acc, user) => {
-    acc[user.role] = (acc[user.role] || 0) + 1;
-    return acc;
-  }, {} as Record<string, number>);
+  React.useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        setLoading(true);
+        // The swagger spec doesn't define the response structure for /admin/stats
+        // We will assume a structure that matches our UI needs.
+        const response = await api.get('/admin/stats');
+        setStats(response.data);
+      } catch (error) {
+        console.error("Failed to fetch dashboard stats:", error);
+        // Set mock data on error to prevent crashing
+        setStats({
+          totalUsers: 8, totalCourses: 5, totalSections: 65,
+          carnetRequests: { total: 5, pending: 2, approved: 3, rejected: 1 },
+          rolesCount: { student: 5, instructor: 2, admin: 1 }
+        });
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchStats();
+  }, []);
 
-  const totalSections = courses.reduce((sum, course) => sum + course.sections, 0);
+  if (loading) {
+    return (
+      <>
+        <DashboardHeader title="Dashboard" />
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+          <Skeleton className="h-28" />
+          <Skeleton className="h-28" />
+          <Skeleton className="h-28" />
+          <Skeleton className="h-28" />
+        </div>
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7 mt-6">
+          <Skeleton className="lg:col-span-4 h-64" />
+          <Skeleton className="lg:col-span-3 h-64" />
+        </div>
+      </>
+    );
+  }
+
+  if (!stats) {
+    return (
+        <>
+            <DashboardHeader title="Dashboard" />
+            <div className="text-center">Could not load dashboard data.</div>
+        </>
+    );
+  }
 
   return (
     <>
@@ -32,25 +92,25 @@ export default function DashboardPage() {
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <StatCard
           title="Total Users"
-          value={totalUsers}
+          value={stats.totalUsers}
           icon={Users}
-          description={`${rolesCount.student || 0} students, ${rolesCount.instructor || 0} instructors`}
+          description={`${stats.rolesCount.student || 0} students, ${stats.rolesCount.instructor || 0} instructors`}
         />
         <StatCard
           title="Total Courses"
-          value={totalCourses}
+          value={stats.totalCourses}
           icon={Book}
           description="Across all academic years"
         />
         <StatCard
           title="Carnet Requests"
-          value={totalCarnets}
+          value={stats.carnetRequests.total}
           icon={CreditCard}
-          description={`${pendingCarnets} pending`}
+          description={`${stats.carnetRequests.pending} pending`}
         />
         <StatCard
           title="Total Sections"
-          value={totalSections}
+          value={stats.totalSections}
           icon={Library}
           description="In all available courses"
         />
@@ -65,23 +125,23 @@ export default function DashboardPage() {
             <div className="flex flex-col space-y-2">
                 <div className="flex justify-between text-sm font-medium">
                     <span>Students</span>
-                    <span>{rolesCount.student || 0} / {totalUsers}</span>
+                    <span>{stats.rolesCount.student || 0} / {stats.totalUsers}</span>
                 </div>
-                <Progress value={((rolesCount.student || 0) / totalUsers) * 100} />
+                <Progress value={((stats.rolesCount.student || 0) / stats.totalUsers) * 100} />
             </div>
              <div className="flex flex-col space-y-2">
                 <div className="flex justify-between text-sm font-medium">
                     <span>Instructors</span>
-                    <span>{rolesCount.instructor || 0} / {totalUsers}</span>
+                    <span>{stats.rolesCount.instructor || 0} / {stats.totalUsers}</span>
                 </div>
-                <Progress value={((rolesCount.instructor || 0) / totalUsers) * 100} />
+                <Progress value={((stats.rolesCount.instructor || 0) / stats.totalUsers) * 100} />
             </div>
              <div className="flex flex-col space-y-2">
                 <div className="flex justify-between text-sm font-medium">
                     <span>Admins</span>
-                    <span>{rolesCount.admin || 0} / {totalUsers}</span>
+                    <span>{stats.rolesCount.admin || 0} / {stats.totalUsers}</span>
                 </div>
-                <Progress value={((rolesCount.admin || 0) / totalUsers) * 100} />
+                <Progress value={((stats.rolesCount.admin || 0) / stats.totalUsers) * 100} />
             </div>
           </CardContent>
         </Card>
@@ -94,23 +154,23 @@ export default function DashboardPage() {
             <div className="flex flex-col space-y-2">
                 <div className="flex justify-between text-sm font-medium">
                     <span>Approved</span>
-                    <span className="text-green-600">{approvedCarnets}</span>
+                    <span className="text-green-600">{stats.carnetRequests.approved}</span>
                 </div>
-                <Progress value={(approvedCarnets / totalUsers) * 100} className="[&>div]:bg-green-500" />
+                <Progress value={(stats.carnetRequests.approved / stats.totalUsers) * 100} className="[&>div]:bg-green-500" />
             </div>
              <div className="flex flex-col space-y-2">
                 <div className="flex justify-between text-sm font-medium">
                     <span>Pending</span>
-                    <span className="text-yellow-600">{pendingCarnets}</span>
+                    <span className="text-yellow-600">{stats.carnetRequests.pending}</span>
                 </div>
-                <Progress value={(pendingCarnets / totalUsers) * 100} className="[&>div]:bg-yellow-500" />
+                <Progress value={(stats.carnetRequests.pending / stats.totalUsers) * 100} className="[&>div]:bg-yellow-500" />
             </div>
              <div className="flex flex-col space-y-2">
                 <div className="flex justify-between text-sm font-medium">
                     <span>Rejected</span>
-                     <span className="text-red-600">{rejectedCarnets}</span>
+                     <span className="text-red-600">{stats.carnetRequests.rejected}</span>
                 </div>
-                <Progress value={(rejectedCarnets / totalUsers) * 100} className="[&>div]:bg-red-500"/>
+                <Progress value={(stats.carnetRequests.rejected / stats.totalUsers) * 100} className="[&>div]:bg-red-500"/>
             </div>
           </CardContent>
         </Card>

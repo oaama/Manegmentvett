@@ -18,9 +18,9 @@ import {
 import Image from "next/image"
 import { format } from "date-fns"
 import { Badge } from "@/components/ui/badge"
-import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
 import { useToast } from "@/hooks/use-toast"
+import api from "@/lib/api"
+import { useRouter } from "next/navigation"
 
 const DateCell = ({ dateValue, formatString }: { dateValue: Date | string, formatString: string }) => {
   const [formattedDate, setFormattedDate] = React.useState("")
@@ -34,50 +34,39 @@ const DateCell = ({ dateValue, formatString }: { dateValue: Date | string, forma
 
 const ActionButtons = ({ row }: { row: { original: CarnetRequest } }) => {
     const request = row.original
+    const router = useRouter()
     const { toast } = useToast()
-    const [rejectionReason, setRejectionReason] = React.useState("");
 
     const handleApprove = async () => {
-        // Simulate API call
-        await new Promise(resolve => setTimeout(resolve, 500));
         try {
-            // await api.put(`/admin/approve-carnet/${request.id}`);
+            await api.post(`/admin/approve-carnet`, { userId: request.user.id });
             toast({
-                title: "Carnet Approved (Simulation)",
+                title: "Carnet Approved",
                 description: `The carnet for ${request.user.name} has been approved.`,
             })
-            // Here you would typically refetch the data or optimistically update the UI
-        } catch (error) {
+            router.refresh()
+        } catch (error: any) {
             toast({
                 title: "Error",
-                description: "Failed to approve the carnet. Please try again.",
+                description: error.response?.data?.message || "Failed to approve the carnet.",
                 variant: "destructive",
             })
         }
     }
 
     const handleReject = async () => {
-        if (!rejectionReason.trim()) {
-            toast({
-                title: "Rejection Failed",
-                description: "Please provide a reason for rejection.",
-                variant: "destructive",
-            })
-            return;
-        }
-        // Simulate API call
-        await new Promise(resolve => setTimeout(resolve, 500));
         try {
-            // await api.put(`/admin/reject-carnet/${request.id}`, { rejectionReason });
+            // The swagger spec does not include a rejection reason, so we only send the ID.
+            await api.post(`/admin/reject-carnet`, { userId: request.user.id });
             toast({
-                title: "Carnet Rejected (Simulation)",
+                title: "Carnet Rejected",
                 description: `The carnet for ${request.user.name} has been rejected.`,
             })
-            // Here you would typically refetch the data or optimistically update the UI
-        } catch (error) {
+            router.refresh();
+        } catch (error: any) {
             toast({
                 title: "Error",
-                description: "Failed to reject the carnet. Please try again.",
+                description: error.response?.data?.message || "Failed to reject the carnet.",
                 variant: "destructive",
             })
         }
@@ -110,8 +99,8 @@ const ActionButtons = ({ row }: { row: { original: CarnetRequest } }) => {
               </DialogContent>
             </Dialog>
 
-            <Button variant="outline" size="sm" onClick={handleApprove}>
-                <CheckCircle className="mr-2 h-4 w-4 text-green-500" /> Approve
+            <Button variant="success" size="sm" onClick={handleApprove}>
+                <CheckCircle className="mr-2 h-4 w-4" /> Approve
             </Button>
             
             <Dialog>
@@ -124,21 +113,9 @@ const ActionButtons = ({ row }: { row: { original: CarnetRequest } }) => {
                     <DialogHeader>
                         <DialogTitle>Reject Carnet Request</DialogTitle>
                         <DialogDescription>
-                            Please provide a reason for rejecting the carnet for {request.user.name}. This will be shown to the user.
+                            Are you sure you want to reject the carnet for {request.user.name}? This action cannot be undone.
                         </DialogDescription>
                     </DialogHeader>
-                    <div className="grid gap-4 py-4">
-                        <div className="grid gap-2">
-                            <Label htmlFor="reason" className="text-left">Rejection Reason</Label>
-                            <Textarea 
-                                id="reason" 
-                                placeholder="e.g., Image is blurry, name does not match."
-                                value={rejectionReason}
-                                onChange={(e) => setRejectionReason(e.target.value)}
-                                className="col-span-3"
-                            />
-                        </div>
-                    </div>
                     <DialogFooter>
                         <DialogClose asChild>
                             <Button type="button" variant="secondary">

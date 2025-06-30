@@ -13,7 +13,7 @@ import {
 import type { User } from "@/lib/types"
 
 type CourseFiltersProps = {
-  instructors: User[]
+  instructors: Pick<User, 'id' | 'name'>[]
 }
 
 export function CourseFilters({ instructors }: CourseFiltersProps) {

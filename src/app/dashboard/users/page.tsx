@@ -1,10 +1,22 @@
 import { DashboardHeader } from "@/components/dashboard-header"
-import { users } from "@/lib/data"
 import { UserClientPage } from "./components/client-page"
 import { AddUserDialog } from "./components/add-user-dialog"
+import api from "@/lib/api"
+import type { User } from "@/lib/types"
+
+async function getUsers() {
+    try {
+        const response = await api.get('/admin/users');
+        // The swagger spec doesn't define the user structure, so we assume it matches our User type
+        return response.data.users || [];
+    } catch (error) {
+        console.error("Failed to fetch users:", error);
+        return []; // Return empty array on error
+    }
+}
 
 export default async function UsersPage() {
-  const data = users
+  const data: User[] = await getUsers();
 
   return (
     <>

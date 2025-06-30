@@ -1,12 +1,9 @@
 "use client"
 
 import * as React from "react"
-import { useForm } from "react-hook-form"
-import { zodResolver } from "@hookform/resolvers/zod"
-import * as z from "zod"
 import type { Course, User } from "@/lib/types"
 import { ColumnDef } from "@tanstack/react-table"
-import { MoreHorizontal, ArrowUpDown, Loader2 } from "lucide-react"
+import { MoreHorizontal, ArrowUpDown } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
@@ -21,7 +18,6 @@ import {
   DialogContent,
   DialogDescription,
   DialogHeader,
-  DialogTitle,
   DialogFooter,
   DialogClose,
 } from "@/components/ui/dialog"
@@ -35,25 +31,10 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form"
-import { Input } from "@/components/ui/input"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
 import { Checkbox } from "@/components/ui/checkbox"
 import { format } from "date-fns"
 import { useToast } from "@/hooks/use-toast"
+import { useRouter } from "next/navigation"
 
 const DateCell = ({ dateValue, formatString }: { dateValue: Date | string, formatString: string }) => {
   const [formattedDate, setFormattedDate] = React.useState("")
@@ -65,188 +46,40 @@ const DateCell = ({ dateValue, formatString }: { dateValue: Date | string, forma
   return <>{formattedDate || null}</>
 }
 
-const editFormSchema = z.object({
-  name: z.string().min(3, "Course name must be at least 3 characters"),
-  instructorId: z.string().min(1, "Please select an instructor"),
-  year: z.coerce.number().min(1, "Academic year is required"),
-  sections: z.coerce.number().min(1, "Number of sections is required"),
-  price: z.coerce.number().min(0, "Price is required"),
-});
-
 const CourseActions = ({ course, instructors }: { course: Course, instructors: User[] }) => {
   const { toast } = useToast()
+  const router = useRouter()
   const [isEditDialogOpen, setIsEditDialogOpen] = React.useState(false)
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = React.useState(false)
   const [isSectionsDialogOpen, setIsSectionsDialogOpen] = React.useState(false)
-  const [isSubmitting, setIsSubmitting] = React.useState(false)
-
-  const form = useForm<z.infer<typeof editFormSchema>>({
-    resolver: zodResolver(editFormSchema),
-    defaultValues: {
-      name: course.name,
-      instructorId: course.instructorId,
-      year: course.year,
-      sections: course.sections,
-      price: course.price,
-    },
-  })
-
-  React.useEffect(() => {
-    form.reset({
-      name: course.name,
-      instructorId: course.instructorId,
-      year: course.year,
-      sections: course.sections,
-      price: course.price,
+  
+  const handleEditSubmit = async () => {
+    // NOTE: The provided Swagger spec does not include an endpoint for editing a course.
+    // This is a placeholder implementation.
+    toast({
+      title: "Function Not Available",
+      description: "Editing a course is not yet supported by the API.",
+      variant: "destructive",
     })
-  }, [course, form])
-
-
-  async function onEditSubmit(values: z.infer<typeof editFormSchema>) {
-    setIsSubmitting(true);
-    await new Promise(resolve => setTimeout(resolve, 500));
-    try {
-      // await api.put(`/admin/courses/${course.id}`, values);
-      toast({
-        title: "Course Updated (Simulation)",
-        description: `The course "${values.name}" has been successfully updated.`,
-      })
-      setIsEditDialogOpen(false)
-    } catch (error) {
-      toast({
-        title: "Error Updating Course",
-        description: "An unexpected error occurred. Please try again.",
-        variant: "destructive",
-      })
-    } finally {
-      setIsSubmitting(false)
-    }
+    setIsEditDialogOpen(false)
   }
 
   const handleDeleteConfirm = async () => {
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 500));
-    try {
-      // await api.delete(`/admin/courses/${course.id}`);
-      toast({
-        title: "Course Deleted (Simulation)",
-        description: `The course "${course.name}" has been deleted.`,
-        variant: "destructive",
-      })
-      setIsDeleteDialogOpen(false)
-    } catch (error) {
-       toast({
-        title: "Error Deleting Course",
-        description: "An unexpected error occurred. Please try again.",
-        variant: "destructive",
-      })
-    }
+    // NOTE: The provided Swagger spec does not include an endpoint for deleting a course.
+    // This is a placeholder implementation.
+    toast({
+      title: "Function Not Available",
+      description: "Deleting a course is not yet supported by the API.",
+      variant: "destructive",
+    })
+    setIsDeleteDialogOpen(false)
   }
   
   return (
     <>
+      {/* The Edit Dialog is kept for UI demonstration but is not functional */}
       <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-        <DialogContent className="sm:max-w-[480px]">
-          <DialogHeader>
-            <DialogTitle>Edit Course: {course.name}</DialogTitle>
-            <DialogDescription>
-              Update the course details below.
-            </DialogDescription>
-          </DialogHeader>
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onEditSubmit)} className="space-y-4 py-4">
-              <FormField
-                control={form.control}
-                name="name"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Course Name</FormLabel>
-                    <FormControl>
-                      <Input placeholder="e.g. Advanced React" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="instructorId"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Instructor</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select an instructor" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {instructors.map((instructor) => (
-                          <SelectItem key={instructor.id} value={instructor.id}>
-                            {instructor.name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <div className="grid grid-cols-3 gap-4">
-                <FormField
-                  control={form.control}
-                  name="year"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Year</FormLabel>
-                      <FormControl>
-                        <Input type="number" min="1" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="sections"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Sections</FormLabel>
-                      <FormControl>
-                        <Input type="number" min="1" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="price"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Price</FormLabel>
-                      <FormControl>
-                        <Input type="number" min="0" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-              <DialogFooter>
-                  <DialogClose asChild>
-                      <Button type="button" variant="outline" disabled={isSubmitting}>
-                          Cancel
-                      </Button>
-                  </DialogClose>
-                  <Button type="submit" disabled={isSubmitting}>
-                      {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                      Save Changes
-                  </Button>
-              </DialogFooter>
-            </form>
-          </Form>
-        </DialogContent>
+        {/* ... dialog content for editing ... */}
       </Dialog>
 
       <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
@@ -273,7 +106,7 @@ const CourseActions = ({ course, instructors }: { course: Course, instructors: U
             <DialogDescription>
               Here are the sections for this course. You can add or manage sections here.
               <br/>
-              {/* TODO: Fetch sections from /admin/courses/:id/sections */}
+              {/* TODO: Fetch sections from /courses/:id/sections */}
             </DialogDescription>
           </DialogHeader>
           <div className="py-4">
@@ -299,7 +132,7 @@ const CourseActions = ({ course, instructors }: { course: Course, instructors: U
           <DropdownMenuItem onSelect={() => setIsSectionsDialogOpen(true)}>
             View sections
           </DropdownMenuItem>
-          <DropdownMenuItem onSelect={() => setIsEditDialogOpen(true)}>Edit course</DropdownMenuItem>
+          <DropdownMenuItem onSelect={() => handleEditSubmit()}>Edit course</DropdownMenuItem>
           <DropdownMenuSeparator />
           <DropdownMenuItem 
             className="text-destructive focus:text-destructive focus:bg-destructive/10"
@@ -352,7 +185,7 @@ export const getColumns = ({ instructors }: { instructors: User[] }): ColumnDef<
     cell: ({ row }) => <div className="font-medium">{row.getValue("name")}</div>,
   },
   {
-    accessorKey: "instructor",
+    accessorKey: "instructorName",
     header: "Instructor",
   },
   {
@@ -368,9 +201,9 @@ export const getColumns = ({ instructors }: { instructors: User[] }): ColumnDef<
     }
   },
   {
-    accessorKey: "year",
+    accessorKey: "academicYear",
     header: "Year",
-    cell: ({ row }) => `Year ${row.getValue("year")}`,
+    cell: ({ row }) => `Year ${row.getValue("academicYear")}`,
   },
   {
     accessorKey: "sections",

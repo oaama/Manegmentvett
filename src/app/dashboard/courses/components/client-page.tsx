@@ -28,7 +28,7 @@ import type { Course, User } from "@/lib/types"
 
 interface DataTableProps<TData, TValue> {
   data: TData[],
-  instructors: User[],
+  instructors: Pick<User, 'id' | 'name'>[],
 }
 
 export function CourseClientPage<TData extends Course, TValue>({

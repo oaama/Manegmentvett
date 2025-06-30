@@ -6,8 +6,7 @@ import {
   Book,
   Bell,
   FileText,
-  BookOpenCheck,
-  Ticket
+  BookOpenCheck
 } from 'lucide-react';
 import {
   Sidebar,
@@ -21,7 +20,6 @@ import {
   SidebarFooter,
   SidebarTrigger,
 } from '@/components/ui/sidebar';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { LogoutButton } from '@/components/logout-button';
 
 const menuItems = [
@@ -29,7 +27,6 @@ const menuItems = [
   { href: '/dashboard/users', label: 'Users', icon: Users },
   { href: '/dashboard/carnets', label: 'Carnet Requests', icon: CreditCard },
   { href: '/dashboard/courses', label: 'Courses', icon: Book },
-  { href: '/dashboard/subscriptions', label: 'Subscriptions', icon: Ticket },
   { href: '/dashboard/notifications', label: 'Notifications', icon: Bell },
   { href: '/dashboard/logs', label: 'Activity Logs', icon: FileText },
 ];
