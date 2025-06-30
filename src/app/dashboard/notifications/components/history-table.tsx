@@ -24,6 +24,18 @@ import type { Notification } from "@/lib/types"
 import { format } from "date-fns"
 import { Badge } from "@/components/ui/badge"
 
+const DateCell = ({ dateValue, formatString }: { dateValue: Date | string, formatString: string }) => {
+  const [formattedDate, setFormattedDate] = React.useState("")
+
+  React.useEffect(() => {
+    // This runs only on the client, after hydration, preventing mismatch.
+    setFormattedDate(format(new Date(dateValue), formatString))
+  }, [dateValue, formatString])
+
+  // Return the formatted date, or a placeholder/empty string during SSR and initial client render.
+  return <>{formattedDate || null}</>
+}
+
 export const columns: ColumnDef<Notification>[] = [
   {
     accessorKey: "title",
@@ -40,7 +52,7 @@ export const columns: ColumnDef<Notification>[] = [
     header: "Date Sent",
     cell: ({ row }) => {
       const date = row.getValue("sentAt") as Date
-      return format(date, "MMM d, yyyy, h:mm a")
+      return <DateCell dateValue={date} formatString="MMM d, yyyy, h:mm a" />
     },
   },
 ]

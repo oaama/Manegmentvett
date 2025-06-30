@@ -55,6 +55,18 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { format } from "date-fns"
 import { useToast } from "@/hooks/use-toast"
 
+const DateCell = ({ dateValue, formatString }: { dateValue: Date | string, formatString: string }) => {
+  const [formattedDate, setFormattedDate] = React.useState("")
+
+  React.useEffect(() => {
+    // This runs only on the client, after hydration, preventing mismatch.
+    setFormattedDate(format(new Date(dateValue), formatString))
+  }, [dateValue, formatString])
+
+  // Return the formatted date, or a placeholder/empty string during SSR and initial client render.
+  return <>{formattedDate || null}</>
+}
+
 const editFormSchema = z.object({
   name: z.string().min(3, "Course name must be at least 3 characters"),
   instructor: z.string().min(1, "Please select an instructor"),
@@ -357,7 +369,7 @@ export const getColumns = ({ instructors }: { instructors: User[] }): ColumnDef<
     header: "Created Date",
     cell: ({ row }) => {
       const date = row.getValue("createdAt") as Date
-      return format(date, "MMM d, yyyy")
+      return <DateCell dateValue={date} formatString="MMM d, yyyy" />
     },
   },
   {

@@ -46,6 +46,18 @@ import {
 } from "@/components/ui/select"
 import { useToast } from "@/hooks/use-toast"
 
+const DateCell = ({ dateValue, formatString }: { dateValue: Date | string, formatString: string }) => {
+  const [formattedDate, setFormattedDate] = React.useState("")
+
+  React.useEffect(() => {
+    // This runs only on the client, after hydration, preventing mismatch.
+    setFormattedDate(format(new Date(dateValue), formatString))
+  }, [dateValue, formatString])
+
+  // Return the formatted date, or a placeholder/empty string during SSR and initial client render.
+  return <>{formattedDate || null}</>
+}
+
 const statusVariant: Record<User["carnetStatus"], "default" | "secondary" | "destructive"> = {
     approved: "default",
     pending: "secondary",
@@ -256,7 +268,7 @@ export const columns: ColumnDef<User>[] = [
     header: "Joined Date",
     cell: ({ row }) => {
       const date = row.getValue("createdAt") as Date
-      return format(date, "MMM d, yyyy")
+      return <DateCell dateValue={date} formatString="MMM d, yyyy" />
     },
   },
   {

@@ -22,6 +22,18 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { useToast } from "@/hooks/use-toast"
 
+const DateCell = ({ dateValue, formatString }: { dateValue: Date | string, formatString: string }) => {
+  const [formattedDate, setFormattedDate] = React.useState("")
+
+  React.useEffect(() => {
+    // This runs only on the client, after hydration, preventing mismatch.
+    setFormattedDate(format(new Date(dateValue), formatString))
+  }, [dateValue, formatString])
+
+  // Return the formatted date, or a placeholder/empty string during SSR and initial client render.
+  return <>{formattedDate || null}</>
+}
+
 const ActionButtons = ({ row }: { row: { original: CarnetRequest } }) => {
     const request = row.original
     const { toast } = useToast()
@@ -157,7 +169,7 @@ export const columns: ColumnDef<CarnetRequest>[] = [
     header: "Request Date",
     cell: ({ row }) => {
       const date = row.getValue("requestedAt") as Date
-      return format(date, "MMM d, yyyy")
+      return <DateCell dateValue={date} formatString="MMM d, yyyy" />
     },
   },
    {
