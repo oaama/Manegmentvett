@@ -32,7 +32,7 @@ export function LoginForm() {
 
   return (
     <form action={formAction} className="grid gap-4">
-      <div className="grid gap-2 animate-in fade-in-0 slide-in-from-bottom-2 duration-500 ease-out" style={{ animationDelay: '200ms', animationFillMode: 'backwards' }}>
+      <div className="grid gap-2 animate-in fade-in-0 slide-in-from-bottom-2 duration-500 ease-out" style={{ animationDelay: '700ms', animationFillMode: 'backwards' }}>
         <Label htmlFor="email">Email</Label>
         <div className="relative">
             <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -47,7 +47,7 @@ export function LoginForm() {
             />
         </div>
       </div>
-      <div className="grid gap-2 animate-in fade-in-0 slide-in-from-bottom-2 duration-500 ease-out" style={{ animationDelay: '300ms', animationFillMode: 'backwards' }}>
+      <div className="grid gap-2 animate-in fade-in-0 slide-in-from-bottom-2 duration-500 ease-out" style={{ animationDelay: '800ms', animationFillMode: 'backwards' }}>
          <Label htmlFor="password">Password</Label>
         <div className="relative">
              <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -72,12 +72,12 @@ export function LoginForm() {
         </div>
       </div>
       {state?.message && !state.success && (
-        <Alert variant="destructive" className="animate-in fade-in-0 duration-500 ease-out" style={{ animationDelay: '400ms', animationFillMode: 'backwards' }}>
+        <Alert variant="destructive" className="animate-in fade-in-0 duration-500 ease-out" style={{ animationDelay: '900ms', animationFillMode: 'backwards' }}>
             <AlertCircle className="h-4 w-4" />
             <AlertDescription>{state.message}</AlertDescription>
         </Alert>
       )}
-      <div className="animate-in fade-in-0 slide-in-from-bottom-2 duration-500 ease-out" style={{ animationDelay: '500ms', animationFillMode: 'backwards' }}>
+      <div className="animate-in fade-in-0 slide-in-from-bottom-2 duration-500 ease-out" style={{ animationDelay: '1000ms', animationFillMode: 'backwards' }}>
         <SubmitButton />
       </div>
     </form>

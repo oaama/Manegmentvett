@@ -23,7 +23,7 @@ export default function LoginPage() {
                     Admin Center Login
                 </p>
             </div>
-            <Card className="animate-in fade-in-0 slide-in-from-bottom-2 duration-700 ease-out">
+            <Card className="animate-in fade-in-0 zoom-in-95 slide-in-from-bottom-4 duration-700 ease-out" style={{ animationDelay: '200ms', animationFillMode: 'backwards' }}>
                 <CardHeader className="text-center">
                     <CardTitle className="text-2xl">Welcome to your Dashboard</CardTitle>
                     <CardDescription>
