@@ -1,7 +1,6 @@
 
 "use server"
 
-import axios from "axios"
 import { cookies } from "next/headers"
 import { redirect } from 'next/navigation'
 
@@ -10,14 +9,29 @@ export async function login(prevState: any, formData: FormData) {
   const password = formData.get("password") as string;
 
   try {
-    const response = await axios.post(
+    const response = await fetch(
       'https://mrvet-production.up.railway.app/api/auth/login', 
-      { email, password },
-      { headers: { 'Content-Type': 'application/json' } }
+      { 
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password }),
+      }
     );
     
-    const token = response.data.token; 
-    const msg = response.data.msg;
+    const data = await response.json();
+
+    if (!response.ok) {
+        console.error("--- LOGIN ACTION FAILED ---");
+        console.error("API Error Response:", JSON.stringify(data, null, 2));
+        console.error("API Error Status:", response.status);
+        return {
+            success: false,
+            message: `Login failed. The server responded with status ${response.status}: ${data.msg || 'Check credentials.'}.`,
+        };
+    }
+
+    const token = data.token; 
+    const msg = data.msg;
 
     if (token) {
         cookies().set("auth_token", token, {
@@ -35,26 +49,11 @@ export async function login(prevState: any, formData: FormData) {
     }
   } catch(error: any) {
     console.error("--- LOGIN ACTION FAILED ---");
-    if (error.response) {
-      console.error("API Error Response:", JSON.stringify(error.response.data, null, 2));
-      console.error("API Error Status:", error.response.status);
-      return {
+    console.error('Error during request setup:', error.message);
+    return {
         success: false,
-        message: `Login failed. The server responded with status ${error.response.status}: ${error.response.data.msg || 'Check credentials'}.`,
-      };
-    } else if (error.request) {
-      console.error("API No Response. Is the server running?");
-      return {
-        success: false,
-        message: "Could not connect to the server. Please check the API URL and ensure the server is running.",
-      };
-    } else {
-      console.error('Error during request setup:', error.message);
-       return {
-        success: false,
-        message: "An unexpected error occurred while preparing the login request.",
-      };
-    }
+        message: "An unexpected error occurred. Please check your network connection.",
+    };
   }
 }
 
@@ -62,7 +61,8 @@ export async function logout() {
   try {
     const token = cookies().get('auth_token')?.value;
     if (token) {
-        await axios.post('https://mrvet-production.up.railway.app/api/auth/logout', {}, {
+        await fetch('https://mrvet-production.up.railway.app/api/auth/logout', {
+            method: 'POST',
             headers: { 
                 'Authorization': `Bearer ${token}`,
                 'Content-Type': 'application/json'
