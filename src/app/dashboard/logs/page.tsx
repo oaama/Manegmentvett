@@ -3,18 +3,22 @@ import { DashboardHeader } from "@/components/dashboard-header"
 import { LogsClientPage } from "./components/client-page"
 import type { ActivityLog } from "@/lib/types"
 import { cookies } from "next/headers"
-import api from "@/lib/api"
+
+const API_BASE_URL = 'https://mrvet-production.up.railway.app/api';
 
 async function getLogs(): Promise<ActivityLog[]> {
     try {
         const token = cookies().get('auth_token')?.value;
         if (!token) return [];
 
-        const response = await api.get('/admin/logs', {
+        const response = await fetch(`${API_BASE_URL}/admin/logs`, {
             headers: { Authorization: `Bearer ${token}` },
+            cache: 'no-store',
         });
 
-        return response.data.logs || response.data || [];
+        if (!response.ok) throw new Error('Failed to fetch logs');
+        const data = await response.json();
+        return data.logs || data || [];
     } catch (error) {
         console.error("Failed to fetch activity logs:", error);
         return [];

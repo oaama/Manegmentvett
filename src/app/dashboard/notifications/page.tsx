@@ -6,18 +6,22 @@ import type { Notification } from "@/lib/types";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { NotificationHistoryFilters } from "./components/history-filters";
 import { cookies } from "next/headers";
-import api from "@/lib/api";
+
+const API_BASE_URL = 'https://mrvet-production.up.railway.app/api';
 
 async function getNotificationHistory(): Promise<Notification[]> {
     try {
         const token = cookies().get('auth_token')?.value;
         if (!token) return [];
 
-        const response = await api.get('/notifications/my', {
+        const response = await fetch(`${API_BASE_URL}/notifications/my`, {
              headers: { Authorization: `Bearer ${token}` },
+             cache: 'no-store',
         });
 
-        return response.data.notifications || response.data || [];
+        if (!response.ok) throw new Error('Failed to fetch notification history');
+        const data = await response.json();
+        return data.notifications || data || [];
     } catch (error) {
         console.warn("Could not fetch notification history. The API endpoint `/notifications/my` may be unavailable or you have no notifications.", error);
         return [];

@@ -5,7 +5,8 @@ import { AddCourseDialog } from "./components/add-course-dialog"
 import { CourseFilters } from "./components/course-filters"
 import type { Course, User } from "@/lib/types"
 import { cookies } from "next/headers"
-import api from "@/lib/api"
+
+const API_BASE_URL = 'https://mrvet-production.up.railway.app/api';
 
 async function getCourses(year?: string): Promise<Course[]> {
     try {
@@ -13,11 +14,14 @@ async function getCourses(year?: string): Promise<Course[]> {
         if (!token) return [];
         const endpoint = year ? `/courses/filter/by-year?year=${year}` : '/courses';
         
-        const response = await api.get(endpoint, {
+        const response = await fetch(`${API_BASE_URL}${endpoint}`, {
              headers: { Authorization: `Bearer ${token}` },
+             cache: 'no-store',
         });
-
-        return response.data.courses || [];
+        
+        if (!response.ok) throw new Error('Failed to fetch courses');
+        const data = await response.json();
+        return data.courses || [];
     } catch (error) {
         console.error("Failed to fetch courses:", error);
         return [];
@@ -29,11 +33,14 @@ async function getInstructors(): Promise<Pick<User, '_id' | 'name'>[]> {
         const token = cookies().get('auth_token')?.value;
         if (!token) return [];
 
-        const response = await api.get('/user/instructors', {
+        const response = await fetch(`${API_BASE_URL}/user/instructors`, {
              headers: { Authorization: `Bearer ${token}` },
+             cache: 'no-store',
         });
-
-        return response.data.instructors || [];
+        
+        if (!response.ok) throw new Error('Failed to fetch instructors');
+        const data = await response.json();
+        return data.instructors || [];
     } catch (error) {
         console.error("Failed to fetch instructors:", error);
         return [];

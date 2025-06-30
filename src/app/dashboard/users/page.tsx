@@ -4,18 +4,25 @@ import { UserClientPage } from "./components/client-page"
 import { AddUserDialog } from "./components/add-user-dialog"
 import type { User } from "@/lib/types"
 import { cookies } from "next/headers"
-import api from "@/lib/api"
+
+const API_BASE_URL = 'https://mrvet-production.up.railway.app/api';
 
 async function getUsers(): Promise<User[]> {
     try {
         const token = cookies().get('auth_token')?.value;
         if (!token) return [];
 
-        const response = await api.get('/admin/users', {
+        const response = await fetch(`${API_BASE_URL}/admin/users`, {
             headers: { Authorization: `Bearer ${token}` },
+            cache: 'no-store',
         });
 
-        return response.data.users || [];
+        if (!response.ok) {
+            throw new Error(`Failed to fetch users: ${response.statusText}`);
+        }
+
+        const data = await response.json();
+        return data.users || [];
     } catch (error) {
         console.error("Failed to fetch users:", error);
         return [];
