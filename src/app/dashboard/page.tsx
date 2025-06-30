@@ -40,18 +40,13 @@ export default function DashboardPage() {
     const fetchStats = async () => {
       try {
         setLoading(true);
-        // The swagger spec doesn't define the response structure for /admin/stats
-        // We will assume a structure that matches our UI needs.
+        // We assume the response structure from /admin/stats matches our UI needs based on the swagger file.
         const response = await api.get('/admin/stats');
         setStats(response.data);
       } catch (error) {
         console.error("Failed to fetch dashboard stats:", error);
-        // Set mock data on error to prevent crashing
-        setStats({
-          totalUsers: 8, totalCourses: 5, totalSections: 65,
-          carnetRequests: { total: 5, pending: 2, approved: 3, rejected: 1 },
-          rolesCount: { student: 5, instructor: 2, admin: 1 }
-        });
+        // On error, stats will remain null, and the UI will show a clear error message.
+        // The mock data fallback has been removed to make API issues more obvious.
       } finally {
         setLoading(false);
       }
@@ -81,7 +76,12 @@ export default function DashboardPage() {
     return (
         <>
             <DashboardHeader title="Dashboard" />
-            <div className="text-center">Could not load dashboard data.</div>
+            <div className="text-center p-8 border rounded-lg bg-card text-card-foreground">
+                <h3 className="text-xl font-semibold mb-2">Could not load dashboard data.</h3>
+                <p className="text-muted-foreground">
+                    Please ensure the API server is running and the `NEXT_PUBLIC_API_BASE_URL` in your `.env` file is correct.
+                </p>
+            </div>
         </>
     );
   }
