@@ -53,7 +53,10 @@ export function AddSubscriptionDialog() {
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsSubmitting(true)
     try {
-        await api.post('/api/admin/subscriptions', values);
+        const token = document.cookie.split('; ').find(row => row.startsWith('auth_token='))?.split('=')[1];
+        await api.post('/api/admin/subscriptions', values, {
+            headers: { Authorization: `Bearer ${token}` }
+        });
         toast({
             title: "Subscription Added",
             description: "The student has been successfully subscribed to the course.",
@@ -64,7 +67,7 @@ export function AddSubscriptionDialog() {
     } catch (error: any) {
         toast({
             title: "Error Adding Subscription",
-            description: error.response?.data?.message || "An unexpected error occurred.",
+            description: error.response?.data?.msg || "An unexpected error occurred.",
             variant: "destructive",
         });
     } finally {

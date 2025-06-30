@@ -77,7 +77,10 @@ const UserActions = ({ user }: { user: User }) => {
 
   const handleEditSubmit = async () => {
     try {
-        await api.put(`/api/admin/users/${user._id}`, { name, email, role });
+        const token = document.cookie.split('; ').find(row => row.startsWith('auth_token='))?.split('=')[1];
+        await api.put(`/api/admin/users/${user._id}`, { name, email, role }, {
+            headers: { Authorization: `Bearer ${token}` }
+        });
         toast({
             title: "User Updated",
             description: `${name}'s profile has been updated.`,
@@ -87,7 +90,7 @@ const UserActions = ({ user }: { user: User }) => {
     } catch(error: any) {
         toast({
             title: "Error Updating User",
-            description: error.response?.data?.message || "An unexpected error occurred.",
+            description: error.response?.data?.msg || "An unexpected error occurred.",
             variant: "destructive",
         })
     }
@@ -95,7 +98,10 @@ const UserActions = ({ user }: { user: User }) => {
 
   const handleDeleteConfirm = async () => {
     try {
-        await api.delete(`/api/admin/users/${user._id}`);
+        const token = document.cookie.split('; ').find(row => row.startsWith('auth_token='))?.split('=')[1];
+        await api.delete(`/api/admin/users/${user._id}`, {
+            headers: { Authorization: `Bearer ${token}` }
+        });
         toast({
             title: "User Deleted",
             description: `${user.name}'s account has been deleted.`,
@@ -106,7 +112,7 @@ const UserActions = ({ user }: { user: User }) => {
     } catch (error: any) {
         toast({
             title: "Error Deleting User",
-            description: error.response?.data?.message || "An unexpected error occurred.",
+            description: error.response?.data?.msg || "An unexpected error occurred.",
             variant: "destructive",
         })
     }

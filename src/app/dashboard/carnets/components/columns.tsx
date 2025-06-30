@@ -41,7 +41,10 @@ const ActionButtons = ({ row }: { row: { original: CarnetRequest } }) => {
 
     const handleApprove = async () => {
         try {
-            await api.post(`/api/admin/approve-carnet`, { userId: request.user._id });
+            const token = document.cookie.split('; ').find(row => row.startsWith('auth_token='))?.split('=')[1];
+            await api.post(`/api/admin/approve-carnet`, { userId: request.user._id }, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
             toast({
                 title: "Carnet Approved",
                 description: `The carnet for ${request.user.name} has been approved.`,
@@ -50,7 +53,7 @@ const ActionButtons = ({ row }: { row: { original: CarnetRequest } }) => {
         } catch (error: any) {
             toast({
                 title: "Error",
-                description: error.response?.data?.message || "Failed to approve the carnet.",
+                description: error.response?.data?.msg || "Failed to approve the carnet.",
                 variant: "destructive",
             })
         }
@@ -58,7 +61,10 @@ const ActionButtons = ({ row }: { row: { original: CarnetRequest } }) => {
 
     const handleReject = async () => {
         try {
-            await api.post(`/api/admin/reject-carnet`, { userId: request.user._id });
+             const token = document.cookie.split('; ').find(row => row.startsWith('auth_token='))?.split('=')[1];
+            await api.post(`/api/admin/reject-carnet`, { userId: request.user._id }, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
             toast({
                 title: "Carnet Rejected",
                 description: `The carnet for ${request.user.name} has been rejected.`,
@@ -67,7 +73,7 @@ const ActionButtons = ({ row }: { row: { original: CarnetRequest } }) => {
         } catch (error: any) {
             toast({
                 title: "Error",
-                description: error.response?.data?.message || "Failed to reject the carnet.",
+                description: error.response?.data?.msg || "Failed to reject the carnet.",
                 variant: "destructive",
             })
         }

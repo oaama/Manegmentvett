@@ -67,7 +67,10 @@ export function NotificationForm() {
     }
 
     try {
-      await api.post('/api/notifications', payload);
+      const token = document.cookie.split('; ').find(row => row.startsWith('auth_token='))?.split('=')[1];
+      await api.post('/api/notifications', payload, {
+          headers: { Authorization: `Bearer ${token}` }
+      });
       toast({
         title: "Notification Sent!",
         description: `Your message "${values.title}" has been sent.`,
@@ -77,7 +80,7 @@ export function NotificationForm() {
     } catch (error: any) {
       toast({
         title: "Error Sending Notification",
-        description: error.response?.data?.message || "An unexpected error occurred.",
+        description: error.response?.data?.msg || "An unexpected error occurred.",
         variant: "destructive",
       })
     } finally {

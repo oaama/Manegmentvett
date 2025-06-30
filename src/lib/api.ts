@@ -7,23 +7,4 @@ const api = axios.create({
   },
 });
 
-// Set up an interceptor to automatically add the auth token to every request.
-api.interceptors.request.use((config) => {
-  // We can't access cookies directly in a universal library file like this
-  // in Next.js. Instead, we'll retrieve the token when making the actual call
-  // in server actions or client components where context is available.
-  // For client-side requests, you could read from document.cookie.
-  if (typeof window !== 'undefined') {
-    const token = document.cookie.split('; ').find(row => row.startsWith('auth_token='))?.split('=')[1];
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
-  }
-  
-  return config;
-}, (error) => {
-  return Promise.reject(error);
-});
-
-
 export default api;

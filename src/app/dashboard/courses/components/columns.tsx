@@ -68,12 +68,13 @@ const CourseActions = ({ course, instructors }: { course: Course, instructors: P
 
   const handleEditSubmit = async () => {
     try {
+        const token = document.cookie.split('; ').find(row => row.startsWith('auth_token='))?.split('=')[1];
         await api.put(`/api/admin/courses/${course._id}`, {
             name,
             price,
             academicYear,
             instructorId,
-        });
+        }, { headers: { Authorization: `Bearer ${token}` } });
         toast({
             title: "Course Updated",
             description: `The course "${name}" has been successfully updated.`,
@@ -83,7 +84,7 @@ const CourseActions = ({ course, instructors }: { course: Course, instructors: P
     } catch (error: any) {
         toast({
             title: "Error Updating Course",
-            description: error.response?.data?.message || "An unexpected error occurred.",
+            description: error.response?.data?.msg || "An unexpected error occurred.",
             variant: "destructive",
         });
     }
@@ -91,7 +92,10 @@ const CourseActions = ({ course, instructors }: { course: Course, instructors: P
 
   const handleDeleteConfirm = async () => {
      try {
-        await api.delete(`/api/admin/courses/${course._id}`);
+        const token = document.cookie.split('; ').find(row => row.startsWith('auth_token='))?.split('=')[1];
+        await api.delete(`/api/admin/courses/${course._id}`, {
+            headers: { Authorization: `Bearer ${token}` }
+        });
         toast({
             title: "Course Deleted",
             description: `The course "${course.name}" has been permanently deleted.`,
@@ -101,7 +105,7 @@ const CourseActions = ({ course, instructors }: { course: Course, instructors: P
     } catch (error: any) {
         toast({
             title: "Error Deleting Course",
-            description: error.response?.data?.message || "An unexpected error occurred.",
+            description: error.response?.data?.msg || "An unexpected error occurred.",
             variant: "destructive",
         });
     }

@@ -46,7 +46,10 @@ const SubscriptionActions = ({ subscription }: { subscription: Subscription }) =
 
     const handleDelete = async () => {
         try {
-            await api.delete(`/api/admin/subscriptions/${subscription._id}`);
+            const token = document.cookie.split('; ').find(row => row.startsWith('auth_token='))?.split('=')[1];
+            await api.delete(`/api/admin/subscriptions/${subscription._id}`, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
             toast({
                 title: "Subscription Deleted",
                 description: "The subscription has been removed.",
@@ -56,7 +59,7 @@ const SubscriptionActions = ({ subscription }: { subscription: Subscription }) =
         } catch (error: any) {
             toast({
                 title: "Error Deleting Subscription",
-                description: error.response?.data?.message || "An unexpected error occurred.",
+                description: error.response?.data?.msg || "An unexpected error occurred.",
                 variant: "destructive",
             });
         }

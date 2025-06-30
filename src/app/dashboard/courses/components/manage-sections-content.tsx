@@ -68,7 +68,10 @@ function AddSectionForm({ course, onSectionAdded }: { course: Course, onSectionA
   async function onSubmit(values: z.infer<typeof sectionFormSchema>) {
     setIsSubmitting(true)
     try {
-      await api.post(`/api/courses/${course.id}/sections`, values)
+      const token = document.cookie.split('; ').find(row => row.startsWith('auth_token='))?.split('=')[1];
+      await api.post(`/api/courses/${course._id}/sections`, values, {
+        headers: { Authorization: `Bearer ${token}` }
+      })
       toast({
         title: "Section Added",
         description: `The section "${values.sectionTitle}" has been added to the course.`,
@@ -79,7 +82,7 @@ function AddSectionForm({ course, onSectionAdded }: { course: Course, onSectionA
     } catch (error: any) {
       toast({
         title: "Error Adding Section",
-        description: error.response?.data?.message || "An unexpected error occurred.",
+        description: error.response?.data?.msg || "An unexpected error occurred.",
         variant: "destructive",
       })
     } finally {
@@ -145,7 +148,10 @@ export function ManageSectionsContent({ course }: { course: Course }) {
   const fetchSections = React.useCallback(async () => {
     setIsLoading(true)
     try {
-      const response = await api.get(`/api/courses/${course.id}/sections`)
+      const token = document.cookie.split('; ').find(row => row.startsWith('auth_token='))?.split('=')[1];
+      const response = await api.get(`/api/courses/${course._id}/sections`, {
+          headers: { Authorization: `Bearer ${token}` }
+      })
       setSections(response.data.sections || [])
     } catch (error) {
         console.warn("Could not fetch sections. The endpoint GET /api/courses/:id/sections may be missing, or the course has no sections yet.", error)
@@ -153,7 +159,7 @@ export function ManageSectionsContent({ course }: { course: Course }) {
     } finally {
       setIsLoading(false)
     }
-  }, [course.id, toast])
+  }, [course._id, toast])
 
   React.useEffect(() => {
     fetchSections()
@@ -184,7 +190,7 @@ export function ManageSectionsContent({ course }: { course: Course }) {
                 </div>
               ) : sections.length > 0 ? (
                 sections.map((section, index) => (
-                  <React.Fragment key={section.id}>
+                  <React.Fragment key={section._id}>
                     <div className="flex items-center justify-between py-2">
                       <div className="font-medium">{section.sectionTitle}</div>
                       <div className="flex items-center gap-2">

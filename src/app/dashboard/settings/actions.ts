@@ -3,6 +3,7 @@
 
 import api from "@/lib/api"
 import { revalidatePath } from "next/cache"
+import { cookies } from "next/headers"
 
 export async function updateAdminCredentials(prevState: any, formData: FormData) {
   const _id = formData.get("_id") as string;
@@ -28,7 +29,10 @@ export async function updateAdminCredentials(prevState: any, formData: FormData)
   }
 
   try {
-    await api.put(`/api/admin/users/${_id}`, payload);
+    const token = cookies().get('auth_token')?.value;
+    await api.put(`/api/admin/users/${_id}`, payload, {
+        headers: { Authorization: `Bearer ${token}` }
+    });
 
     revalidatePath('/dashboard/settings');
     return { success: true, message: "Your credentials have been updated successfully." };
@@ -37,7 +41,7 @@ export async function updateAdminCredentials(prevState: any, formData: FormData)
     console.error("Failed to update credentials:", error);
     return {
       success: false,
-      message: error.response?.data?.message || "Failed to update credentials. Please check your current password.",
+      message: error.response?.data?.msg || "Failed to update credentials. Please check your current password.",
     };
   }
 }

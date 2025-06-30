@@ -71,8 +71,12 @@ export function AddUserDialog() {
     }
 
     try {
+      const token = document.cookie.split('; ').find(row => row.startsWith('auth_token='))?.split('=')[1];
       await api.post('/api/admin/create-teacher', formData, {
-        headers: { 'Content-Type': 'multipart/form-data' }
+        headers: { 
+            'Content-Type': 'multipart/form-data',
+            Authorization: `Bearer ${token}`
+        }
       });
       toast({
         title: "Teacher Created",
@@ -82,7 +86,7 @@ export function AddUserDialog() {
       form.reset()
       router.refresh(); 
     } catch (error: any) {
-        const errorMessage = error.response?.data?.message || "An unexpected error occurred.";
+        const errorMessage = error.response?.data?.msg || "An unexpected error occurred.";
         toast({
             title: "Error Creating Teacher",
             description: errorMessage,

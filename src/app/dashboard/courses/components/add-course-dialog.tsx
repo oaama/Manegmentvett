@@ -83,8 +83,12 @@ export function AddCourseDialog({ instructors }: AddCourseDialogProps) {
     }
 
     try {
+      const token = document.cookie.split('; ').find(row => row.startsWith('auth_token='))?.split('=')[1];
       await api.post('/api/courses/upload', formData, { 
-        headers: { 'Content-Type': 'multipart/form-data' } 
+        headers: { 
+            'Content-Type': 'multipart/form-data',
+            Authorization: `Bearer ${token}` 
+        } 
       });
 
       toast({
@@ -97,7 +101,7 @@ export function AddCourseDialog({ instructors }: AddCourseDialogProps) {
     } catch (error: any) {
       toast({
         title: "Error Creating Course",
-        description: error.response?.data?.message || "An unexpected error occurred.",
+        description: error.response?.data?.msg || "An unexpected error occurred.",
         variant: "destructive",
       })
     } finally {
