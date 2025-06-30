@@ -1,9 +1,12 @@
 import axios from 'axios';
 
 if (!process.env.NEXT_PUBLIC_API_BASE_URL) {
-  console.warn("WARNING: 'NEXT_PUBLIC_API_BASE_URL' is not set in the environment variables.");
+  console.warn("***********************************************************************************");
+  console.warn("WARNING: 'NEXT_PUBLIC_API_BASE_URL' is not set in your environment variables.");
   console.warn("The application will not be able to connect to the backend API.");
-  console.warn("Please create a .env file and add: NEXT_PUBLIC_API_BASE_URL=http://your-api-url");
+  console.warn("To fix this, open the '.env' file in the root of the project,");
+  console.warn("uncomment the NEXT_PUBLIC_API_BASE_URL line, and set it to your API's URL.");
+  console.warn("***********************************************************************************");
 }
 
 const api = axios.create({
