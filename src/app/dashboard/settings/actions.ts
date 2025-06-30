@@ -39,6 +39,7 @@ export async function updateAdminCredentials(prevState: any, formData: FormData)
         headers: { 
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json',
+            'Accept': 'application/json',
         },
         body: JSON.stringify(payload),
     });

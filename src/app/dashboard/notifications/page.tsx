@@ -18,7 +18,11 @@ async function getNotificationHistory(): Promise<Notification[]> {
         }
 
         const response = await fetch(`${API_BASE_URL}/notifications/my`, {
-             headers: { Authorization: `Bearer ${token}` },
+             headers: { 
+                 Authorization: `Bearer ${token}`,
+                 'Content-Type': 'application/json',
+                 'Accept': 'application/json',
+             },
              cache: 'no-store',
         });
 

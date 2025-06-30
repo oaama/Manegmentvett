@@ -15,7 +15,11 @@ async function getLogs(): Promise<ActivityLog[]> {
         }
 
         const response = await fetch(`${API_BASE_URL}/admin/logs`, {
-            headers: { Authorization: `Bearer ${token}` },
+            headers: { 
+                Authorization: `Bearer ${token}`,
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+            },
             cache: 'no-store',
         });
 

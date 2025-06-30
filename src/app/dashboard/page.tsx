@@ -31,6 +31,8 @@ async function getStats(): Promise<Stats> {
         const response = await fetch(`${API_BASE_URL}/admin/stats`, {
             headers: {
                 'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
             },
             cache: 'no-store',
         });
