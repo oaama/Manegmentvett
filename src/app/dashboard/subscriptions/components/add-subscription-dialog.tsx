@@ -33,19 +33,19 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { useToast } from "@/hooks/use-toast"
-import type { User, Course } from "@/lib/types"
+import type { Course } from "@/lib/types"
+import { Input } from "@/components/ui/input"
 
 const formSchema = z.object({
-  studentId: z.string().min(1, "Please select a student"),
+  studentId: z.string().min(1, "Please enter a student ID"),
   courseId: z.string().min(1, "Please select a course"),
 })
 
 type AddSubscriptionDialogProps = {
-  students: User[];
   courses: Course[];
 }
 
-export function AddSubscriptionDialog({ students, courses }: AddSubscriptionDialogProps) {
+export function AddSubscriptionDialog({ courses }: AddSubscriptionDialogProps) {
   const [open, setOpen] = React.useState(false)
   const [isSubmitting, setIsSubmitting] = React.useState(false)
   const { toast } = useToast()
@@ -98,21 +98,10 @@ export function AddSubscriptionDialog({ students, courses }: AddSubscriptionDial
               name="studentId"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Student</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select a student" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {students.map((student) => (
-                        <SelectItem key={student.id} value={student.id}>
-                          {student.name} (ID: {student.id})
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  <FormLabel>Student ID</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Enter student ID" {...field} />
+                  </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
