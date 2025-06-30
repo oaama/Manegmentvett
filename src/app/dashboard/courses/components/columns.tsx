@@ -20,6 +20,7 @@ import {
   DialogHeader,
   DialogFooter,
   DialogClose,
+  DialogTitle,
 } from "@/components/ui/dialog"
 import {
   AlertDialog,
@@ -35,6 +36,10 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { format } from "date-fns"
 import { useToast } from "@/hooks/use-toast"
 import { useRouter } from "next/navigation"
+import api from "@/lib/api"
+import { Label } from "@/components/ui/label"
+import { Input } from "@/components/ui/input"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 
 const DateCell = ({ dateValue, formatString }: { dateValue: Date | string, formatString: string }) => {
   const [formattedDate, setFormattedDate] = React.useState("")
@@ -46,40 +51,109 @@ const DateCell = ({ dateValue, formatString }: { dateValue: Date | string, forma
   return <>{formattedDate || null}</>
 }
 
-const CourseActions = ({ course, instructors }: { course: Course, instructors: User[] }) => {
+const CourseActions = ({ course, instructors }: { course: Course, instructors: Pick<User, 'id' | 'name'>[] }) => {
   const { toast } = useToast()
   const router = useRouter()
   const [isEditDialogOpen, setIsEditDialogOpen] = React.useState(false)
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = React.useState(false)
   const [isSectionsDialogOpen, setIsSectionsDialogOpen] = React.useState(false)
   
+  // State for the edit form
+  const [name, setName] = React.useState(course.name)
+  const [price, setPrice] = React.useState(course.price)
+  const [academicYear, setAcademicYear] = React.useState(course.academicYear)
+  const [instructorId, setInstructorId] = React.useState(course.instructorId)
+
   const handleEditSubmit = async () => {
-    // NOTE: The provided Swagger spec does not include an endpoint for editing a course.
-    // This is a placeholder implementation.
-    toast({
-      title: "Function Not Available",
-      description: "Editing a course is not yet supported by the API.",
-      variant: "destructive",
-    })
-    setIsEditDialogOpen(false)
+    try {
+      const selectedInstructor = instructors.find(i => i.id === instructorId)
+      await api.put(`/courses/${course.id}`, {
+        name,
+        price,
+        academicYear,
+        instructorName: selectedInstructor?.name,
+        instructorId,
+      });
+      toast({
+        title: "Course Updated",
+        description: `The course "${name}" has been successfully updated.`,
+      })
+      setIsEditDialogOpen(false)
+      router.refresh()
+    } catch (error: any) {
+       toast({
+        title: "Error Updating Course",
+        description: error.response?.data?.message || "An unexpected error occurred.",
+        variant: "destructive",
+      })
+    }
   }
 
   const handleDeleteConfirm = async () => {
-    // NOTE: The provided Swagger spec does not include an endpoint for deleting a course.
-    // This is a placeholder implementation.
-    toast({
-      title: "Function Not Available",
-      description: "Deleting a course is not yet supported by the API.",
-      variant: "destructive",
-    })
-    setIsDeleteDialogOpen(false)
+    try {
+      await api.delete(`/courses/${course.id}`);
+      toast({
+        title: "Course Deleted",
+        description: `The course "${course.name}" has been permanently deleted.`,
+      })
+      router.refresh()
+    } catch (error: any) {
+      toast({
+        title: "Error Deleting Course",
+        description: error.response?.data?.message || "An unexpected error occurred.",
+        variant: "destructive",
+      })
+    } finally {
+      setIsDeleteDialogOpen(false)
+    }
   }
   
   return (
     <>
-      {/* The Edit Dialog is kept for UI demonstration but is not functional */}
       <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-        {/* ... dialog content for editing ... */}
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Edit Course: {course.name}</DialogTitle>
+            <DialogDescription>
+              Make changes to the course details below.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-4 py-4">
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="name" className="text-right">Name</Label>
+              <Input id="name" value={name} onChange={(e) => setName(e.target.value)} className="col-span-3" />
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="price" className="text-right">Price</Label>
+              <Input id="price" type="number" value={price} onChange={(e) => setPrice(Number(e.target.value))} className="col-span-3" />
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="academicYear" className="text-right">Year</Label>
+              <Input id="academicYear" type="number" value={academicYear} onChange={(e) => setAcademicYear(Number(e.target.value))} className="col-span-3" />
+            </div>
+             <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="instructor" className="text-right">Instructor</Label>
+              <Select value={instructorId} onValueChange={setInstructorId}>
+                <SelectTrigger className="col-span-3">
+                  <SelectValue placeholder="Select an instructor" />
+                </SelectTrigger>
+                <SelectContent>
+                  {instructors.map((instructor) => (
+                    <SelectItem key={instructor.id} value={instructor.id}>
+                      {instructor.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+          <DialogFooter>
+             <DialogClose asChild>
+              <Button type="button" variant="outline">Cancel</Button>
+            </DialogClose>
+            <Button onClick={handleEditSubmit}>Save Changes</Button>
+          </DialogFooter>
+        </DialogContent>
       </Dialog>
 
       <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
@@ -132,7 +206,7 @@ const CourseActions = ({ course, instructors }: { course: Course, instructors: U
           <DropdownMenuItem onSelect={() => setIsSectionsDialogOpen(true)}>
             View sections
           </DropdownMenuItem>
-          <DropdownMenuItem onSelect={() => handleEditSubmit()}>Edit course</DropdownMenuItem>
+          <DropdownMenuItem onSelect={() => setIsEditDialogOpen(true)}>Edit course</DropdownMenuItem>
           <DropdownMenuSeparator />
           <DropdownMenuItem 
             className="text-destructive focus:text-destructive focus:bg-destructive/10"
@@ -146,7 +220,7 @@ const CourseActions = ({ course, instructors }: { course: Course, instructors: U
   )
 }
 
-export const getColumns = ({ instructors }: { instructors: User[] }): ColumnDef<Course>[] => [
+export const getColumns = ({ instructors }: { instructors: Pick<User, 'id' | 'name'>[] }): ColumnDef<Course>[] => [
   {
     id: "select",
     header: ({ table }) => (
