@@ -1,7 +1,7 @@
 
 "use server"
 
-import api from "@/lib/api"
+import axios from "axios"
 import { cookies } from "next/headers"
 import { redirect } from 'next/navigation'
 
@@ -10,13 +10,18 @@ export async function login(prevState: any, formData: FormData) {
   const password = formData.get("password") as string;
 
   try {
-    const response = await api.post('/auth/login', { email, password });
+    const response = await axios.post(
+      'https://mrvet-production.up.railway.app/api/auth/login', 
+      { email, password },
+      { headers: { 'Content-Type': 'application/json' } }
+    );
     
     const token = response.data.token; 
+    const msg = response.data.msg;
 
     if (token) {
         cookies().set("auth_token", token, {
-            httpOnly: false, // Allow client-side script to read the cookie for API requests
+            httpOnly: false,
             secure: process.env.NODE_ENV === "production",
             maxAge: 60 * 60 * 24 * 7, // 1 week
             path: "/",
@@ -25,7 +30,7 @@ export async function login(prevState: any, formData: FormData) {
     } else {
          return {
             success: false,
-            message: response.data.msg || "Login successful, but no token was provided by the server.",
+            message: msg || "Login successful, but no token was provided by the server.",
         }
     }
   } catch(error: any) {
@@ -38,7 +43,7 @@ export async function login(prevState: any, formData: FormData) {
         message: `Login failed. The server responded with status ${error.response.status}: ${error.response.data.msg || 'Check credentials'}.`,
       };
     } else if (error.request) {
-      console.error("API No Response. Is the server running at the specified URL?", error.config.url);
+      console.error("API No Response. Is the server running?");
       return {
         success: false,
         message: "Could not connect to the server. Please check the API URL and ensure the server is running.",
@@ -57,8 +62,11 @@ export async function logout() {
   try {
     const token = cookies().get('auth_token')?.value;
     if (token) {
-        await api.post('/auth/logout', {}, {
-            headers: { 'Authorization': `Bearer ${token}` }
+        await axios.post('https://mrvet-production.up.railway.app/api/auth/logout', {}, {
+            headers: { 
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            }
         });
     }
   } catch (error) {
