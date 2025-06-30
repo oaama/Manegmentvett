@@ -46,7 +46,7 @@ export default async function NotificationsPage({ searchParams }: NotificationsP
         </div>
         <div className="lg:col-span-3">
              <Card>
-                <CardHeader className="flex flex-row items-center justify-between">
+                <CardHeader className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                     <div className="space-y-1.5">
                         <CardTitle>Notification History</CardTitle>
                         <CardDescription>A log of all previously sent notifications.</CardDescription>

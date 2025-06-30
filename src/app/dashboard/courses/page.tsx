@@ -53,7 +53,7 @@ export default async function CoursesPage({ searchParams }: CoursesPageProps) {
   return (
     <>
       <DashboardHeader title="Courses Management">
-        <div className="flex items-center gap-4">
+        <div className="flex flex-wrap items-center gap-2">
           <CourseFilters instructors={instructors} />
           <AddCourseDialog instructors={instructors} />
         </div>
