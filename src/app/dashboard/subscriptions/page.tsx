@@ -4,26 +4,18 @@ import { AddSubscriptionDialog } from "./components/add-subscription-dialog"
 import { SubscriptionsClientPage } from "./components/client-page"
 import type { Subscription } from "@/lib/types"
 import { cookies } from "next/headers"
+import api from "@/lib/api"
 
-const API_BASE_URL = 'https://mrvet-production.up.railway.app/api';
-
-async function getSubscriptions() {
+async function getSubscriptions(): Promise<Subscription[]> {
     try {
         const token = cookies().get('auth_token')?.value;
         if (!token) return [];
 
-        const response = await fetch(`${API_BASE_URL}/admin/subscriptions`, {
+        const response = await api.get('/admin/subscriptions', {
             headers: { Authorization: `Bearer ${token}` },
-            cache: 'no-store',
         });
 
-        if (!response.ok) {
-            console.error("Failed to fetch subscriptions:", response.status, await response.text());
-            return [];
-        }
-
-        const data = await response.json();
-        return data.subscriptions || data || [];
+        return response.data.subscriptions || response.data || [];
     } catch (error) {
         console.error("Failed to fetch subscriptions:", error);
         return [];

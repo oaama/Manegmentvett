@@ -5,44 +5,35 @@ import { AddCourseDialog } from "./components/add-course-dialog"
 import { CourseFilters } from "./components/course-filters"
 import type { Course, User } from "@/lib/types"
 import { cookies } from "next/headers"
+import api from "@/lib/api"
 
-const API_BASE_URL = 'https://mrvet-production.up.railway.app/api';
-
-async function getCourses(year?: string) {
+async function getCourses(year?: string): Promise<Course[]> {
     try {
         const token = cookies().get('auth_token')?.value;
         if (!token) return [];
         const endpoint = year ? `/courses/filter/by-year?year=${year}` : '/courses';
-        const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+        
+        const response = await api.get(endpoint, {
              headers: { Authorization: `Bearer ${token}` },
-             cache: 'no-store',
         });
-        if (!response.ok) {
-            console.error("Failed to fetch courses:", response.status, await response.text());
-            return [];
-        }
-        const data = await response.json();
-        return data.courses || [];
+
+        return response.data.courses || [];
     } catch (error) {
         console.error("Failed to fetch courses:", error);
         return [];
     }
 }
 
-async function getInstructors() {
+async function getInstructors(): Promise<Pick<User, '_id' | 'name'>[]> {
     try {
         const token = cookies().get('auth_token')?.value;
         if (!token) return [];
-        const response = await fetch(`${API_BASE_URL}/user/instructors`, {
+
+        const response = await api.get('/user/instructors', {
              headers: { Authorization: `Bearer ${token}` },
-             cache: 'no-store',
         });
-        if (!response.ok) {
-            console.error("Failed to fetch instructors:", response.status, await response.text());
-            return [];
-        }
-        const data = await response.json();
-        return data.instructors || [];
+
+        return response.data.instructors || [];
     } catch (error) {
         console.error("Failed to fetch instructors:", error);
         return [];

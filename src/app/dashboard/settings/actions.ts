@@ -3,8 +3,7 @@
 
 import { revalidatePath } from "next/cache"
 import { cookies } from "next/headers"
-
-const API_BASE_URL = 'https://mrvet-production.up.railway.app/api';
+import api from "@/lib/api";
 
 export async function updateAdminCredentials(prevState: any, formData: FormData) {
   const _id = formData.get("_id") as string;
@@ -31,32 +30,20 @@ export async function updateAdminCredentials(prevState: any, formData: FormData)
 
   try {
     const token = cookies().get('auth_token')?.value;
-    const response = await fetch(`${API_BASE_URL}/admin/users/${_id}`, {
-        method: 'PUT',
+    const response = await api.put(`/admin/users/${_id}`, payload, {
         headers: { 
-            'Content-Type': 'application/json',
             'Authorization': `Bearer ${token}` 
         },
-        body: JSON.stringify(payload),
     });
     
-    const responseData = await response.json();
-
-    if (!response.ok) {
-       return {
-          success: false,
-          message: responseData.msg || "Failed to update credentials. Please check your current password.",
-       };
-    }
-
     revalidatePath('/dashboard/settings');
-    return { success: true, message: "Your credentials have been updated successfully." };
+    return { success: true, message: response.data.msg || "Your credentials have been updated successfully." };
 
   } catch (error: any) {
     console.error("Failed to update credentials:", error);
     return {
       success: false,
-      message: "An unexpected network error occurred.",
+      message: error.response?.data?.msg || "An unexpected error occurred.",
     };
   }
 }
