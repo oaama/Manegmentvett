@@ -1,6 +1,5 @@
 "use client"
 
-import { useState } from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod"
@@ -26,8 +25,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { useToast } from "@/hooks/use-toast"
 import { User } from "@/lib/types"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
-import { Wand2, Loader2, Send } from "lucide-react"
-import { analyzeNotification } from "@/ai/flows/analyzeNotification"
+import { Send } from "lucide-react"
 
 const formSchema = z.object({
   target: z.string().min(1, "Target is required"),
@@ -49,7 +47,6 @@ type NotificationFormProps = {
 }
 
 export function NotificationForm({ users }: NotificationFormProps) {
-  const [isAnalyzing, setIsAnalyzing] = useState(false);
   const { toast } = useToast()
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -71,44 +68,6 @@ export function NotificationForm({ users }: NotificationFormProps) {
       description: `Your message "${values.title}" has been sent.`,
     })
     form.reset()
-  }
-
-  const handleAnalyze = async () => {
-    const { title, message } = form.getValues();
-    if (!title || !message) {
-      toast({
-        title: "Analysis Failed",
-        description: "Please provide a title and message to analyze.",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    setIsAnalyzing(true);
-    try {
-      const result = await analyzeNotification({ title, message });
-      if (result.isSafe) {
-        toast({
-          title: "Analysis Complete",
-          description: result.reason,
-        });
-      } else {
-        toast({
-          title: "Content Warning",
-          description: result.reason,
-          variant: "destructive",
-        });
-      }
-    } catch (error) {
-      console.error("AI analysis failed:", error);
-      toast({
-        title: "Analysis Error",
-        description: "Could not analyze the content at this time.",
-        variant: "destructive",
-      });
-    } finally {
-      setIsAnalyzing(false);
-    }
   }
 
   return (
@@ -193,12 +152,8 @@ export function NotificationForm({ users }: NotificationFormProps) {
               )}
             />
             
-            <div className="flex flex-col sm:flex-row gap-2">
-                <Button type="button" variant="outline" onClick={handleAnalyze} disabled={isAnalyzing}>
-                    {isAnalyzing ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Wand2 className="mr-2 h-4 w-4" />}
-                    Analyze with AI
-                </Button>
-                <Button type="submit" className="flex-grow">
+            <div className="flex justify-end">
+                <Button type="submit">
                     <Send className="mr-2 h-4 w-4" />
                     Send Notification
                 </Button>
