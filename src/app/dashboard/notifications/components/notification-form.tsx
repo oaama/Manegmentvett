@@ -4,6 +4,7 @@ import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod"
 import { Loader2, Send } from "lucide-react"
+import React from "react"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -25,8 +26,6 @@ import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { useToast } from "@/hooks/use-toast"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
-import api from "@/lib/api"
-import React from "react"
 
 const formSchema = z.object({
   target: z.string().min(1, "Target is required"),
@@ -61,10 +60,11 @@ export function NotificationForm() {
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsSubmitting(true)
+    await new Promise(resolve => setTimeout(resolve, 1000));
     try {
-      await api.post('/admin/notify', values);
+      // await api.post('/admin/notify', values);
       toast({
-        title: "Notification Sent!",
+        title: "Notification Sent! (Simulation)",
         description: `Your message "${values.title}" has been sent.`,
       })
       form.reset()

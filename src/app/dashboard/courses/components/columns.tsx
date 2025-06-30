@@ -54,17 +54,14 @@ import {
 import { Checkbox } from "@/components/ui/checkbox"
 import { format } from "date-fns"
 import { useToast } from "@/hooks/use-toast"
-import api from "@/lib/api"
 
 const DateCell = ({ dateValue, formatString }: { dateValue: Date | string, formatString: string }) => {
   const [formattedDate, setFormattedDate] = React.useState("")
 
   React.useEffect(() => {
-    // This runs only on the client, after hydration, preventing mismatch.
     setFormattedDate(format(new Date(dateValue), formatString))
   }, [dateValue, formatString])
 
-  // Return the formatted date, or a placeholder/empty string during SSR and initial client render.
   return <>{formattedDate || null}</>
 }
 
@@ -107,10 +104,11 @@ const CourseActions = ({ course, instructors }: { course: Course, instructors: U
 
   async function onEditSubmit(values: z.infer<typeof editFormSchema>) {
     setIsSubmitting(true);
+    await new Promise(resolve => setTimeout(resolve, 500));
     try {
-      await api.put(`/admin/courses/${course.id}`, values);
+      // await api.put(`/admin/courses/${course.id}`, values);
       toast({
-        title: "Course Updated",
+        title: "Course Updated (Simulation)",
         description: `The course "${values.name}" has been successfully updated.`,
       })
       setIsEditDialogOpen(false)
@@ -126,10 +124,12 @@ const CourseActions = ({ course, instructors }: { course: Course, instructors: U
   }
 
   const handleDeleteConfirm = async () => {
+    // Simulate API call
+    await new Promise(resolve => setTimeout(resolve, 500));
     try {
-      await api.delete(`/admin/courses/${course.id}`);
+      // await api.delete(`/admin/courses/${course.id}`);
       toast({
-        title: "Course Deleted",
+        title: "Course Deleted (Simulation)",
         description: `The course "${course.name}" has been deleted.`,
         variant: "destructive",
       })

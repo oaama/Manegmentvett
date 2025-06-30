@@ -24,17 +24,14 @@ import {
 } from "@/components/ui/alert-dialog"
 import { format } from "date-fns"
 import { useToast } from "@/hooks/use-toast"
-import api from "@/lib/api"
 
 const DateCell = ({ dateValue, formatString }: { dateValue: Date | string, formatString: string }) => {
   const [formattedDate, setFormattedDate] = React.useState("")
 
   React.useEffect(() => {
-    // This runs only on the client, after hydration, preventing mismatch.
     setFormattedDate(format(new Date(dateValue), formatString))
   }, [dateValue, formatString])
 
-  // Return the formatted date, or a placeholder/empty string during SSR and initial client render.
   return <>{formattedDate || null}</>
 }
 
@@ -43,10 +40,12 @@ const SubscriptionActions = ({ subscription }: { subscription: Subscription }) =
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = React.useState(false)
 
   const handleUnsubscribe = async () => {
+    // Simulate API call
+    await new Promise(resolve => setTimeout(resolve, 500));
     try {
-      await api.delete(`/admin/subscriptions/${subscription.id}`);
+      // await api.delete(`/admin/subscriptions/${subscription.id}`);
       toast({
-        title: "Unsubscribed",
+        title: "Unsubscribed (Simulation)",
         description: `${subscription.user.name} has been unsubscribed from ${subscription.course.name}.`,
         variant: "destructive",
       })

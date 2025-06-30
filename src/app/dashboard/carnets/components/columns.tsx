@@ -21,17 +21,14 @@ import { Badge } from "@/components/ui/badge"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { useToast } from "@/hooks/use-toast"
-import api from "@/lib/api"
 
 const DateCell = ({ dateValue, formatString }: { dateValue: Date | string, formatString: string }) => {
   const [formattedDate, setFormattedDate] = React.useState("")
 
   React.useEffect(() => {
-    // This runs only on the client, after hydration, preventing mismatch.
     setFormattedDate(format(new Date(dateValue), formatString))
   }, [dateValue, formatString])
 
-  // Return the formatted date, or a placeholder/empty string during SSR and initial client render.
   return <>{formattedDate || null}</>
 }
 
@@ -41,10 +38,12 @@ const ActionButtons = ({ row }: { row: { original: CarnetRequest } }) => {
     const [rejectionReason, setRejectionReason] = React.useState("");
 
     const handleApprove = async () => {
+        // Simulate API call
+        await new Promise(resolve => setTimeout(resolve, 500));
         try {
-            await api.put(`/admin/approve-carnet/${request.id}`);
+            // await api.put(`/admin/approve-carnet/${request.id}`);
             toast({
-                title: "Carnet Approved",
+                title: "Carnet Approved (Simulation)",
                 description: `The carnet for ${request.user.name} has been approved.`,
             })
             // Here you would typically refetch the data or optimistically update the UI
@@ -66,10 +65,12 @@ const ActionButtons = ({ row }: { row: { original: CarnetRequest } }) => {
             })
             return;
         }
+        // Simulate API call
+        await new Promise(resolve => setTimeout(resolve, 500));
         try {
-            await api.put(`/admin/reject-carnet/${request.id}`, { rejectionReason });
+            // await api.put(`/admin/reject-carnet/${request.id}`, { rejectionReason });
             toast({
-                title: "Carnet Rejected",
+                title: "Carnet Rejected (Simulation)",
                 description: `The carnet for ${request.user.name} has been rejected.`,
             })
             // Here you would typically refetch the data or optimistically update the UI

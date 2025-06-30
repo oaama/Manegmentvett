@@ -35,7 +35,6 @@ import {
 } from "@/components/ui/select"
 import { useToast } from "@/hooks/use-toast"
 import { User } from "@/lib/types"
-import api from "@/lib/api"
 
 const formSchema = z.object({
   name: z.string().min(3, "Course name must be at least 3 characters"),
@@ -68,23 +67,24 @@ export function AddCourseDialog({ instructors }: AddCourseDialogProps) {
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsSubmitting(true)
+    await new Promise(resolve => setTimeout(resolve, 1000));
     
     try {
-      const formData = new FormData();
-      Object.entries(values).forEach(([key, value]) => {
-        if (key === 'coverImage' && value instanceof FileList && value.length > 0) {
-          formData.append(key, value[0]);
-        } else {
-          formData.append(key, String(value));
-        }
-      });
-      
-      await api.post('/admin/courses', formData, { 
-        headers: { 'Content-Type': 'multipart/form-data' } 
-      });
+      // In the future, you will use a real API call like this:
+      // const formData = new FormData();
+      // Object.entries(values).forEach(([key, value]) => {
+      //   if (key === 'coverImage' && value instanceof FileList && value.length > 0) {
+      //     formData.append(key, value[0]);
+      //   } else {
+      //     formData.append(key, String(value));
+      //   }
+      // });
+      // await api.post('/admin/courses', formData, { 
+      //   headers: { 'Content-Type': 'multipart/form-data' } 
+      // });
 
       toast({
-        title: "Course Created",
+        title: "Course Created (Simulation)",
         description: `The course "${values.name}" has been successfully created.`,
       })
       setOpen(false)

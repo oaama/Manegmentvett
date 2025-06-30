@@ -35,7 +35,6 @@ import {
 import { useToast } from "@/hooks/use-toast"
 import type { Course } from "@/lib/types"
 import { Input } from "@/components/ui/input"
-import api from "@/lib/api"
 
 const formSchema = z.object({
   studentId: z.string().min(1, "Please enter a student ID"),
@@ -61,11 +60,12 @@ export function AddSubscriptionDialog({ courses }: AddSubscriptionDialogProps) {
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsSubmitting(true)
+    await new Promise(resolve => setTimeout(resolve, 1000));
     
     try {
-      await api.post('/admin/subscriptions', values);
+      // await api.post('/admin/subscriptions', values);
       toast({
-        title: "Subscription Created",
+        title: "Subscription Created (Simulation)",
         description: `The student has been successfully subscribed to the course.`,
       })
       setOpen(false)
