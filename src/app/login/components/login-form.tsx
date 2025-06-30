@@ -48,12 +48,7 @@ export function LoginForm() {
         </div>
       </div>
       <div className="grid gap-2 animate-in fade-in-0 slide-in-from-bottom-2 duration-500 ease-out" style={{ animationDelay: '300ms', animationFillMode: 'backwards' }}>
-         <div className="flex items-center">
-            <Label htmlFor="password">Password</Label>
-            <a href="#" className="ml-auto inline-block text-sm underline">
-              Forgot your password?
-            </a>
-          </div>
+         <Label htmlFor="password">Password</Label>
         <div className="relative">
              <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input 

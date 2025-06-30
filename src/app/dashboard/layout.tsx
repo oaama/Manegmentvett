@@ -8,6 +8,7 @@ import {
   FileText,
   BookOpenCheck,
   TicketCheck,
+  Settings,
 } from 'lucide-react';
 import {
   Sidebar,
@@ -31,6 +32,7 @@ const menuItems = [
   { href: '/dashboard/subscriptions', label: 'Subscriptions', icon: TicketCheck },
   { href: '/dashboard/notifications', label: 'Notifications', icon: Bell },
   { href: '/dashboard/logs', label: 'Activity Logs', icon: FileText },
+  { href: '/dashboard/settings', label: 'Settings', icon: Settings },
 ];
 
 export default function DashboardLayout({
