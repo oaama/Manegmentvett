@@ -3,10 +3,14 @@ import { CarnetClientPage } from "./components/client-page"
 import { CarnetStatusFilter } from "./components/carnet-status-filter"
 import api from "@/lib/api"
 import type { CarnetRequest, User } from "@/lib/types"
+import { cookies } from "next/headers"
 
 async function getCarnetRequests() {
     try {
-        const response = await api.get('/admin/users');
+        const token = cookies().get('auth_token')?.value;
+        const response = await api.get('/admin/users', {
+            headers: { Authorization: `Bearer ${token}` }
+        });
         const users: User[] = response.data.users || [];
         
         // Transform user data into carnet requests, similar to the mock data structure

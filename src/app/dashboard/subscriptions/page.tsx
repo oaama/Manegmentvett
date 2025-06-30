@@ -3,6 +3,7 @@ import { AddSubscriptionDialog } from "./components/add-subscription-dialog"
 import { SubscriptionsClientPage } from "./components/client-page"
 import api from "@/lib/api"
 import type { Subscription, User, Course } from "@/lib/types"
+import { cookies } from "next/headers"
 
 // NOTE: Since there are no endpoints for subscriptions yet, we will use mock data.
 // We'll also fetch users and courses to pass to the add dialog,
@@ -23,7 +24,10 @@ async function getSubscriptions() {
 
 async function getUsers() {
     try {
-        const response = await api.get('/admin/users');
+        const token = cookies().get('auth_token')?.value;
+        const response = await api.get('/admin/users', {
+            headers: { Authorization: `Bearer ${token}` }
+        });
         return response.data.users || [];
     } catch (error) {
         console.error("Failed to fetch users:", error);
@@ -33,7 +37,10 @@ async function getUsers() {
 
 async function getCourses() {
     try {
-        const response = await api.get('/courses');
+        const token = cookies().get('auth_token')?.value;
+        const response = await api.get('/courses', {
+            headers: { Authorization: `Bearer ${token}` }
+        });
         return response.data.courses || [];
     } catch (error) {
         console.error("Failed to fetch courses:", error);

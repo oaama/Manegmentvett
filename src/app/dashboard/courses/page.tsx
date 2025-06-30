@@ -4,11 +4,15 @@ import { AddCourseDialog } from "./components/add-course-dialog"
 import { CourseFilters } from "./components/course-filters"
 import api from "@/lib/api"
 import type { Course, User } from "@/lib/types"
+import { cookies } from "next/headers"
 
 async function getCourses(year?: string) {
     try {
+        const token = cookies().get('auth_token')?.value;
         const endpoint = year ? `/courses/filter/by-year?year=${year}` : '/courses';
-        const response = await api.get(endpoint);
+        const response = await api.get(endpoint, {
+             headers: { Authorization: `Bearer ${token}` }
+        });
         return response.data.courses || [];
     } catch (error) {
         console.error("Failed to fetch courses:", error);
@@ -18,7 +22,10 @@ async function getCourses(year?: string) {
 
 async function getInstructors() {
     try {
-        const response = await api.get('/user/instructors');
+        const token = cookies().get('auth_token')?.value;
+        const response = await api.get('/user/instructors', {
+             headers: { Authorization: `Bearer ${token}` }
+        });
         // Assuming the endpoint returns an array of objects with { id, name }
         return response.data.instructors || [];
     } catch (error) {
@@ -30,7 +37,7 @@ async function getInstructors() {
 type CoursesPageProps = {
   searchParams: {
     year?: string;
-    instructor?: string; // This is no longer supported by backend but kept for potential future use
+    instructor?: string;
   }
 }
 
