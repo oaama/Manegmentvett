@@ -1,5 +1,5 @@
 export type User = {
-  id: string;
+  _id: string;
   name: string;
   email: string;
   role: 'student' | 'instructor' | 'admin';
@@ -13,7 +13,7 @@ export type User = {
 };
 
 export type Course = {
-  id: string;
+  _id: string;
   name:string;
   instructorName: string; // Changed from 'instructor' to match API
   instructorId: string;
@@ -25,7 +25,7 @@ export type Course = {
 };
 
 export type Section = {
-  id: string;
+  _id: string;
   sectionType: string;
   sectionTitle: string;
   videos: string; // JSON Array string
@@ -33,8 +33,8 @@ export type Section = {
 };
 
 export type CarnetRequest = {
-  id: string;
-  user: Pick<User, 'id' | 'name' | 'email' | 'academicYear'>;
+  _id: string;
+  user: Pick<User, '_id' | 'name' | 'email' | 'academicYear'>;
   carnetImage: string;
   status: 'pending' | 'approved' | 'rejected';
   rejectionReason?: string;
@@ -42,7 +42,7 @@ export type CarnetRequest = {
 };
 
 export type Notification = {
-  id: string;
+  _id: string;
   title: string;
   message: string;
   target: 'all' | 'students' | 'instructors' | string; // user id
@@ -50,7 +50,7 @@ export type Notification = {
 };
 
 export type ActivityLog = {
-  id: string;
+  _id: string;
   user: string;
   action: string;
   details: string;
@@ -58,8 +58,8 @@ export type ActivityLog = {
 };
 
 export type Subscription = {
-  id: string;
-  user: Pick<User, 'id' | 'name' | 'email'>;
-  course: Pick<Course, 'id' | 'name'>;
+  _id: string;
+  user: Pick<User, '_id' | 'name' | 'email'>;
+  course: Pick<Course, '_id' | 'name'>;
   subscribedAt: Date;
 };

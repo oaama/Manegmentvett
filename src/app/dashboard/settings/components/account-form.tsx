@@ -20,7 +20,7 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 
 const formSchema = z.object({
-  id: z.string().optional(), // It will come from the hidden input
+  _id: z.string().optional(), // It will come from the hidden input
   email: z.string().email({ message: "Please enter a valid email." }),
   currentPassword: z.string().min(1, { message: "Current password is required to make changes." }),
   newPassword: z.string().min(8, { message: "New password must be at least 8 characters." }).optional().or(z.literal('')),
@@ -61,7 +61,7 @@ export function AccountForm() {
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
-            id: "",
+            _id: "",
             email: "",
             currentPassword: "",
             newPassword: "",
@@ -74,10 +74,10 @@ export function AccountForm() {
         try {
             const response = await api.get('/api/user/me');
             const user = response.data?.user || response.data;
-            if (user && user.id) {
+            if (user && user._id) {
               setAdmin(user);
               form.reset({
-                  id: user.id,
+                  _id: user._id,
                   email: user.email,
                   currentPassword: "",
                   newPassword: "",
@@ -144,7 +144,7 @@ export function AccountForm() {
   return (
      <Form {...form}>
         <form action={formAction} className="space-y-6 max-w-lg">
-            <input type="hidden" name="id" value={admin?.id || ''} />
+            <input type="hidden" name="_id" value={admin?._id || ''} />
             <FormField
               control={form.control}
               name="email"

@@ -17,8 +17,8 @@ async function getCarnetRequests() {
         const requests: CarnetRequest[] = users
           .filter(u => u.role === 'student' && u.carnetStatus)
           .map(u => ({
-            id: u.id,
-            user: { id: u.id, name: u.name, email: u.email, academicYear: u.academicYear },
+            _id: u._id,
+            user: { _id: u._id, name: u.name, email: u.email, academicYear: u.academicYear },
             carnetImage: u.carnetImage || 'https://placehold.co/400x250.png',
             status: u.carnetStatus,
             rejectionReason: u.rejectionReason,

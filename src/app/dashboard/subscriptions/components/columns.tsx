@@ -46,7 +46,7 @@ const SubscriptionActions = ({ subscription }: { subscription: Subscription }) =
 
     const handleDelete = async () => {
         try {
-            await api.delete(`/api/admin/subscriptions/${subscription.id}`);
+            await api.delete(`/api/admin/subscriptions/${subscription._id}`);
             toast({
                 title: "Subscription Deleted",
                 description: "The subscription has been removed.",

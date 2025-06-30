@@ -77,7 +77,7 @@ const UserActions = ({ user }: { user: User }) => {
 
   const handleEditSubmit = async () => {
     try {
-        await api.put(`/api/admin/users/${user.id}`, { name, email, role });
+        await api.put(`/api/admin/users/${user._id}`, { name, email, role });
         toast({
             title: "User Updated",
             description: `${name}'s profile has been updated.`,
@@ -95,7 +95,7 @@ const UserActions = ({ user }: { user: User }) => {
 
   const handleDeleteConfirm = async () => {
     try {
-        await api.delete(`/api/admin/users/${user.id}`);
+        await api.delete(`/api/admin/users/${user._id}`);
         toast({
             title: "User Deleted",
             description: `${user.name}'s account has been deleted.`,
@@ -186,7 +186,7 @@ const UserActions = ({ user }: { user: User }) => {
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
           <DropdownMenuLabel>Actions</DropdownMenuLabel>
-          <DropdownMenuItem onClick={() => navigator.clipboard.writeText(user.id)}>
+          <DropdownMenuItem onClick={() => navigator.clipboard.writeText(user._id)}>
             Copy user ID
           </DropdownMenuItem>
           <DropdownMenuSeparator />

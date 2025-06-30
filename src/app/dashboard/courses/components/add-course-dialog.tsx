@@ -49,7 +49,7 @@ const formSchema = z.object({
 })
 
 type AddCourseDialogProps = {
-  instructors: Pick<User, 'id' | 'name'>[];
+  instructors: Pick<User, '_id' | 'name'>[];
 }
 
 export function AddCourseDialog({ instructors }: AddCourseDialogProps) {
@@ -149,7 +149,7 @@ export function AddCourseDialog({ instructors }: AddCourseDialogProps) {
                     </FormControl>
                     <SelectContent>
                       {instructors.map((instructor) => (
-                        <SelectItem key={instructor.id} value={instructor.name}>
+                        <SelectItem key={instructor._id} value={instructor.name}>
                           {instructor.name}
                         </SelectItem>
                       ))}

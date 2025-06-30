@@ -35,7 +35,7 @@ export async function login(prevState: any, formData: FormData) {
       console.error("API Error Status:", error.response.status);
       return {
         success: false,
-        message: `Login failed. The server responded with status ${error.response.status}: ${error.response.data.message || 'Check credentials'}.`,
+        message: `Login failed. The server responded with status ${error.response.status}: ${error.response.data.msg || 'Check credentials'}.`,
       };
     } else if (error.request) {
       console.error("API No Response. Is the server running at the specified URL?", error.config.url);

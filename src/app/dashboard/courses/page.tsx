@@ -42,7 +42,7 @@ type CoursesPageProps = {
 }
 
 export default async function CoursesPage({ searchParams }: CoursesPageProps) {
-  const instructors: Pick<User, 'id'|'name'>[] = await getInstructors();
+  const instructors: Pick<User, '_id'|'name'>[] = await getInstructors();
   let data: Course[] = await getCourses(searchParams.year);
 
   if (searchParams.instructor) {

@@ -54,7 +54,7 @@ const DateCell = ({ dateValue, formatString }: { dateValue: Date | string, forma
   return <>{formattedDate || null}</>
 }
 
-const CourseActions = ({ course, instructors }: { course: Course, instructors: Pick<User, 'id' | 'name'>[] }) => {
+const CourseActions = ({ course, instructors }: { course: Course, instructors: Pick<User, '_id' | 'name'>[] }) => {
   const { toast } = useToast()
   const router = useRouter()
   const [isEditDialogOpen, setIsEditDialogOpen] = React.useState(false)
@@ -68,7 +68,7 @@ const CourseActions = ({ course, instructors }: { course: Course, instructors: P
 
   const handleEditSubmit = async () => {
     try {
-        await api.put(`/api/admin/courses/${course.id}`, {
+        await api.put(`/api/admin/courses/${course._id}`, {
             name,
             price,
             academicYear,
@@ -91,7 +91,7 @@ const CourseActions = ({ course, instructors }: { course: Course, instructors: P
 
   const handleDeleteConfirm = async () => {
      try {
-        await api.delete(`/api/admin/courses/${course.id}`);
+        await api.delete(`/api/admin/courses/${course._id}`);
         toast({
             title: "Course Deleted",
             description: `The course "${course.name}" has been permanently deleted.`,
@@ -138,7 +138,7 @@ const CourseActions = ({ course, instructors }: { course: Course, instructors: P
                 </SelectTrigger>
                 <SelectContent>
                   {instructors.map((instructor) => (
-                    <SelectItem key={instructor.id} value={instructor.id}>
+                    <SelectItem key={instructor._id} value={instructor._id}>
                       {instructor.name}
                     </SelectItem>
                   ))}
@@ -204,7 +204,7 @@ const CourseActions = ({ course, instructors }: { course: Course, instructors: P
   )
 }
 
-export const getColumns = ({ instructors }: { instructors: Pick<User, 'id' | 'name'>[] }): ColumnDef<Course>[] => [
+export const getColumns = ({ instructors }: { instructors: Pick<User, '_id' | 'name'>[] }): ColumnDef<Course>[] => [
   {
     id: "select",
     header: ({ table }) => (

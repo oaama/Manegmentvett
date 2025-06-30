@@ -13,7 +13,7 @@ import {
 import type { User } from "@/lib/types"
 
 type CourseFiltersProps = {
-  instructors: Pick<User, 'id' | 'name'>[]
+  instructors: Pick<User, '_id' | 'name'>[]
 }
 
 export function CourseFilters({ instructors }: CourseFiltersProps) {
@@ -60,7 +60,7 @@ export function CourseFilters({ instructors }: CourseFiltersProps) {
           <SelectContent>
               <SelectItem value="all">All Instructors</SelectItem>
               {instructors.map(instructor => (
-                  <SelectItem key={instructor.id} value={instructor.id}>{instructor.name}</SelectItem>
+                  <SelectItem key={instructor._id} value={instructor._id}>{instructor.name}</SelectItem>
               ))}
           </SelectContent>
        </Select>

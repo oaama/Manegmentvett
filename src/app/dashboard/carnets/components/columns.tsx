@@ -41,7 +41,7 @@ const ActionButtons = ({ row }: { row: { original: CarnetRequest } }) => {
 
     const handleApprove = async () => {
         try {
-            await api.post(`/api/admin/approve-carnet`, { userId: request.user.id });
+            await api.post(`/api/admin/approve-carnet`, { userId: request.user._id });
             toast({
                 title: "Carnet Approved",
                 description: `The carnet for ${request.user.name} has been approved.`,
@@ -58,7 +58,7 @@ const ActionButtons = ({ row }: { row: { original: CarnetRequest } }) => {
 
     const handleReject = async () => {
         try {
-            await api.post(`/api/admin/reject-carnet`, { userId: request.user.id });
+            await api.post(`/api/admin/reject-carnet`, { userId: request.user._id });
             toast({
                 title: "Carnet Rejected",
                 description: `The carnet for ${request.user.name} has been rejected.`,

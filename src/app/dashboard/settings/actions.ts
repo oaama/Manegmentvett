@@ -5,12 +5,12 @@ import api from "@/lib/api"
 import { revalidatePath } from "next/cache"
 
 export async function updateAdminCredentials(prevState: any, formData: FormData) {
-  const id = formData.get("id") as string;
+  const _id = formData.get("_id") as string;
   const email = formData.get("email") as string;
   const currentPassword = formData.get("currentPassword") as string;
   const newPassword = formData.get("newPassword") as string;
 
-  if (!id) {
+  if (!_id) {
     return { success: false, message: "User ID is missing. Cannot update credentials." };
   }
 
@@ -28,7 +28,7 @@ export async function updateAdminCredentials(prevState: any, formData: FormData)
   }
 
   try {
-    await api.put(`/api/admin/users/${id}`, payload);
+    await api.put(`/api/admin/users/${_id}`, payload);
 
     revalidatePath('/dashboard/settings');
     return { success: true, message: "Your credentials have been updated successfully." };
