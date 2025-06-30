@@ -1,3 +1,4 @@
+
 "use server"
 
 import api from "@/lib/api"
@@ -11,7 +12,6 @@ export async function login(prevState: any, formData: FormData) {
   try {
     const response = await api.post('/auth/login', { email, password });
     
-    // Assuming the token is in response.data.token
     const token = response.data.token; 
 
     if (token) {
@@ -21,7 +21,6 @@ export async function login(prevState: any, formData: FormData) {
             maxAge: 60 * 60 * 24 * 7, // 1 week
             path: "/",
         });
-        // Redirect is handled in middleware and client-side, but for server action we can force it
         redirect('/dashboard');
     } else {
          return {
@@ -30,18 +29,27 @@ export async function login(prevState: any, formData: FormData) {
         }
     }
   } catch(error: any) {
-    console.error("Login failed:", error);
-    const errorMessage = error.response?.data?.message || "Invalid email or password";
-    return {
+    console.error("Login failed:", error.message);
+    
+    // Check if it's a network error vs. a bad credentials error from the server
+    if (error.response) {
+      // The server responded with an error (e.g., 401 Unauthorized)
+      return {
         success: false,
-        message: errorMessage,
+        message: error.response.data?.message || "Invalid email or password.",
+      };
+    } else {
+      // A network error occurred (e.g., server not running, wrong URL)
+      return {
+        success: false,
+        message: "Could not connect to the server. Please check the API URL and ensure the server is running.",
+      };
     }
   }
 }
 
 export async function logout() {
   try {
-     // Notify the backend about the logout
     const token = cookies().get('auth_token')?.value;
     if (token) {
         await api.post('/auth/logout', {}, {
@@ -51,7 +59,6 @@ export async function logout() {
   } catch (error) {
     console.error("Backend logout failed, proceeding with client-side logout:", error);
   } finally {
-    // Always clear the cookie and redirect
     cookies().delete('auth_token');
     redirect('/login');
   }
