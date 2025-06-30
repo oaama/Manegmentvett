@@ -152,7 +152,7 @@ export function NotificationForm({ users }: NotificationFormProps) {
               )}
             />
             
-            <div className="flex justify-end">
+            <div className="flex justify-center">
                 <Button type="submit">
                     <Send className="mr-2 h-4 w-4" />
                     Send Notification
