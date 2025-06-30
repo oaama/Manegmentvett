@@ -77,7 +77,9 @@ export default function DashboardLayout({
                 </div>
                 <SidebarTrigger />
             </div>
-            {children}
+            <main className="animate-in fade-in-0 slide-in-from-top-2 duration-500">
+              {children}
+            </main>
         </div>
       </SidebarInset>
     </SidebarProvider>
