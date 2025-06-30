@@ -1,3 +1,4 @@
+
 import { DashboardHeader } from "@/components/dashboard-header"
 import { CarnetClientPage } from "./components/client-page"
 import { CarnetStatusFilter } from "./components/carnet-status-filter"
@@ -8,12 +9,11 @@ import { cookies } from "next/headers"
 async function getCarnetRequests() {
     try {
         const token = cookies().get('auth_token')?.value;
-        const response = await api.get('/admin/users', {
+        const response = await api.get('/api/admin/users', {
             headers: { Authorization: `Bearer ${token}` }
         });
         const users: User[] = response.data.users || [];
         
-        // Transform user data into carnet requests, similar to the mock data structure
         const requests: CarnetRequest[] = users
           .filter(u => u.role === 'student' && u.carnetStatus)
           .map(u => ({
@@ -28,7 +28,7 @@ async function getCarnetRequests() {
         return requests;
     } catch (error) {
         console.error("Failed to fetch users for carnet requests:", error);
-        return []; // Return empty array on error
+        return [];
     }
 }
 

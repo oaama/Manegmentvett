@@ -1,3 +1,4 @@
+
 import { DashboardHeader } from "@/components/dashboard-header"
 import { CourseClientPage } from "./components/client-page"
 import { AddCourseDialog } from "./components/add-course-dialog"
@@ -9,7 +10,7 @@ import { cookies } from "next/headers"
 async function getCourses(year?: string) {
     try {
         const token = cookies().get('auth_token')?.value;
-        const endpoint = year ? `/courses/filter/by-year?year=${year}` : '/courses';
+        const endpoint = year ? `/api/courses/filter/by-year?year=${year}` : '/api/courses';
         const response = await api.get(endpoint, {
              headers: { Authorization: `Bearer ${token}` }
         });
@@ -23,10 +24,9 @@ async function getCourses(year?: string) {
 async function getInstructors() {
     try {
         const token = cookies().get('auth_token')?.value;
-        const response = await api.get('/user/instructors', {
+        const response = await api.get('/api/user/instructors', {
              headers: { Authorization: `Bearer ${token}` }
         });
-        // Assuming the endpoint returns an array of objects with { id, name }
         return response.data.instructors || [];
     } catch (error) {
         console.error("Failed to fetch instructors:", error);
@@ -45,7 +45,6 @@ export default async function CoursesPage({ searchParams }: CoursesPageProps) {
   const instructors: Pick<User, 'id'|'name'>[] = await getInstructors();
   let data: Course[] = await getCourses(searchParams.year);
 
-  // Instructor filter is done on the client-side as there is no dedicated backend endpoint
   if (searchParams.instructor) {
     data = data.filter(course => course.instructorId === searchParams.instructor);
   }

@@ -1,3 +1,4 @@
+
 "use client"
 
 import * as React from "react"
@@ -75,8 +76,6 @@ export function AddCourseDialog({ instructors }: AddCourseDialogProps) {
     formData.append('courseName', values.courseName);
     formData.append('instructorName', values.instructorName);
     formData.append('academicYear', String(values.academicYear));
-    // The endpoint expects sections as a JSON string, we are sending it as a plain string for now.
-    // This might need adjustment based on backend implementation.
     formData.append('sections', values.sections);
     formData.append('price', String(values.price));
     if (values.coverImage && values.coverImage.length > 0) {
@@ -84,7 +83,7 @@ export function AddCourseDialog({ instructors }: AddCourseDialogProps) {
     }
 
     try {
-      await api.post('/courses/upload', formData, { 
+      await api.post('/api/courses/upload', formData, { 
         headers: { 'Content-Type': 'multipart/form-data' } 
       });
 

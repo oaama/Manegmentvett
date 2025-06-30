@@ -1,3 +1,4 @@
+
 "use server"
 
 import api from "@/lib/api"
@@ -27,8 +28,7 @@ export async function updateAdminCredentials(prevState: any, formData: FormData)
   }
 
   try {
-    // Using the endpoint provided by the user
-    await api.put(`/admin/users/${id}`, payload);
+    await api.put(`/api/admin/users/${id}`, payload);
 
     revalidatePath('/dashboard/settings');
     return { success: true, message: "Your credentials have been updated successfully." };

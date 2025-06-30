@@ -1,3 +1,4 @@
+
 import { DashboardHeader } from "@/components/dashboard-header"
 import { AddSubscriptionDialog } from "./components/add-subscription-dialog"
 import { SubscriptionsClientPage } from "./components/client-page"
@@ -8,14 +9,13 @@ import { cookies } from "next/headers"
 async function getSubscriptions() {
     try {
         const token = cookies().get('auth_token')?.value;
-        const response = await api.get('/admin/subscriptions', {
+        const response = await api.get('/api/admin/subscriptions', {
             headers: { Authorization: `Bearer ${token}` }
         });
-        // The API might return { subscriptions: [...] } or just an array [...]
         return response.data.subscriptions || response.data || [];
     } catch (error) {
         console.error("Failed to fetch subscriptions:", error);
-        return []; // Return empty array on error
+        return [];
     }
 }
 

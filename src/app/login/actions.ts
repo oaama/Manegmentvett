@@ -10,8 +10,7 @@ export async function login(prevState: any, formData: FormData) {
   const password = formData.get("password") as string;
 
   try {
-    // CORRECTED ENDPOINT based on swagger file
-    const response = await api.post('/auth/login', { email, password });
+    const response = await api.post('/api/auth/login', { email, password });
     
     const token = response.data.token; 
 
@@ -32,8 +31,6 @@ export async function login(prevState: any, formData: FormData) {
   } catch(error: any) {
     console.error("--- LOGIN ACTION FAILED ---");
     if (error.response) {
-      // The request was made and the server responded with a status code
-      // that falls out of the range of 2xx
       console.error("API Error Response:", JSON.stringify(error.response.data, null, 2));
       console.error("API Error Status:", error.response.status);
       return {
@@ -41,14 +38,12 @@ export async function login(prevState: any, formData: FormData) {
         message: `Login failed. The server responded with status ${error.response.status}: ${error.response.data.message || 'Check credentials'}.`,
       };
     } else if (error.request) {
-      // The request was made but no response was received
       console.error("API No Response. Is the server running at the specified URL?", error.config.url);
       return {
         success: false,
         message: "Could not connect to the server. Please check the API URL and ensure the server is running.",
       };
     } else {
-      // Something happened in setting up the request that triggered an Error
       console.error('Error during request setup:', error.message);
        return {
         success: false,
@@ -62,8 +57,7 @@ export async function logout() {
   try {
     const token = cookies().get('auth_token')?.value;
     if (token) {
-        // CORRECTED ENDPOINT based on swagger file
-        await api.post('/auth/logout', {}, {
+        await api.post('/api/auth/logout', {}, {
             headers: { 'Authorization': `Bearer ${token}` }
         });
     }

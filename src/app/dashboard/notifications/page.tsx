@@ -1,3 +1,4 @@
+
 import { DashboardHeader } from "@/components/dashboard-header";
 import { NotificationForm } from "./components/notification-form";
 import { HistoryTable } from "./components/history-table";
@@ -9,17 +10,13 @@ import api from "@/lib/api";
 
 async function getNotificationHistory() {
     try {
-        // NOTE: The swagger file specifies /notifications/my which fetches notifications for the authenticated user (admin).
-        // This might not be what's expected (i.e., all notifications sent to everyone).
-        // Using /notifications/my as it's the only available endpoint.
         const token = cookies().get('auth_token')?.value;
-        const response = await api.get('/notifications/my', {
+        const response = await api.get('/api/notifications/my', {
              headers: { Authorization: `Bearer ${token}` }
         });
-        // The API might return { notifications: [...] } or just an array [...]
         return response.data.notifications || response.data || [];
     } catch (error) {
-        console.warn("Could not fetch notification history. The API endpoint `/notifications/my` may be unavailable or you have no notifications.", error);
+        console.warn("Could not fetch notification history. The API endpoint `/api/notifications/my` may be unavailable or you have no notifications.", error);
         return [];
     }
 }

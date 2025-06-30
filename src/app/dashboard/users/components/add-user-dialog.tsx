@@ -1,3 +1,4 @@
+
 "use client"
 
 import * as React from "react"
@@ -30,7 +31,6 @@ import { useToast } from "@/hooks/use-toast"
 import api from "@/lib/api"
 import { useRouter } from "next/navigation"
 
-// Schema based on /admin/create-teacher endpoint
 const formSchema = z.object({
   name: z.string().min(3, "Name must be at least 3 characters"),
   email: z.string().email("Please enter a valid email address"),
@@ -71,7 +71,7 @@ export function AddUserDialog() {
     }
 
     try {
-      await api.post('/admin/create-teacher', formData, {
+      await api.post('/api/admin/create-teacher', formData, {
         headers: { 'Content-Type': 'multipart/form-data' }
       });
       toast({
@@ -80,7 +80,7 @@ export function AddUserDialog() {
       })
       setOpen(false)
       form.reset()
-      router.refresh(); // Refetch data on the page
+      router.refresh(); 
     } catch (error: any) {
         const errorMessage = error.response?.data?.message || "An unexpected error occurred.";
         toast({

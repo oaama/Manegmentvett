@@ -1,3 +1,4 @@
+
 "use client"
 
 import * as React from "react"
@@ -76,7 +77,7 @@ const UserActions = ({ user }: { user: User }) => {
 
   const handleEditSubmit = async () => {
     try {
-        await api.put(`/admin/users/${user.id}`, { name, email, role });
+        await api.put(`/api/admin/users/${user.id}`, { name, email, role });
         toast({
             title: "User Updated",
             description: `${name}'s profile has been updated.`,
@@ -94,11 +95,11 @@ const UserActions = ({ user }: { user: User }) => {
 
   const handleDeleteConfirm = async () => {
     try {
-        await api.delete(`/admin/users/${user.id}`);
+        await api.delete(`/api/admin/users/${user.id}`);
         toast({
             title: "User Deleted",
             description: `${user.name}'s account has been deleted.`,
-            variant: "destructive", // Using default for success, but destructive title
+            variant: "destructive", 
         })
         setIsDeleteDialogOpen(false)
         router.refresh()

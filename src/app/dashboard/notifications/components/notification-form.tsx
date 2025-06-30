@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useForm } from "react-hook-form"
@@ -59,16 +60,14 @@ export function NotificationForm() {
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsSubmitting(true)
     
-    // Construct the payload based on the selected target
     const payload = {
         title: values.title,
         message: values.message,
-        // The API uses `userId` to denote the target, which can be an ID or a group name
         userId: values.targetGroup === 'specific' ? values.targetUserId : values.targetGroup,
     }
 
     try {
-      await api.post('/notifications', payload);
+      await api.post('/api/notifications', payload);
       toast({
         title: "Notification Sent!",
         description: `Your message "${values.title}" has been sent.`,

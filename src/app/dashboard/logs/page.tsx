@@ -1,3 +1,4 @@
+
 import { DashboardHeader } from "@/components/dashboard-header"
 import { LogsClientPage } from "./components/client-page"
 import type { ActivityLog } from "@/lib/types"
@@ -7,14 +8,13 @@ import { cookies } from "next/headers"
 async function getLogs(): Promise<ActivityLog[]> {
     try {
         const token = cookies().get('auth_token')?.value;
-        const response = await api.get('/admin/logs', {
+        const response = await api.get('/api/admin/logs', {
             headers: { Authorization: `Bearer ${token}` }
         });
-        // The API might return { logs: [...] } or just an array [...]
         return response.data.logs || response.data || [];
     } catch (error) {
         console.error("Failed to fetch activity logs:", error);
-        return []; // Return empty array on error
+        return [];
     }
 }
 

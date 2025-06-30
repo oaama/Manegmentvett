@@ -1,3 +1,4 @@
+
 "use client"
 
 import * as React from 'react';
@@ -57,7 +58,7 @@ export default function DashboardPage() {
     const fetchStats = async () => {
       try {
         setLoading(true);
-        const response = await api.get('/admin/stats');
+        const response = await api.get('/api/admin/stats');
         setStats(response.data);
       } catch (error) {
         console.error("Failed to fetch dashboard stats:", error);

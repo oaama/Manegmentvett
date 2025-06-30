@@ -61,7 +61,6 @@ const CourseActions = ({ course, instructors }: { course: Course, instructors: P
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = React.useState(false)
   const [isSectionsDialogOpen, setIsSectionsDialogOpen] = React.useState(false)
   
-  // State for the edit form
   const [name, setName] = React.useState(course.name)
   const [price, setPrice] = React.useState(course.price)
   const [academicYear, setAcademicYear] = React.useState(course.academicYear)
@@ -69,7 +68,7 @@ const CourseActions = ({ course, instructors }: { course: Course, instructors: P
 
   const handleEditSubmit = async () => {
     try {
-        await api.put(`/admin/courses/${course.id}`, {
+        await api.put(`/api/admin/courses/${course.id}`, {
             name,
             price,
             academicYear,
@@ -92,7 +91,7 @@ const CourseActions = ({ course, instructors }: { course: Course, instructors: P
 
   const handleDeleteConfirm = async () => {
      try {
-        await api.delete(`/admin/courses/${course.id}`);
+        await api.delete(`/api/admin/courses/${course.id}`);
         toast({
             title: "Course Deleted",
             description: `The course "${course.name}" has been permanently deleted.`,

@@ -1,3 +1,4 @@
+
 "use client"
 
 import * as React from "react"
@@ -40,7 +41,7 @@ const ActionButtons = ({ row }: { row: { original: CarnetRequest } }) => {
 
     const handleApprove = async () => {
         try {
-            await api.post(`/admin/approve-carnet`, { userId: request.user.id });
+            await api.post(`/api/admin/approve-carnet`, { userId: request.user.id });
             toast({
                 title: "Carnet Approved",
                 description: `The carnet for ${request.user.name} has been approved.`,
@@ -57,8 +58,7 @@ const ActionButtons = ({ row }: { row: { original: CarnetRequest } }) => {
 
     const handleReject = async () => {
         try {
-            // The swagger spec does not include a rejection reason, so we only send the ID.
-            await api.post(`/admin/reject-carnet`, { userId: request.user.id });
+            await api.post(`/api/admin/reject-carnet`, { userId: request.user.id });
             toast({
                 title: "Carnet Rejected",
                 description: `The carnet for ${request.user.name} has been rejected.`,

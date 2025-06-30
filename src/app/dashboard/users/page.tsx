@@ -1,3 +1,4 @@
+
 import { DashboardHeader } from "@/components/dashboard-header"
 import { UserClientPage } from "./components/client-page"
 import { AddUserDialog } from "./components/add-user-dialog"
@@ -8,10 +9,9 @@ import { cookies } from "next/headers"
 async function getUsers() {
     try {
         const token = cookies().get('auth_token')?.value;
-        const response = await api.get('/admin/users', {
+        const response = await api.get('/api/admin/users', {
             headers: { Authorization: `Bearer ${token}` }
         });
-        // The swagger spec doesn't define the user structure, so we assume it matches our User type
         return response.data.users || [];
     } catch (error) {
         console.error("Failed to fetch users:", error);

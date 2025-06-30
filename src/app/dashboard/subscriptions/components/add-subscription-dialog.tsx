@@ -53,7 +53,7 @@ export function AddSubscriptionDialog() {
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsSubmitting(true)
     try {
-        await api.post('/admin/subscriptions', values);
+        await api.post('/api/admin/subscriptions', values);
         toast({
             title: "Subscription Added",
             description: "The student has been successfully subscribed to the course.",

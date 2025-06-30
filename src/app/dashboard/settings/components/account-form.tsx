@@ -72,9 +72,7 @@ export function AccountForm() {
     const fetchAdminProfile = React.useCallback(async () => {
         setLoading(true);
         try {
-            // CORRECTED ENDPOINT based on swagger file
-            const response = await api.get('/user/me');
-            // The user object could be at response.data or response.data.user
+            const response = await api.get('/api/user/me');
             const user = response.data?.user || response.data;
             if (user && user.id) {
               setAdmin(user);
@@ -87,11 +85,11 @@ export function AccountForm() {
               });
               setError(null);
             } else {
-                throw new Error("Invalid data structure from /user/me");
+                throw new Error("Invalid data structure from /api/user/me");
             }
         } catch (err: any) {
             console.error("Failed to fetch admin profile", err);
-            setError("Could not load your profile data. The API endpoint `/user/me` may be unavailable or returning an unexpected format.");
+            setError("Could not load your profile data. The API endpoint `/api/user/me` may be unavailable or returning an unexpected format.");
         } finally {
             setLoading(false);
         }
@@ -110,7 +108,7 @@ export function AccountForm() {
             })
         }
         if (state.success) {
-            fetchAdminProfile(); // Refetch profile to show updated data and reset form
+            fetchAdminProfile(); 
         }
     }, [state, toast, fetchAdminProfile]);
 

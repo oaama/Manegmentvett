@@ -1,10 +1,11 @@
+
 "use client"
 
 import * as React from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod"
-import { PlusCircle, Loader2 } from "lucide-react"
+import { PlusCircle, Loader2, Trash2 } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -67,7 +68,7 @@ function AddSectionForm({ course, onSectionAdded }: { course: Course, onSectionA
   async function onSubmit(values: z.infer<typeof sectionFormSchema>) {
     setIsSubmitting(true)
     try {
-      await api.post(`/courses/${course.id}/sections`, values)
+      await api.post(`/api/courses/${course.id}/sections`, values)
       toast({
         title: "Section Added",
         description: `The section "${values.sectionTitle}" has been added to the course.`,
@@ -144,18 +145,11 @@ export function ManageSectionsContent({ course }: { course: Course }) {
   const fetchSections = React.useCallback(async () => {
     setIsLoading(true)
     try {
-      // NOTE: Swagger does not specify a GET endpoint for sections.
-      // This might fail if the endpoint doesn't exist.
-      const response = await api.get(`/courses/${course.id}/sections`)
+      const response = await api.get(`/api/courses/${course.id}/sections`)
       setSections(response.data.sections || [])
     } catch (error) {
-      console.warn("Could not fetch sections. The endpoint GET /courses/:id/sections may be missing from the backend.", error)
-      toast({
-        title: "Could not load sections",
-        description: "This course may not have sections yet, or the API endpoint is unavailable.",
-        variant: "default",
-      })
-      setSections([])
+        console.warn("Could not fetch sections. The endpoint GET /api/courses/:id/sections may be missing, or the course has no sections yet.", error)
+        setSections([]);
     } finally {
       setIsLoading(false)
     }
