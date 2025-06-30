@@ -23,17 +23,22 @@ async function handler(req: NextRequest) {
 
   const token = cookies().get('auth_token')?.value;
 
-  const headers = new Headers(req.headers);
-  headers.set('Host', url.host);
+  // Create a new Headers object, selectively forwarding only necessary headers.
+  // This prevents forwarding potentially problematic headers from the browser (like User-Agent, etc)
+  // which might be causing the backend to reject the request.
+  const headers = new Headers();
+  
+  // Forward essential headers only
+  if (req.headers.get('Content-Type')) {
+    headers.set('Content-Type', req.headers.get('Content-Type')!);
+  }
+  if (req.headers.get('Accept')) {
+    headers.set('Accept', req.headers.get('Accept')!);
+  }
+
   if (token) {
     headers.set('Authorization', `Bearer ${token}`);
   }
-  
-  // To prevent loops and other issues
-  headers.delete('x-forwarded-host');
-  headers.delete('x-forwarded-port');
-  headers.delete('x-forwarded-proto');
-  headers.delete('cookie'); // Don't forward browser cookies
   
   try {
     const response = await fetch(url.toString(), {
