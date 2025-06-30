@@ -68,27 +68,37 @@ export function AccountForm() {
         },
     });
 
-    React.useEffect(() => {
-        async function fetchAdminProfile() {
-            try {
-                // NOTE: This endpoint needs to be implemented in the backend.
-                // It should return the currently authenticated admin's user object.
-                const response = await api.get('/admin/profile');
-                if (response.data && response.data.user) {
-                  setAdmin(response.data.user);
-                  form.reset({ email: response.data.user.email });
-                } else {
-                    throw new Error("Invalid data structure from /admin/profile");
-                }
-            } catch (err: any) {
-                console.error("Failed to fetch admin profile", err);
-                setError("Could not load your profile data. Please ensure the API endpoint `/admin/profile` is working correctly.");
-            } finally {
-                setLoading(false);
+    const fetchAdminProfile = React.useCallback(async () => {
+        setLoading(true);
+        try {
+            // NOTE: This endpoint needs to be implemented in the backend.
+            // It should return the currently authenticated admin's user object.
+            const response = await api.get('/admin/profile');
+            if (response.data && response.data.user) {
+              const user = response.data.user;
+              setAdmin(user);
+              form.reset({
+                  id: user.id,
+                  email: user.email,
+                  currentPassword: "",
+                  newPassword: "",
+                  confirmPassword: "",
+              });
+              setError(null);
+            } else {
+                throw new Error("Invalid data structure from /admin/profile");
             }
+        } catch (err: any) {
+            console.error("Failed to fetch admin profile", err);
+            setError("Could not load your profile data. Please ensure the API endpoint `/admin/profile` is working correctly.");
+        } finally {
+            setLoading(false);
         }
-        fetchAdminProfile();
     }, [form]);
+
+    React.useEffect(() => {
+        fetchAdminProfile();
+    }, [fetchAdminProfile]);
 
     React.useEffect(() => {
         if (state.message) {
@@ -99,14 +109,9 @@ export function AccountForm() {
             })
         }
         if (state.success) {
-            form.reset({
-                ...form.getValues(),
-                currentPassword: "",
-                newPassword: "",
-                confirmPassword: "",
-            });
+            fetchAdminProfile(); // Refetch profile to show updated data and reset form
         }
-    }, [state, toast, form]);
+    }, [state, toast, fetchAdminProfile]);
 
     if (loading) {
       return (
