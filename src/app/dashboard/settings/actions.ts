@@ -4,9 +4,14 @@ import api from "@/lib/api"
 import { revalidatePath } from "next/cache"
 
 export async function updateAdminCredentials(prevState: any, formData: FormData) {
+  const id = formData.get("id") as string;
   const email = formData.get("email") as string;
   const currentPassword = formData.get("currentPassword") as string;
   const newPassword = formData.get("newPassword") as string;
+
+  if (!id) {
+    return { success: false, message: "User ID is missing. Cannot update credentials." };
+  }
 
   if (!email || !currentPassword) {
     return { success: false, message: "Email and Current Password are required." };
@@ -22,8 +27,8 @@ export async function updateAdminCredentials(prevState: any, formData: FormData)
   }
 
   try {
-    // This is the endpoint you need to implement in the backend
-    await api.put('/admin/profile/update', payload);
+    // Using the endpoint provided by the user
+    await api.put(`/admin/users/${id}`, payload);
 
     revalidatePath('/dashboard/settings');
     return { success: true, message: "Your credentials have been updated successfully." };
