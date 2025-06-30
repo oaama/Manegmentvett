@@ -37,7 +37,7 @@ const formSchema = z.object({
   password: z.string().min(8, "Password must be at least 8 characters"),
   phone: z.string().min(10, "Please enter a valid phone number"),
   academicYear: z.coerce.number().min(0, "Academic year is required"),
-  profileImage: z.instanceof(FileList).optional(),
+  profileImage: z.any().optional(),
 })
 
 export function AddUserDialog() {

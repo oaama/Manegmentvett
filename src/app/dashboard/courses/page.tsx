@@ -6,6 +6,8 @@ import { CourseFilters } from "./components/course-filters"
 import type { Course, User } from "@/lib/types"
 import { serverFetch } from "@/lib/server-api"
 
+export const dynamic = "force-dynamic";
+
 async function getCourses(year?: string): Promise<Course[]> {
     try {
         const endpoint = year ? `/courses/filter/by-year?year=${year}` : '/courses';

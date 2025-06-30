@@ -2,6 +2,8 @@
 import { DashboardClientPage, type Stats } from "./components/client-page";
 import { serverFetch } from "@/lib/server-api";
 
+export const dynamic = "force-dynamic";
+
 const mockStats: Stats = {
     totalUsers: 8,
     totalCourses: 5,

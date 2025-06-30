@@ -5,6 +5,8 @@ import { CarnetStatusFilter } from "./components/carnet-status-filter"
 import type { CarnetRequest, User } from "@/lib/types"
 import { serverFetch } from "@/lib/server-api"
 
+export const dynamic = "force-dynamic";
+
 async function getCarnetRequests(): Promise<CarnetRequest[]> {
     try {
         const response = await serverFetch('/admin/users');

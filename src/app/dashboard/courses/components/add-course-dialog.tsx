@@ -45,7 +45,7 @@ const formSchema = z.object({
   academicYear: z.coerce.number().min(1, "Academic year is required"),
   sections: z.string().min(1, "Number of sections is required"),
   price: z.coerce.number().min(0, "Price is required"),
-  coverImage: z.instanceof(FileList).refine(files => files.length > 0, "Cover image is required."),
+  coverImage: z.any().refine(files => files?.length > 0, "Cover image is required."),
 })
 
 type AddCourseDialogProps = {

@@ -5,6 +5,8 @@ import { SubscriptionsClientPage } from "./components/client-page"
 import type { Subscription } from "@/lib/types"
 import { serverFetch } from "@/lib/server-api"
 
+export const dynamic = "force-dynamic";
+
 async function getSubscriptions(): Promise<Subscription[]> {
     try {
         const response = await serverFetch('/admin/subscriptions');

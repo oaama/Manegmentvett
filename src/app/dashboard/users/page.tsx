@@ -5,6 +5,8 @@ import { AddUserDialog } from "./components/add-user-dialog"
 import type { User } from "@/lib/types"
 import { serverFetch } from "@/lib/server-api"
 
+export const dynamic = "force-dynamic";
+
 async function getUsers(): Promise<User[]> {
     try {
         const response = await serverFetch('/admin/users');
