@@ -37,6 +37,7 @@ const formSchema = z.object({
   password: z.string().min(8, "Password must be at least 8 characters"),
   phone: z.string().min(10, "Please enter a valid phone number"),
   academicYear: z.coerce.number().min(0, "Academic year is required"),
+  profileImage: z.instanceof(FileList).optional(),
 })
 
 export function AddUserDialog() {
@@ -59,8 +60,20 @@ export function AddUserDialog() {
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsSubmitting(true)
     
+    const formData = new FormData();
+    formData.append('name', values.name);
+    formData.append('email', values.email);
+    formData.append('password', values.password);
+    formData.append('phone', values.phone);
+    formData.append('academicYear', String(values.academicYear));
+    if (values.profileImage && values.profileImage.length > 0) {
+      formData.append('profileImage', values.profileImage[0]);
+    }
+
     try {
-      await api.post('/admin/create-teacher', values);
+      await api.post('/admin/create-teacher', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      });
       toast({
         title: "Teacher Created",
         description: `The account for "${values.name}" has been successfully created.`,
@@ -83,7 +96,7 @@ export function AddUserDialog() {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button>
+        <Button variant="default">
           <PlusCircle className="mr-2 h-4 w-4" />
           Add Teacher
         </Button>
@@ -157,6 +170,19 @@ export function AddUserDialog() {
                   <FormLabel>Academic Year</FormLabel>
                   <FormControl>
                      <Input type="number" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+             <FormField
+              control={form.control}
+              name="profileImage"
+              render={({ field: { onChange, value, ...rest } }) => (
+                <FormItem>
+                  <FormLabel>Profile Image (Optional)</FormLabel>
+                  <FormControl>
+                    <Input type="file" accept="image/*" onChange={(e) => onChange(e.target.files)} {...rest} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

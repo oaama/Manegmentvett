@@ -7,6 +7,7 @@ export type User = {
   academicYear: number;
   carnetStatus: 'pending' | 'approved' | 'rejected';
   carnetImage?: string;
+  profileImage?: string;
   rejectionReason?: string;
   createdAt: Date;
 };
