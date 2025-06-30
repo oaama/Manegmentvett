@@ -108,7 +108,7 @@ export function AddSubscriptionDialog({ students, courses }: AddSubscriptionDial
                     <SelectContent>
                       {students.map((student) => (
                         <SelectItem key={student.id} value={student.id}>
-                          {student.name} ({student.email})
+                          {student.name} (ID: {student.id})
                         </SelectItem>
                       ))}
                     </SelectContent>
