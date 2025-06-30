@@ -19,7 +19,11 @@ async function getNotificationHistory(): Promise<Notification[]> {
              cache: 'no-store',
         });
 
-        if (!response.ok) throw new Error('Failed to fetch notification history');
+        if (!response.ok) {
+            const errorBody = await response.json().catch(() => response.text());
+            console.error("API Error fetching notification history:", errorBody);
+            throw new Error(`Failed to fetch notification history. Status: ${response.status}`);
+        }
         const data = await response.json();
         return data.notifications || data || [];
     } catch (error) {

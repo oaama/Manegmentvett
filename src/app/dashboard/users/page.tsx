@@ -18,7 +18,9 @@ async function getUsers(): Promise<User[]> {
         });
 
         if (!response.ok) {
-            throw new Error(`Failed to fetch users: ${response.statusText}`);
+            const errorBody = await response.json().catch(() => response.text());
+            console.error("API Error fetching users:", errorBody);
+            throw new Error(`Failed to fetch users. Status: ${response.status}`);
         }
 
         const data = await response.json();

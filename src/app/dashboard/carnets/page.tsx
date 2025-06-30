@@ -17,7 +17,11 @@ async function getCarnetRequests(): Promise<CarnetRequest[]> {
             cache: 'no-store',
         });
         
-        if (!response.ok) throw new Error('Failed to fetch users for carnet requests');
+        if (!response.ok) {
+            const errorBody = await response.json().catch(() => response.text());
+            console.error("API Error fetching users for carnets:", errorBody);
+            throw new Error(`Failed to fetch users for carnet requests. Status: ${response.status}`);
+        }
 
         const data = await response.json();
         const users: User[] = data.users || [];

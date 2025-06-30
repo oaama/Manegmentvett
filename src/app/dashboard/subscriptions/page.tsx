@@ -17,7 +17,11 @@ async function getSubscriptions(): Promise<Subscription[]> {
             cache: 'no-store',
         });
         
-        if (!response.ok) throw new Error('Failed to fetch subscriptions');
+        if (!response.ok) {
+            const errorBody = await response.json().catch(() => response.text());
+            console.error("API Error fetching subscriptions:", errorBody);
+            throw new Error(`Failed to fetch subscriptions. Status: ${response.status}`);
+        }
         const data = await response.json();
         return data.subscriptions || data || [];
     } catch (error) {

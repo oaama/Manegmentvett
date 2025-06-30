@@ -16,7 +16,11 @@ async function getLogs(): Promise<ActivityLog[]> {
             cache: 'no-store',
         });
 
-        if (!response.ok) throw new Error('Failed to fetch logs');
+        if (!response.ok) {
+            const errorBody = await response.json().catch(() => response.text());
+            console.error("API Error fetching logs:", errorBody);
+            throw new Error(`Failed to fetch logs. Status: ${response.status}`);
+        }
         const data = await response.json();
         return data.logs || data || [];
     } catch (error) {

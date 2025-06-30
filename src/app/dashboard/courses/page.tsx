@@ -19,7 +19,11 @@ async function getCourses(year?: string): Promise<Course[]> {
              cache: 'no-store',
         });
         
-        if (!response.ok) throw new Error('Failed to fetch courses');
+        if (!response.ok) {
+            const errorBody = await response.json().catch(() => response.text());
+            console.error("API Error fetching courses:", errorBody);
+            throw new Error(`Failed to fetch courses. Status: ${response.status}`);
+        }
         const data = await response.json();
         return data.courses || [];
     } catch (error) {
@@ -38,7 +42,11 @@ async function getInstructors(): Promise<Pick<User, '_id' | 'name'>[]> {
              cache: 'no-store',
         });
         
-        if (!response.ok) throw new Error('Failed to fetch instructors');
+        if (!response.ok) {
+            const errorBody = await response.json().catch(() => response.text());
+            console.error("API Error fetching instructors:", errorBody);
+            throw new Error(`Failed to fetch instructors. Status: ${response.status}`);
+        }
         const data = await response.json();
         return data.instructors || [];
     } catch (error) {
