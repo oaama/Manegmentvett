@@ -84,7 +84,7 @@ export function AddCourseDialog({ instructors }: AddCourseDialogProps) {
 
     try {
       const token = document.cookie.split('; ').find(row => row.startsWith('auth_token='))?.split('=')[1];
-      await api.post('/api/courses/upload', formData, { 
+      await api.post('/courses/upload', formData, { 
         headers: { 
             'Content-Type': 'multipart/form-data',
             Authorization: `Bearer ${token}` 

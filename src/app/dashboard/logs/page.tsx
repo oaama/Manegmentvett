@@ -8,7 +8,7 @@ import { cookies } from "next/headers"
 async function getLogs(): Promise<ActivityLog[]> {
     try {
         const token = cookies().get('auth_token')?.value;
-        const response = await api.get('/api/admin/logs', {
+        const response = await api.get('/admin/logs', {
             headers: { Authorization: `Bearer ${token}` }
         });
         return response.data.logs || response.data || [];

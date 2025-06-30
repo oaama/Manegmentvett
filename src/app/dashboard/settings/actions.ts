@@ -30,7 +30,7 @@ export async function updateAdminCredentials(prevState: any, formData: FormData)
 
   try {
     const token = cookies().get('auth_token')?.value;
-    await api.put(`/api/admin/users/${_id}`, payload, {
+    await api.put(`/admin/users/${_id}`, payload, {
         headers: { Authorization: `Bearer ${token}` }
     });
 

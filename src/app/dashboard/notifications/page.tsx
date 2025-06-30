@@ -11,12 +11,12 @@ import api from "@/lib/api";
 async function getNotificationHistory() {
     try {
         const token = cookies().get('auth_token')?.value;
-        const response = await api.get('/api/notifications/my', {
+        const response = await api.get('/notifications/my', {
              headers: { Authorization: `Bearer ${token}` }
         });
         return response.data.notifications || response.data || [];
     } catch (error) {
-        console.warn("Could not fetch notification history. The API endpoint `/api/notifications/my` may be unavailable or you have no notifications.", error);
+        console.warn("Could not fetch notification history. The API endpoint `/notifications/my` may be unavailable or you have no notifications.", error);
         return [];
     }
 }

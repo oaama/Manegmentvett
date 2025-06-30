@@ -9,7 +9,7 @@ import { cookies } from "next/headers"
 async function getUsers() {
     try {
         const token = cookies().get('auth_token')?.value;
-        const response = await api.get('/api/admin/users', {
+        const response = await api.get('/admin/users', {
             headers: { Authorization: `Bearer ${token}` }
         });
         return response.data.users || [];

@@ -73,7 +73,7 @@ export function AccountForm() {
         setLoading(true);
         try {
             const token = document.cookie.split('; ').find(row => row.startsWith('auth_token='))?.split('=')[1];
-            const response = await api.get('/api/user/me', {
+            const response = await api.get('/user/me', {
                 headers: { Authorization: `Bearer ${token}` }
             });
             const user = response.data?.user || response.data;
@@ -88,11 +88,11 @@ export function AccountForm() {
               });
               setError(null);
             } else {
-                throw new Error("Invalid data structure from /api/user/me");
+                throw new Error("Invalid data structure from /user/me");
             }
         } catch (err: any) {
             console.error("Failed to fetch admin profile", err);
-            setError("Could not load your profile data. The API endpoint `/api/user/me` may be unavailable or returning an unexpected format.");
+            setError("Could not load your profile data. The API endpoint `/user/me` may be unavailable or returning an unexpected format.");
         } finally {
             setLoading(false);
         }

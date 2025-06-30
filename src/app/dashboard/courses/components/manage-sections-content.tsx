@@ -69,7 +69,7 @@ function AddSectionForm({ course, onSectionAdded }: { course: Course, onSectionA
     setIsSubmitting(true)
     try {
       const token = document.cookie.split('; ').find(row => row.startsWith('auth_token='))?.split('=')[1];
-      await api.post(`/api/courses/${course._id}/sections`, values, {
+      await api.post(`/courses/${course._id}/sections`, values, {
         headers: { Authorization: `Bearer ${token}` }
       })
       toast({
@@ -149,12 +149,12 @@ export function ManageSectionsContent({ course }: { course: Course }) {
     setIsLoading(true)
     try {
       const token = document.cookie.split('; ').find(row => row.startsWith('auth_token='))?.split('=')[1];
-      const response = await api.get(`/api/courses/${course._id}/sections`, {
+      const response = await api.get(`/courses/${course._id}/sections`, {
           headers: { Authorization: `Bearer ${token}` }
       })
       setSections(response.data.sections || [])
     } catch (error) {
-        console.warn("Could not fetch sections. The endpoint GET /api/courses/:id/sections may be missing, or the course has no sections yet.", error)
+        console.warn("Could not fetch sections. The endpoint GET /courses/:id/sections may be missing, or the course has no sections yet.", error)
         setSections([]);
     } finally {
       setIsLoading(false)

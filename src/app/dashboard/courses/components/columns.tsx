@@ -69,7 +69,7 @@ const CourseActions = ({ course, instructors }: { course: Course, instructors: P
   const handleEditSubmit = async () => {
     try {
         const token = document.cookie.split('; ').find(row => row.startsWith('auth_token='))?.split('=')[1];
-        await api.put(`/api/admin/courses/${course._id}`, {
+        await api.put(`/admin/courses/${course._id}`, {
             name,
             price,
             academicYear,
@@ -93,7 +93,7 @@ const CourseActions = ({ course, instructors }: { course: Course, instructors: P
   const handleDeleteConfirm = async () => {
      try {
         const token = document.cookie.split('; ').find(row => row.startsWith('auth_token='))?.split('=')[1];
-        await api.delete(`/api/admin/courses/${course._id}`, {
+        await api.delete(`/admin/courses/${course._id}`, {
             headers: { Authorization: `Bearer ${token}` }
         });
         toast({

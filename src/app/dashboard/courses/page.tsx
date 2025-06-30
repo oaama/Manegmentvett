@@ -10,7 +10,7 @@ import { cookies } from "next/headers"
 async function getCourses(year?: string) {
     try {
         const token = cookies().get('auth_token')?.value;
-        const endpoint = year ? `/api/courses/filter/by-year?year=${year}` : '/api/courses';
+        const endpoint = year ? `/courses/filter/by-year?year=${year}` : '/courses';
         const response = await api.get(endpoint, {
              headers: { Authorization: `Bearer ${token}` }
         });
@@ -24,7 +24,7 @@ async function getCourses(year?: string) {
 async function getInstructors() {
     try {
         const token = cookies().get('auth_token')?.value;
-        const response = await api.get('/api/user/instructors', {
+        const response = await api.get('/user/instructors', {
              headers: { Authorization: `Bearer ${token}` }
         });
         return response.data.instructors || [];

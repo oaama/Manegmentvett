@@ -59,7 +59,7 @@ export default function DashboardPage() {
       try {
         setLoading(true);
         const token = document.cookie.split('; ').find(row => row.startsWith('auth_token='))?.split('=')[1];
-        const response = await api.get('/api/admin/stats', {
+        const response = await api.get('/admin/stats', {
             headers: { Authorization: `Bearer ${token}` }
         });
         setStats(response.data);

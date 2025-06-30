@@ -78,7 +78,7 @@ const UserActions = ({ user }: { user: User }) => {
   const handleEditSubmit = async () => {
     try {
         const token = document.cookie.split('; ').find(row => row.startsWith('auth_token='))?.split('=')[1];
-        await api.put(`/api/admin/users/${user._id}`, { name, email, role }, {
+        await api.put(`/admin/users/${user._id}`, { name, email, role }, {
             headers: { Authorization: `Bearer ${token}` }
         });
         toast({
@@ -99,7 +99,7 @@ const UserActions = ({ user }: { user: User }) => {
   const handleDeleteConfirm = async () => {
     try {
         const token = document.cookie.split('; ').find(row => row.startsWith('auth_token='))?.split('=')[1];
-        await api.delete(`/api/admin/users/${user._id}`, {
+        await api.delete(`/admin/users/${user._id}`, {
             headers: { Authorization: `Bearer ${token}` }
         });
         toast({

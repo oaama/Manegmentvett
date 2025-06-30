@@ -10,7 +10,7 @@ export async function login(prevState: any, formData: FormData) {
   const password = formData.get("password") as string;
 
   try {
-    const response = await api.post('/api/auth/login', { email, password });
+    const response = await api.post('/auth/login', { email, password });
     
     const token = response.data.token; 
 
@@ -57,7 +57,7 @@ export async function logout() {
   try {
     const token = cookies().get('auth_token')?.value;
     if (token) {
-        await api.post('/api/auth/logout', {}, {
+        await api.post('/auth/logout', {}, {
             headers: { 'Authorization': `Bearer ${token}` }
         });
     }

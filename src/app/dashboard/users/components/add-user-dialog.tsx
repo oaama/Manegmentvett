@@ -72,7 +72,7 @@ export function AddUserDialog() {
 
     try {
       const token = document.cookie.split('; ').find(row => row.startsWith('auth_token='))?.split('=')[1];
-      await api.post('/api/admin/create-teacher', formData, {
+      await api.post('/admin/create-teacher', formData, {
         headers: { 
             'Content-Type': 'multipart/form-data',
             Authorization: `Bearer ${token}`

@@ -54,7 +54,7 @@ export function AddSubscriptionDialog() {
     setIsSubmitting(true)
     try {
         const token = document.cookie.split('; ').find(row => row.startsWith('auth_token='))?.split('=')[1];
-        await api.post('/api/admin/subscriptions', values, {
+        await api.post('/admin/subscriptions', values, {
             headers: { Authorization: `Bearer ${token}` }
         });
         toast({
