@@ -11,7 +11,10 @@ const API_BASE_URL = 'https://mrvet-production.up.railway.app/api';
 async function getCourses(year?: string): Promise<Course[]> {
     try {
         const token = cookies().get('auth_token')?.value;
-        if (!token) return [];
+        if (!token) {
+            console.error("Authentication token not found for getCourses.");
+            return [];
+        }
         const endpoint = year ? `/courses/filter/by-year?year=${year}` : '/courses';
         
         const response = await fetch(`${API_BASE_URL}${endpoint}`, {
@@ -22,7 +25,7 @@ async function getCourses(year?: string): Promise<Course[]> {
         if (!response.ok) {
             const errorBody = await response.json().catch(() => response.text());
             console.error("API Error fetching courses:", errorBody);
-            throw new Error(`Failed to fetch courses. Status: ${response.status}`);
+            return [];
         }
         const data = await response.json();
         return data.courses || [];
@@ -35,7 +38,10 @@ async function getCourses(year?: string): Promise<Course[]> {
 async function getInstructors(): Promise<Pick<User, '_id' | 'name'>[]> {
     try {
         const token = cookies().get('auth_token')?.value;
-        if (!token) return [];
+        if (!token) {
+            console.error("Authentication token not found for getInstructors.");
+            return [];
+        }
 
         const response = await fetch(`${API_BASE_URL}/user/instructors`, {
              headers: { Authorization: `Bearer ${token}` },
@@ -45,7 +51,7 @@ async function getInstructors(): Promise<Pick<User, '_id' | 'name'>[]> {
         if (!response.ok) {
             const errorBody = await response.json().catch(() => response.text());
             console.error("API Error fetching instructors:", errorBody);
-            throw new Error(`Failed to fetch instructors. Status: ${response.status}`);
+            return [];
         }
         const data = await response.json();
         return data.instructors || [];

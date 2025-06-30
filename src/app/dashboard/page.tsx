@@ -24,25 +24,27 @@ async function getStats(): Promise<Stats> {
     try {
         const token = cookies().get('auth_token')?.value;
         if (!token) {
-            throw new Error("Authentication token not found in server component.");
+            console.error("Authentication token not found in server component for getStats.");
+            return mockStats;
         }
         
         const response = await fetch(`${API_BASE_URL}/admin/stats`, {
             headers: {
                 'Authorization': `Bearer ${token}`,
             },
-            cache: 'no-store', // Ensure fresh data on every request
+            cache: 'no-store',
         });
 
         if (!response.ok) {
-            const errorBody = await response.json();
-            throw new Error(errorBody.message || `Request failed with status ${response.status}`);
+            const errorBody = await response.json().catch(() => response.text());
+            console.error(`API Error fetching stats. Status: ${response.status}`, errorBody);
+            return mockStats;
         }
         
         return await response.json();
 
     } catch (error: any) {
-        console.error("Failed to fetch dashboard stats on server:", error.message);
+        console.error("Fatal error fetching dashboard stats on server:", error.message);
         console.warn("Dashboard is falling back to mock data due to API connection failure.");
         return mockStats;
     }

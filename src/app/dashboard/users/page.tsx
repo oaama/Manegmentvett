@@ -10,7 +10,10 @@ const API_BASE_URL = 'https://mrvet-production.up.railway.app/api';
 async function getUsers(): Promise<User[]> {
     try {
         const token = cookies().get('auth_token')?.value;
-        if (!token) return [];
+        if (!token) {
+            console.error("Authentication token not found for getUsers.");
+            return [];
+        }
 
         const response = await fetch(`${API_BASE_URL}/admin/users`, {
             headers: { Authorization: `Bearer ${token}` },
@@ -20,7 +23,7 @@ async function getUsers(): Promise<User[]> {
         if (!response.ok) {
             const errorBody = await response.json().catch(() => response.text());
             console.error("API Error fetching users:", errorBody);
-            throw new Error(`Failed to fetch users. Status: ${response.status}`);
+            return [];
         }
 
         const data = await response.json();

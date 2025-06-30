@@ -10,7 +10,10 @@ const API_BASE_URL = 'https://mrvet-production.up.railway.app/api';
 async function getSubscriptions(): Promise<Subscription[]> {
     try {
         const token = cookies().get('auth_token')?.value;
-        if (!token) return [];
+        if (!token) {
+            console.error("Authentication token not found for getSubscriptions.");
+            return [];
+        }
 
         const response = await fetch(`${API_BASE_URL}/admin/subscriptions`, {
             headers: { Authorization: `Bearer ${token}` },
@@ -20,7 +23,7 @@ async function getSubscriptions(): Promise<Subscription[]> {
         if (!response.ok) {
             const errorBody = await response.json().catch(() => response.text());
             console.error("API Error fetching subscriptions:", errorBody);
-            throw new Error(`Failed to fetch subscriptions. Status: ${response.status}`);
+            return [];
         }
         const data = await response.json();
         return data.subscriptions || data || [];

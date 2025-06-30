@@ -9,7 +9,10 @@ const API_BASE_URL = 'https://mrvet-production.up.railway.app/api';
 async function getLogs(): Promise<ActivityLog[]> {
     try {
         const token = cookies().get('auth_token')?.value;
-        if (!token) return [];
+        if (!token) {
+            console.error("Authentication token not found for getLogs.");
+            return [];
+        }
 
         const response = await fetch(`${API_BASE_URL}/admin/logs`, {
             headers: { Authorization: `Bearer ${token}` },
@@ -19,7 +22,7 @@ async function getLogs(): Promise<ActivityLog[]> {
         if (!response.ok) {
             const errorBody = await response.json().catch(() => response.text());
             console.error("API Error fetching logs:", errorBody);
-            throw new Error(`Failed to fetch logs. Status: ${response.status}`);
+            return [];
         }
         const data = await response.json();
         return data.logs || data || [];

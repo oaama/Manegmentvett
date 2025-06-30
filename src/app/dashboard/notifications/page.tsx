@@ -12,7 +12,10 @@ const API_BASE_URL = 'https://mrvet-production.up.railway.app/api';
 async function getNotificationHistory(): Promise<Notification[]> {
     try {
         const token = cookies().get('auth_token')?.value;
-        if (!token) return [];
+        if (!token) {
+            console.error("Authentication token not found for getNotificationHistory.");
+            return [];
+        }
 
         const response = await fetch(`${API_BASE_URL}/notifications/my`, {
              headers: { Authorization: `Bearer ${token}` },
@@ -22,12 +25,12 @@ async function getNotificationHistory(): Promise<Notification[]> {
         if (!response.ok) {
             const errorBody = await response.json().catch(() => response.text());
             console.error("API Error fetching notification history:", errorBody);
-            throw new Error(`Failed to fetch notification history. Status: ${response.status}`);
+            return [];
         }
         const data = await response.json();
         return data.notifications || data || [];
     } catch (error) {
-        console.warn("Could not fetch notification history. The API endpoint `/notifications/my` may be unavailable or you have no notifications.", error);
+        console.warn("Could not fetch notification history, returning empty list.", error);
         return [];
     }
 }

@@ -10,7 +10,10 @@ const API_BASE_URL = 'https://mrvet-production.up.railway.app/api';
 async function getCarnetRequests(): Promise<CarnetRequest[]> {
     try {
         const token = cookies().get('auth_token')?.value;
-        if (!token) return [];
+        if (!token) {
+            console.error("Authentication token not found for getCarnetRequests.");
+            return [];
+        }
 
         const response = await fetch(`${API_BASE_URL}/admin/users`, {
             headers: { Authorization: `Bearer ${token}` },
@@ -20,7 +23,7 @@ async function getCarnetRequests(): Promise<CarnetRequest[]> {
         if (!response.ok) {
             const errorBody = await response.json().catch(() => response.text());
             console.error("API Error fetching users for carnets:", errorBody);
-            throw new Error(`Failed to fetch users for carnet requests. Status: ${response.status}`);
+            return [];
         }
 
         const data = await response.json();
@@ -39,7 +42,7 @@ async function getCarnetRequests(): Promise<CarnetRequest[]> {
           
         return requests;
     } catch (error) {
-        console.error("Failed to fetch users for carnet requests:", error);
+        console.error("Failed to fetch and process carnet requests:", error);
         return [];
     }
 }
