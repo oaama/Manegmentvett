@@ -22,13 +22,23 @@ export async function login(prevState: any, formData: FormData) {
     const data = await response.json();
 
     if (response.ok && data.token) {
-        cookies().set("auth_token", data.token, {
-            httpOnly: false,
-            secure: process.env.NODE_ENV === "production",
-            maxAge: 60 * 60 * 24 * 7, // 1 week
-            path: "/",
-        });
-        loginSuccessful = true;
+        // The API returns the user object on successful login.
+        // We must verify the user is an admin before creating the session.
+        if (data.user && data.user.role === 'admin') {
+            cookies().set("auth_token", data.token, {
+                // httpOnly must be false so the client-side API helper can read the cookie.
+                httpOnly: false, 
+                secure: process.env.NODE_ENV === "production",
+                maxAge: 60 * 60 * 24 * 7, // 1 week
+                path: "/",
+            });
+            loginSuccessful = true;
+        } else {
+             return {
+                success: false,
+                message: data.msg || "Login failed: You do not have administrator privileges.",
+            }
+        }
     } else {
         return {
             success: false,
@@ -37,10 +47,10 @@ export async function login(prevState: any, formData: FormData) {
     }
   } catch(error) {
     console.error("--- LOGIN ACTION FAILED ---");
-    console.error(error); // Log the full error object for debugging
+    console.error(error);
     return {
         success: false,
-        message: "An unexpected network error occurred. Please check your connection or contact support.",
+        message: "An unexpected error occurred. Please check your network connection.",
     };
   }
   
@@ -48,7 +58,6 @@ export async function login(prevState: any, formData: FormData) {
     redirect('/dashboard');
   }
   
-  // This part should not be reached if login fails and returns, but as a fallback.
   return {
     success: false,
     message: "An unknown error occurred during login.",
