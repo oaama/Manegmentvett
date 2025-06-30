@@ -19,7 +19,7 @@ export default async function CoursesPage({ searchParams }: CoursesPageProps) {
     data = data.filter(course => course.year === Number(searchParams.year));
   }
   if (searchParams.instructor) {
-    data = data.filter(course => course.instructor === searchParams.instructor);
+    data = data.filter(course => course.instructorId === searchParams.instructor);
   }
 
   return (

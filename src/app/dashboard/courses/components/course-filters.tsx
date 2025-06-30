@@ -60,7 +60,7 @@ export function CourseFilters({ instructors }: CourseFiltersProps) {
           <SelectContent>
               <SelectItem value="all">All Instructors</SelectItem>
               {instructors.map(instructor => (
-                  <SelectItem key={instructor.id} value={instructor.name}>{instructor.name}</SelectItem>
+                  <SelectItem key={instructor.id} value={instructor.id}>{instructor.name}</SelectItem>
               ))}
           </SelectContent>
        </Select>
