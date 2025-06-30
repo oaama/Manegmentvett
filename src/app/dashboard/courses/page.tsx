@@ -4,25 +4,13 @@ import { CourseClientPage } from "./components/client-page"
 import { AddCourseDialog } from "./components/add-course-dialog"
 import { CourseFilters } from "./components/course-filters"
 import type { Course, User } from "@/lib/types"
-import { cookies } from "next/headers"
+import { serverFetch } from "@/lib/server-api"
 
 async function getCourses(year?: string): Promise<Course[]> {
     try {
-        const token = cookies().get('auth_token')?.value;
-        if (!token) {
-            console.error("Authentication token not found for getCourses.");
-            return [];
-        }
         const endpoint = year ? `/courses/filter/by-year?year=${year}` : '/courses';
         
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL || ''}${endpoint}`, {
-             headers: { 
-                 Authorization: `Bearer ${token}`,
-                 'Content-Type': 'application/json',
-                 'Accept': 'application/json',
-             },
-             cache: 'no-store',
-        });
+        const response = await serverFetch(endpoint);
         
         if (!response.ok) {
             const errorBody = await response.json().catch(() => response.text());
@@ -31,28 +19,15 @@ async function getCourses(year?: string): Promise<Course[]> {
         }
         const data = await response.json();
         return data.courses || [];
-    } catch (error) {
-        console.error("Failed to fetch courses:", error);
+    } catch (error: any) {
+        console.error("Failed to fetch courses:", error.message);
         return [];
     }
 }
 
 async function getInstructors(): Promise<Pick<User, '_id' | 'name'>[]> {
     try {
-        const token = cookies().get('auth_token')?.value;
-        if (!token) {
-            console.error("Authentication token not found for getInstructors.");
-            return [];
-        }
-
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL || ''}/user/instructors`, {
-             headers: { 
-                 Authorization: `Bearer ${token}`,
-                 'Content-Type': 'application/json',
-                 'Accept': 'application/json',
-             },
-             cache: 'no-store',
-        });
+        const response = await serverFetch('/user/instructors');
         
         if (!response.ok) {
             const errorBody = await response.json().catch(() => response.text());
@@ -61,8 +36,8 @@ async function getInstructors(): Promise<Pick<User, '_id' | 'name'>[]> {
         }
         const data = await response.json();
         return data.instructors || [];
-    } catch (error) {
-        console.error("Failed to fetch instructors:", error);
+    } catch (error: any) {
+        console.error("Failed to fetch instructors:", error.message);
         return [];
     }
 }

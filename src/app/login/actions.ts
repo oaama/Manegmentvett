@@ -8,10 +8,18 @@ export async function login(prevState: any, formData: FormData) {
   const email = formData.get("email") as string;
   const password = formData.get("password") as string;
   
+  const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
+  if (!apiUrl) {
+    return {
+        success: false,
+        message: "The API URL is not configured. Please contact the administrator.",
+    };
+  }
+
   let loginSuccessful = false;
 
   try {
-    const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL || ''}/auth/login`, {
+    const response = await fetch(`${apiUrl}/auth/login`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -63,10 +71,12 @@ export async function login(prevState: any, formData: FormData) {
 }
 
 export async function logout() {
+  const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
+  
   try {
     const token = cookies().get('auth_token')?.value;
-    if (token) {
-        await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL || ''}/auth/logout`, {
+    if (token && apiUrl) {
+        await fetch(`${apiUrl}/auth/logout`, {
             method: 'POST',
             headers: { 
                 'Authorization': `Bearer ${token}`,

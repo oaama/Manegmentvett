@@ -2,24 +2,11 @@
 import { DashboardHeader } from "@/components/dashboard-header"
 import { LogsClientPage } from "./components/client-page"
 import type { ActivityLog } from "@/lib/types"
-import { cookies } from "next/headers"
+import { serverFetch } from "@/lib/server-api"
 
 async function getLogs(): Promise<ActivityLog[]> {
     try {
-        const token = cookies().get('auth_token')?.value;
-        if (!token) {
-            console.error("Authentication token not found for getLogs.");
-            return [];
-        }
-
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL || ''}/admin/logs`, {
-            headers: { 
-                Authorization: `Bearer ${token}`,
-                'Content-Type': 'application/json',
-                'Accept': 'application/json',
-            },
-            cache: 'no-store',
-        });
+        const response = await serverFetch('/admin/logs');
 
         if (!response.ok) {
             const errorBody = await response.json().catch(() => response.text());
@@ -28,8 +15,8 @@ async function getLogs(): Promise<ActivityLog[]> {
         }
         const data = await response.json();
         return data.logs || data || [];
-    } catch (error) {
-        console.error("Failed to fetch activity logs:", error);
+    } catch (error: any) {
+        console.error("Failed to fetch activity logs:", error.message);
         return [];
     }
 }

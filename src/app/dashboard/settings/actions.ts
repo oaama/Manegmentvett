@@ -4,6 +4,14 @@
 import { revalidatePath } from "next/cache"
 import { cookies } from "next/headers"
 
+async function getApiUrl() {
+    const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
+    if (!apiUrl) {
+        throw new Error("The API base URL is not configured. Please set NEXT_PUBLIC_API_BASE_URL in your .env file.");
+    }
+    return apiUrl;
+}
+
 export async function updateAdminCredentials(prevState: any, formData: FormData) {
   const _id = formData.get("_id") as string;
   const email = formData.get("email") as string;
@@ -28,11 +36,12 @@ export async function updateAdminCredentials(prevState: any, formData: FormData)
   }
 
   try {
+    const apiUrl = await getApiUrl();
     const token = cookies().get('auth_token')?.value;
     if (!token) {
         return { success: false, message: "Authentication failed. Please log in again." };
     }
-    const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL || ''}/admin/users/${_id}`, {
+    const response = await fetch(`${apiUrl}/admin/users/${_id}`, {
         method: 'PUT',
         headers: { 
             'Authorization': `Bearer ${token}`,

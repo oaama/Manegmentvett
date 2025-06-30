@@ -3,24 +3,11 @@ import { DashboardHeader } from "@/components/dashboard-header"
 import { AddSubscriptionDialog } from "./components/add-subscription-dialog"
 import { SubscriptionsClientPage } from "./components/client-page"
 import type { Subscription } from "@/lib/types"
-import { cookies } from "next/headers"
+import { serverFetch } from "@/lib/server-api"
 
 async function getSubscriptions(): Promise<Subscription[]> {
     try {
-        const token = cookies().get('auth_token')?.value;
-        if (!token) {
-            console.error("Authentication token not found for getSubscriptions.");
-            return [];
-        }
-
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL || ''}/admin/subscriptions`, {
-            headers: { 
-                Authorization: `Bearer ${token}`,
-                'Content-Type': 'application/json',
-                'Accept': 'application/json',
-            },
-            cache: 'no-store',
-        });
+        const response = await serverFetch('/admin/subscriptions');
         
         if (!response.ok) {
             const errorBody = await response.json().catch(() => response.text());
@@ -29,8 +16,8 @@ async function getSubscriptions(): Promise<Subscription[]> {
         }
         const data = await response.json();
         return data.subscriptions || data || [];
-    } catch (error) {
-        console.error("Failed to fetch subscriptions:", error);
+    } catch (error: any) {
+        console.error("Failed to fetch subscriptions:", error.message);
         return [];
     }
 }

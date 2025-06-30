@@ -1,6 +1,6 @@
 
-import { cookies } from "next/headers";
 import { DashboardClientPage, type Stats } from "./components/client-page";
+import { serverFetch } from "@/lib/server-api";
 
 const mockStats: Stats = {
     totalUsers: 8,
@@ -21,20 +21,7 @@ const mockStats: Stats = {
 
 async function getStats(): Promise<Stats> {
     try {
-        const token = cookies().get('auth_token')?.value;
-        if (!token) {
-            console.error("Authentication token not found in server component for getStats.");
-            return mockStats;
-        }
-        
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL || ''}/admin/stats`, {
-            headers: {
-                'Authorization': `Bearer ${token}`,
-                'Content-Type': 'application/json',
-                'Accept': 'application/json',
-            },
-            cache: 'no-store',
-        });
+        const response = await serverFetch('/admin/stats');
 
         if (!response.ok) {
             const errorBody = await response.json().catch(() => response.text());

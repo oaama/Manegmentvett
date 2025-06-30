@@ -3,24 +3,11 @@ import { DashboardHeader } from "@/components/dashboard-header"
 import { CarnetClientPage } from "./components/client-page"
 import { CarnetStatusFilter } from "./components/carnet-status-filter"
 import type { CarnetRequest, User } from "@/lib/types"
-import { cookies } from "next/headers"
+import { serverFetch } from "@/lib/server-api"
 
 async function getCarnetRequests(): Promise<CarnetRequest[]> {
     try {
-        const token = cookies().get('auth_token')?.value;
-        if (!token) {
-            console.error("Authentication token not found for getCarnetRequests.");
-            return [];
-        }
-
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL || ''}/admin/users`, {
-            headers: { 
-                Authorization: `Bearer ${token}`,
-                'Content-Type': 'application/json',
-                'Accept': 'application/json',
-            },
-            cache: 'no-store',
-        });
+        const response = await serverFetch('/admin/users');
         
         if (!response.ok) {
             const errorBody = await response.json().catch(() => response.text());
@@ -43,8 +30,8 @@ async function getCarnetRequests(): Promise<CarnetRequest[]> {
           }));
           
         return requests;
-    } catch (error) {
-        console.error("Failed to fetch and process carnet requests:", error);
+    } catch (error: any) {
+        console.error("Failed to fetch and process carnet requests:", error.message);
         return [];
     }
 }

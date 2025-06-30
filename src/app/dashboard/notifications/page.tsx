@@ -5,24 +5,11 @@ import { HistoryTable } from "./components/history-table";
 import type { Notification } from "@/lib/types";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { NotificationHistoryFilters } from "./components/history-filters";
-import { cookies } from "next/headers";
+import { serverFetch } from "@/lib/server-api";
 
 async function getNotificationHistory(): Promise<Notification[]> {
     try {
-        const token = cookies().get('auth_token')?.value;
-        if (!token) {
-            console.error("Authentication token not found for getNotificationHistory.");
-            return [];
-        }
-
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL || ''}/notifications/my`, {
-             headers: { 
-                 Authorization: `Bearer ${token}`,
-                 'Content-Type': 'application/json',
-                 'Accept': 'application/json',
-             },
-             cache: 'no-store',
-        });
+        const response = await serverFetch('/notifications/my');
 
         if (!response.ok) {
             const errorBody = await response.json().catch(() => response.text());
@@ -31,8 +18,8 @@ async function getNotificationHistory(): Promise<Notification[]> {
         }
         const data = await response.json();
         return data.notifications || data || [];
-    } catch (error) {
-        console.warn("Could not fetch notification history, returning empty list.", error);
+    } catch (error: any) {
+        console.warn("Could not fetch notification history, returning empty list.", error.message);
         return [];
     }
 }

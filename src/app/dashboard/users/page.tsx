@@ -3,24 +3,11 @@ import { DashboardHeader } from "@/components/dashboard-header"
 import { UserClientPage } from "./components/client-page"
 import { AddUserDialog } from "./components/add-user-dialog"
 import type { User } from "@/lib/types"
-import { cookies } from "next/headers"
+import { serverFetch } from "@/lib/server-api"
 
 async function getUsers(): Promise<User[]> {
     try {
-        const token = cookies().get('auth_token')?.value;
-        if (!token) {
-            console.error("Authentication token not found for getUsers.");
-            return [];
-        }
-
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL || ''}/admin/users`, {
-            headers: { 
-                Authorization: `Bearer ${token}`,
-                'Content-Type': 'application/json',
-                'Accept': 'application/json',
-            },
-            cache: 'no-store',
-        });
+        const response = await serverFetch('/admin/users');
 
         if (!response.ok) {
             const errorBody = await response.json().catch(() => response.text());
@@ -30,8 +17,8 @@ async function getUsers(): Promise<User[]> {
 
         const data = await response.json();
         return data.users || [];
-    } catch (error) {
-        console.error("Failed to fetch users:", error);
+    } catch (error: any) {
+        console.error("Failed to fetch users:", error.message);
         return [];
     }
 }
