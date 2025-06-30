@@ -32,9 +32,9 @@ export default function LoginPage() {
                 </div>
             </div>
             <Card className="animate-in fade-in-0 zoom-in-95 duration-500" style={{ animationDelay: '200ms', animationFillMode: 'backwards' }}>
-                <CardHeader>
-                    <CardTitle className="text-2xl tracking-tight">Admin Sign In</CardTitle>
-                    <CardDescription>Welcome back! Please enter your details to continue.</CardDescription>
+                <CardHeader className="text-center">
+                    <CardTitle className="text-2xl tracking-tight">Welcome to your Dashboard</CardTitle>
+                    <CardDescription>Please sign in to continue.</CardDescription>
                 </CardHeader>
                 <CardContent>
                     <LoginForm />
