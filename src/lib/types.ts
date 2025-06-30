@@ -46,3 +46,10 @@ export type ActivityLog = {
   details: string;
   timestamp: Date;
 };
+
+export type Subscription = {
+  id: string;
+  user: Pick<User, 'id' | 'name' | 'email'>;
+  course: Pick<Course, 'id' | 'name'>;
+  subscribedAt: Date;
+};

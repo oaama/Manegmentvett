@@ -6,7 +6,8 @@ import {
   Book,
   Bell,
   FileText,
-  BookOpenCheck
+  BookOpenCheck,
+  Ticket
 } from 'lucide-react';
 import {
   Sidebar,
@@ -28,6 +29,7 @@ const menuItems = [
   { href: '/dashboard/users', label: 'Users', icon: Users },
   { href: '/dashboard/carnets', label: 'Carnet Requests', icon: CreditCard },
   { href: '/dashboard/courses', label: 'Courses', icon: Book },
+  { href: '/dashboard/subscriptions', label: 'Subscriptions', icon: Ticket },
   { href: '/dashboard/notifications', label: 'Notifications', icon: Bell },
   { href: '/dashboard/logs', label: 'Activity Logs', icon: FileText },
 ];
@@ -44,7 +46,7 @@ export default function DashboardLayout({
           <div className="flex items-center gap-2 p-2">
             <BookOpenCheck className="w-8 h-8 text-primary" />
             <div className="flex flex-col">
-              <h2 className="text-lg font-semibold">eLearn Admin</h2>
+              <h2 className="text-lg font-semibold">Mr Vetgo</h2>
               <p className="text-xs text-muted-foreground">Admin Center</p>
             </div>
           </div>
@@ -72,7 +74,7 @@ export default function DashboardLayout({
             <div className="md:hidden flex items-center justify-between mb-4">
                  <div className="flex items-center gap-2">
                     <BookOpenCheck className="w-6 h-6 text-primary" />
-                    <h2 className="text-md font-semibold">eLearn Admin</h2>
+                    <h2 className="text-md font-semibold">Mr Vetgo</h2>
                 </div>
                 <SidebarTrigger />
             </div>

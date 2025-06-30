@@ -3,7 +3,7 @@ import './globals.css';
 import { Toaster } from "@/components/ui/toaster";
 
 export const metadata: Metadata = {
-  title: 'eLearn Admin Center',
+  title: 'Mr Vetgo Admin Center',
   description: 'Admin Dashboard for an e-learning platform.',
 };
 

@@ -7,7 +7,7 @@ export default function LoginPage() {
       <div className="w-full max-w-md">
         <div className="flex flex-col items-center mb-6">
             <BookOpenCheck className="h-12 w-12 text-primary mb-2" />
-            <h1 className="text-3xl font-bold tracking-tight">eLearn Admin Center</h1>
+            <h1 className="text-3xl font-bold tracking-tight">Mr Vetgo Admin Center</h1>
             <p className="text-muted-foreground">Welcome back! Please sign in to continue.</p>
         </div>
         <LoginForm />

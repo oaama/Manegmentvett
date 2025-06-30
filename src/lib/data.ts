@@ -1,4 +1,4 @@
-import type { User, Course, CarnetRequest, Notification, ActivityLog } from './types';
+import type { User, Course, CarnetRequest, Notification, ActivityLog, Subscription } from './types';
 
 export const users: User[] = [
   { id: '1', name: 'Alice Johnson', email: 'alice@example.com', role: 'student', phone: '123-456-7890', academicYear: 2, carnetStatus: 'approved', createdAt: new Date('2023-01-15') },
@@ -43,4 +43,11 @@ export const activityLogs: ActivityLog[] = [
     { id: 'l3', user: 'Charlie Brown', action: 'CREATE_COURSE', details: 'Created new course "Advanced React Hooks"', timestamp: new Date(Date.now() - 1000 * 60 * 55) },
     { id: 'l4', user: 'Diana Miller', action: 'APPROVE_CARNET', details: 'Approved carnet request for Bob Williams (ID: 2)', timestamp: new Date(Date.now() - 1000 * 60 * 125) },
     { id: 'l5', user: 'Diana Miller', action: 'DELETE_USER', details: 'Deleted user (ID: 99)', timestamp: new Date(Date.now() - 1000 * 60 * 180) },
+];
+
+export const subscriptions: Subscription[] = [
+  { id: 'sub1', user: { id: '1', name: 'Alice Johnson', email: 'alice@example.com' }, course: { id: 'c1', name: 'Introduction to React' }, subscribedAt: new Date('2023-09-05') },
+  { id: 'sub2', user: { id: '2', name: 'Bob Williams', email: 'bob@example.com' }, course: { id: 'c2', name: 'Advanced NodeJS' }, subscribedAt: new Date('2023-09-06') },
+  { id: 'sub3', user: { id: '1', name: 'Alice Johnson', email: 'alice@example.com' }, course: { id: 'c4', name: 'Database Management' }, subscribedAt: new Date('2023-09-07') },
+  { id: 'sub4', user: { id: '7', name: 'Grace Lee', email: 'grace@example.com' }, course: { id: 'c5', name: 'Data Structures & Algorithms' }, subscribedAt: new Date('2023-09-08') },
 ];
