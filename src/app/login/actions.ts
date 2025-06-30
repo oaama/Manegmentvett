@@ -26,8 +26,8 @@ export async function login(prevState: any, formData: FormData) {
         // We must verify the user is an admin before creating the session.
         if (data.user && data.user.role === 'admin') {
             cookies().set("auth_token", data.token, {
-                // httpOnly must be false so the client-side API helper can read the cookie.
-                httpOnly: false, 
+                // httpOnly should be true for security. Server-side code can still access it.
+                httpOnly: true, 
                 secure: process.env.NODE_ENV === "production",
                 maxAge: 60 * 60 * 24 * 7, // 1 week
                 path: "/",
