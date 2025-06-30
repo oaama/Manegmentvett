@@ -26,6 +26,7 @@ import {
 import { format } from "date-fns"
 import { useToast } from "@/hooks/use-toast"
 import { useRouter } from "next/navigation"
+import api from "@/lib/api"
 
 const DateCell = ({ dateValue, formatString }: { dateValue: Date | string, formatString: string }) => {
   const [formattedDate, setFormattedDate] = React.useState("")
@@ -43,19 +44,19 @@ const SubscriptionActions = ({ subscription }: { subscription: Subscription }) =
     const [isDeleteDialogOpen, setIsDeleteDialogOpen] = React.useState(false)
 
     const handleDelete = async () => {
-        // TODO: Replace with actual API call when the endpoint is provided.
         try {
-            // await api.delete(`/admin/subscriptions/${subscription.id}`);
-            await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate API call
+            // NOTE: The swagger file doesn't specify an endpoint for deleting subscriptions.
+            // Assuming the endpoint is DELETE /admin/subscriptions/{id}
+            await api.delete(`/admin/subscriptions/${subscription.id}`);
             toast({
-                title: "Subscription Removed (Mock)",
+                title: "Subscription Removed",
                 description: `The subscription for ${subscription.user.name} has been removed.`,
             })
             router.refresh();
         } catch (error: any) {
              toast({
                 title: "Error Removing Subscription",
-                description: "This is a mock action. The API endpoint is not yet available.",
+                description: error.response?.data?.message || "Failed to remove subscription. The API endpoint may not be available.",
                 variant: "destructive",
             })
         } finally {

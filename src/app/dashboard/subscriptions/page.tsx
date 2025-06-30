@@ -5,29 +5,22 @@ import api from "@/lib/api"
 import type { Subscription, User, Course } from "@/lib/types"
 import { cookies } from "next/headers"
 
-// NOTE: The data fetching for this page has been temporarily switched to
-// mock data to prevent the app from crashing while the API is unavailable.
-
 async function getSubscriptions() {
-    // This is a mock function. Replace with actual API call when ready.
     try {
-        // const response = await api.get('/admin/subscriptions');
-        // return response.data.subscriptions || [];
-        const { subscriptions } = await import("@/lib/data");
-        return subscriptions;
+        const token = cookies().get('auth_token')?.value;
+        const response = await api.get('/admin/subscriptions', {
+             headers: { Authorization: `Bearer ${token}` }
+        });
+        // NOTE: The swagger file doesn't specify the structure for subscriptions.
+        // Assuming it's an array under a 'subscriptions' key.
+        return response.data.subscriptions || [];
     } catch (error) {
-        console.error("Failed to fetch subscriptions:", error);
-        return [];
+        console.error("Failed to fetch subscriptions. The API endpoint might not exist or the server is down.", error);
+        return []; // Return empty array on error to prevent crashing
     }
 }
 
 async function getUsers() {
-    // MOCK: Returning mock data to prevent app crash while API is unavailable.
-    // The real implementation is commented out below.
-    console.warn("Subscriptions Page: Using mock user data. Please ensure your API server is running.");
-    const { users } = await import("@/lib/data");
-    return users;
-    /*
     try {
         const token = cookies().get('auth_token')?.value;
         const response = await api.get('/admin/users', {
@@ -35,19 +28,12 @@ async function getUsers() {
         });
         return response.data.users || [];
     } catch (error) {
-        console.error("Failed to fetch users:", error);
+        console.error("Failed to fetch users for subscriptions page:", error);
         return [];
     }
-    */
 }
 
 async function getCourses() {
-    // MOCK: Returning mock data to prevent app crash while API is unavailable.
-    // The real implementation is commented out below.
-    console.warn("Subscriptions Page: Using mock course data. Please ensure your API server is running.");
-    const { courses } = await import("@/lib/data");
-    return courses;
-    /*
     try {
         const token = cookies().get('auth_token')?.value;
         const response = await api.get('/courses', {
@@ -55,10 +41,9 @@ async function getCourses() {
         });
         return response.data.courses || [];
     } catch (error) {
-        console.error("Failed to fetch courses:", error);
+        console.error("Failed to fetch courses for subscriptions page:", error);
         return [];
     }
-    */
 }
 
 
@@ -73,7 +58,6 @@ export default async function SubscriptionsPage() {
   return (
     <>
       <DashboardHeader title="Subscriptions Management">
-        {/* Pass lists to dialog for potential future use (e.g., validation) */}
         <AddSubscriptionDialog students={studentList} courses={courseList} />
       </DashboardHeader>
       <div className="p-1">

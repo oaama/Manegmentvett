@@ -1,9 +1,26 @@
 import { DashboardHeader } from "@/components/dashboard-header";
 import { NotificationForm } from "./components/notification-form";
 import { HistoryTable } from "./components/history-table";
-import { notifications } from "@/lib/data";
+import type { Notification } from "@/lib/types";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { NotificationHistoryFilters } from "./components/history-filters";
+import { cookies } from "next/headers";
+import api from "@/lib/api";
+
+async function getNotificationHistory() {
+    try {
+        const token = cookies().get('auth_token')?.value;
+        // NOTE: The swagger file doesn't specify an endpoint for fetching all sent notifications.
+        // Assuming the endpoint is GET /admin/notifications
+        const response = await api.get('/admin/notifications', {
+             headers: { Authorization: `Bearer ${token}` }
+        });
+        return response.data.notifications || [];
+    } catch (error) {
+        console.error("Failed to fetch notification history. The API endpoint might not exist or the server is down.", error);
+        return [];
+    }
+}
 
 type NotificationsPageProps = {
   searchParams: {
@@ -11,12 +28,14 @@ type NotificationsPageProps = {
   }
 }
 
-export default function NotificationsPage({ searchParams }: NotificationsPageProps) {
+export default async function NotificationsPage({ searchParams }: NotificationsPageProps) {
   const target = searchParams.target || 'all';
 
+  const allNotifications: Notification[] = await getNotificationHistory();
+
   const filteredNotifications = target === 'all' 
-    ? notifications 
-    : notifications.filter(n => n.target === target);
+    ? allNotifications 
+    : allNotifications.filter(n => n.target === target);
 
   return (
     <>
