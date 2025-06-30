@@ -42,7 +42,6 @@ export function LoginForm() {
             type="email"
             placeholder="admin@elearn.com"
             required
-            defaultValue="admin@elearn.com"
             className="pl-10"
             />
         </div>
@@ -56,7 +55,7 @@ export function LoginForm() {
                 name="password" 
                 type={showPassword ? "text" : "password"}
                 required 
-                defaultValue="admin123"
+                placeholder="********"
                 className="pl-10 pr-10"
             />
              <Button 
