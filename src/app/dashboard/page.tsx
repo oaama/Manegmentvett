@@ -2,8 +2,7 @@
 import { cookies } from "next/headers";
 import { DashboardHeader } from '@/components/dashboard-header';
 import { DashboardClientPage, type Stats } from "./components/client-page";
-
-const API_BASE_URL = 'https://mrvet-production.up.railway.app/api';
+import api from "@/lib/api";
 
 const mockStats: Stats = {
     totalUsers: 8,
@@ -29,24 +28,19 @@ async function getStats(): Promise<Stats> {
             throw new Error("Authentication token not found in server component.");
         }
         
-        const response = await fetch(`${API_BASE_URL}/admin/stats`, {
-            method: 'GET',
+        const response = await api.get('/admin/stats', {
             headers: {
                 'Authorization': `Bearer ${token}`,
-                'Content-Type': 'application/json',
             },
-            cache: 'no-store', 
         });
-
-        if (!response.ok) {
-            throw new Error(`Request failed on server with status ${response.status}`);
-        }
         
-        const data = await response.json();
-        return data;
+        return response.data;
 
-    } catch (error) {
+    } catch (error: any) {
         console.error("Failed to fetch dashboard stats on server:", error);
+        if (error.response) {
+            console.error(`API responded with status ${error.response.status}`);
+        }
         console.warn("Dashboard is falling back to mock data due to API connection failure.");
         return mockStats;
     }
