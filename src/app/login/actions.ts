@@ -25,24 +25,33 @@ export async function login(prevState: any, formData: FormData) {
     } else {
          return {
             success: false,
-            message: "Login successful, but no token received.",
+            message: "Login successful, but no token was provided by the server.",
         }
     }
   } catch(error: any) {
-    console.error("Login failed:", error.message);
-    
-    // Check if it's a network error vs. a bad credentials error from the server
+    console.error("--- LOGIN ACTION FAILED ---");
     if (error.response) {
-      // The server responded with an error (e.g., 401 Unauthorized)
+      // The request was made and the server responded with a status code
+      // that falls out of the range of 2xx
+      console.error("API Error Response:", JSON.stringify(error.response.data, null, 2));
+      console.error("API Error Status:", error.response.status);
       return {
         success: false,
-        message: error.response.data?.message || "Invalid email or password.",
+        message: error.response.data?.message || `Login failed. The server responded with status ${error.response.status}.`,
       };
-    } else {
-      // A network error occurred (e.g., server not running, wrong URL)
+    } else if (error.request) {
+      // The request was made but no response was received
+      console.error("API No Response. Is the server running at the specified URL?", error.config.url);
       return {
         success: false,
         message: "Could not connect to the server. Please check the API URL and ensure the server is running.",
+      };
+    } else {
+      // Something happened in setting up the request that triggered an Error
+      console.error('Error during request setup:', error.message);
+       return {
+        success: false,
+        message: "An unexpected error occurred while preparing the login request.",
       };
     }
   }
