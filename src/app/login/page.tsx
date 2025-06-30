@@ -1,6 +1,7 @@
 import { LoginForm } from "./components/login-form";
 import { BookOpenCheck } from "lucide-react";
 import Image from "next/image";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
 export default function LoginPage() {
   return (
@@ -23,17 +24,22 @@ export default function LoginPage() {
         </div>
       </div>
       <div className="flex items-center justify-center py-12">
-        <div className="mx-auto grid w-[380px] gap-6">
-          <div className="grid gap-4 text-center animate-in fade-in-0 slide-in-from-bottom-2 duration-500">
-            <div className="flex justify-center items-center gap-3">
-                <BookOpenCheck className="h-10 w-10 text-primary" />
-                <h1 className="text-4xl font-bold tracking-tighter">Mr Vet</h1>
+        <div className="mx-auto grid w-[400px] gap-6">
+            <div className="grid gap-2 text-center animate-in fade-in-0 slide-in-from-bottom-2 duration-500">
+                <div className="flex justify-center items-center gap-3">
+                    <BookOpenCheck className="h-8 w-8 text-primary" />
+                    <h1 className="text-3xl font-bold tracking-tighter">Mr Vet</h1>
+                </div>
             </div>
-            <p className="text-balance text-muted-foreground">
-              Admin Center Login
-            </p>
-          </div>
-          <LoginForm />
+            <Card className="animate-in fade-in-0 zoom-in-95 duration-500" style={{ animationDelay: '200ms', animationFillMode: 'backwards' }}>
+                <CardHeader>
+                    <CardTitle className="text-2xl tracking-tight">Admin Sign In</CardTitle>
+                    <CardDescription>Welcome back! Please enter your details to continue.</CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <LoginForm />
+                </CardContent>
+            </Card>
         </div>
       </div>
     </div>
