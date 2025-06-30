@@ -3,16 +3,27 @@ import { DashboardHeader } from "@/components/dashboard-header"
 import { AddSubscriptionDialog } from "./components/add-subscription-dialog"
 import { SubscriptionsClientPage } from "./components/client-page"
 import type { Subscription } from "@/lib/types"
-import api from "@/lib/api"
 import { cookies } from "next/headers"
+
+const API_BASE_URL = 'https://mrvet-production.up.railway.app/api';
 
 async function getSubscriptions() {
     try {
         const token = cookies().get('auth_token')?.value;
-        const response = await api.get('/admin/subscriptions', {
-            headers: { Authorization: `Bearer ${token}` }
+        if (!token) return [];
+
+        const response = await fetch(`${API_BASE_URL}/admin/subscriptions`, {
+            headers: { Authorization: `Bearer ${token}` },
+            cache: 'no-store',
         });
-        return response.data.subscriptions || response.data || [];
+
+        if (!response.ok) {
+            console.error("Failed to fetch subscriptions:", response.status, await response.text());
+            return [];
+        }
+
+        const data = await response.json();
+        return data.subscriptions || data || [];
     } catch (error) {
         console.error("Failed to fetch subscriptions:", error);
         return [];

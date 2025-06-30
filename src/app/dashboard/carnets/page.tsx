@@ -2,17 +2,28 @@
 import { DashboardHeader } from "@/components/dashboard-header"
 import { CarnetClientPage } from "./components/client-page"
 import { CarnetStatusFilter } from "./components/carnet-status-filter"
-import api from "@/lib/api"
 import type { CarnetRequest, User } from "@/lib/types"
 import { cookies } from "next/headers"
+
+const API_BASE_URL = 'https://mrvet-production.up.railway.app/api';
 
 async function getCarnetRequests() {
     try {
         const token = cookies().get('auth_token')?.value;
-        const response = await api.get('/admin/users', {
-            headers: { Authorization: `Bearer ${token}` }
+        if (!token) return [];
+
+        const response = await fetch(`${API_BASE_URL}/admin/users`, {
+            headers: { Authorization: `Bearer ${token}` },
+            cache: 'no-store',
         });
-        const users: User[] = response.data.users || [];
+        
+        if (!response.ok) {
+            console.error("Failed to fetch users for carnet requests:", response.status, await response.text());
+            return [];
+        }
+
+        const data = await response.json();
+        const users: User[] = data.users || [];
         
         const requests: CarnetRequest[] = users
           .filter(u => u.role === 'student' && u.carnetStatus)

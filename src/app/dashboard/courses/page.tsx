@@ -3,18 +3,26 @@ import { DashboardHeader } from "@/components/dashboard-header"
 import { CourseClientPage } from "./components/client-page"
 import { AddCourseDialog } from "./components/add-course-dialog"
 import { CourseFilters } from "./components/course-filters"
-import api from "@/lib/api"
 import type { Course, User } from "@/lib/types"
 import { cookies } from "next/headers"
+
+const API_BASE_URL = 'https://mrvet-production.up.railway.app/api';
 
 async function getCourses(year?: string) {
     try {
         const token = cookies().get('auth_token')?.value;
+        if (!token) return [];
         const endpoint = year ? `/courses/filter/by-year?year=${year}` : '/courses';
-        const response = await api.get(endpoint, {
-             headers: { Authorization: `Bearer ${token}` }
+        const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+             headers: { Authorization: `Bearer ${token}` },
+             cache: 'no-store',
         });
-        return response.data.courses || [];
+        if (!response.ok) {
+            console.error("Failed to fetch courses:", response.status, await response.text());
+            return [];
+        }
+        const data = await response.json();
+        return data.courses || [];
     } catch (error) {
         console.error("Failed to fetch courses:", error);
         return [];
@@ -24,10 +32,17 @@ async function getCourses(year?: string) {
 async function getInstructors() {
     try {
         const token = cookies().get('auth_token')?.value;
-        const response = await api.get('/user/instructors', {
-             headers: { Authorization: `Bearer ${token}` }
+        if (!token) return [];
+        const response = await fetch(`${API_BASE_URL}/user/instructors`, {
+             headers: { Authorization: `Bearer ${token}` },
+             cache: 'no-store',
         });
-        return response.data.instructors || [];
+        if (!response.ok) {
+            console.error("Failed to fetch instructors:", response.status, await response.text());
+            return [];
+        }
+        const data = await response.json();
+        return data.instructors || [];
     } catch (error) {
         console.error("Failed to fetch instructors:", error);
         return [];
