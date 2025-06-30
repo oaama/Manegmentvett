@@ -16,7 +16,7 @@ export async function login(prevState: any, formData: FormData) {
 
     if (token) {
         cookies().set("auth_token", token, {
-            httpOnly: true,
+            httpOnly: false, // Allow client-side script to read the cookie for API requests
             secure: process.env.NODE_ENV === "production",
             maxAge: 60 * 60 * 24 * 7, // 1 week
             path: "/",
@@ -25,7 +25,7 @@ export async function login(prevState: any, formData: FormData) {
     } else {
          return {
             success: false,
-            message: "Login successful, but no token was provided by the server.",
+            message: response.data.msg || "Login successful, but no token was provided by the server.",
         }
     }
   } catch(error: any) {
