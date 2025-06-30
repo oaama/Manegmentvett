@@ -36,7 +36,6 @@ const formSchema = z.object({
   courseId: z.string().min(1, "Course ID is required"),
 })
 
-// The props are kept for future use, e.g. validation against the list
 type AddSubscriptionDialogProps = {
   students: Pick<User, 'id' | 'name'>[];
   courses: Pick<Course, 'id' | 'name'>[];
@@ -59,23 +58,23 @@ export function AddSubscriptionDialog({ students, courses }: AddSubscriptionDial
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsSubmitting(true)
     
-    // TODO: Replace with actual API call when the endpoint is provided.
     try {
-      // await api.post('/admin/subscriptions', values);
-      console.log("Submitting subscription:", values)
-      await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate API call
+      await api.post('/admin/subscriptions/activate', {
+        userId: values.studentId,
+        courseId: values.courseId,
+      });
       
       toast({
-        title: "Subscription Added (Mock)",
-        description: `Student ${values.studentId} has been subscribed to course ${values.courseId}.`,
+        title: "Subscription Activated",
+        description: `Student (${values.studentId}) has been subscribed to course (${values.courseId}).`,
       })
       setOpen(false)
       form.reset()
       router.refresh()
     } catch (error: any) {
         toast({
-            title: "Error Adding Subscription",
-            description: "This is a mock action. The API endpoint is not yet available.",
+            title: "Error Activating Subscription",
+            description: error.response?.data?.message || "An unexpected error occurred.",
             variant: "destructive",
         })
     } finally {
