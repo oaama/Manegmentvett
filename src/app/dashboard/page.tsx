@@ -1,35 +1,9 @@
-"use client"
 
-import * as React from 'react';
+import { cookies } from "next/headers";
 import { DashboardHeader } from '@/components/dashboard-header';
-import { StatCard } from '@/components/stat-card';
-import { Users, Book, CreditCard, Library } from 'lucide-react';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
-import { Progress } from '@/components/ui/progress';
-import { Skeleton } from '@/components/ui/skeleton';
+import { DashboardClientPage, type Stats } from "./components/client-page";
 
-type Stats = {
-  totalUsers: number;
-  totalCourses: number;
-  carnetRequests: {
-    total: number;
-    pending: number;
-    approved: number;
-    rejected: number;
-  };
-  rolesCount: {
-    student: number;
-    instructor: number;
-    admin: number;
-  };
-  totalSections: number;
-}
+const API_BASE_URL = 'https://mrvet-production.up.railway.app/api';
 
 const mockStats: Stats = {
     totalUsers: 8,
@@ -48,163 +22,39 @@ const mockStats: Stats = {
     totalSections: 65,
 };
 
-const API_BASE_URL = 'https://mrvet-production.up.railway.app/api';
-
-export default function DashboardPage() {
-  const [stats, setStats] = React.useState<Stats | null>(null);
-  const [loading, setLoading] = React.useState(true);
-
-  React.useEffect(() => {
-    const fetchStats = async () => {
-      try {
-        setLoading(true);
-        
-        const token = document.cookie
-          .split('; ')
-          .find((row) => row.startsWith('auth_token='))
-          ?.split('=')[1];
-        
+async function getStats(): Promise<Stats> {
+    try {
+        const token = cookies().get('auth_token')?.value;
         if (!token) {
-            throw new Error("Authentication token not found. Please log in again.");
+            throw new Error("Authentication token not found in server component.");
         }
-
+        
         const response = await fetch(`${API_BASE_URL}/admin/stats`, {
             method: 'GET',
             headers: {
                 'Authorization': `Bearer ${token}`,
                 'Content-Type': 'application/json',
-            }
+            },
+            cache: 'no-store', 
         });
 
         if (!response.ok) {
-            throw new Error(`Request failed with status ${response.status}`);
+            throw new Error(`Request failed on server with status ${response.status}`);
         }
-
+        
         const data = await response.json();
-        setStats(data);
-      } catch (error) {
-        console.error("Failed to fetch dashboard stats:", error);
+        return data;
+
+    } catch (error) {
+        console.error("Failed to fetch dashboard stats on server:", error);
         console.warn("Dashboard is falling back to mock data due to API connection failure.");
-        setStats(mockStats);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchStats();
-  }, []);
+        return mockStats;
+    }
+}
 
-  const getPercentage = (part: number, total: number) => {
-    if (total === 0) return 0;
-    return (part / total) * 100;
-  }
 
-  if (loading || !stats) {
-    return (
-      <>
-        <DashboardHeader title="Dashboard" />
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-          <Skeleton className="h-28" />
-          <Skeleton className="h-28" />
-          <Skeleton className="h-28" />
-          <Skeleton className="h-28" />
-        </div>
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7 mt-6">
-          <Skeleton className="lg:col-span-4 h-64" />
-          <Skeleton className="lg:col-span-3 h-64" />
-        </div>
-      </>
-    );
-  }
+export default async function DashboardPage() {
+    const stats = await getStats();
 
-  return (
-    <>
-      <DashboardHeader title="Dashboard" />
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <StatCard
-          title="Total Users"
-          value={stats.totalUsers}
-          icon={Users}
-          description={`${stats.rolesCount.student || 0} students, ${stats.rolesCount.instructor || 0} instructors`}
-        />
-        <StatCard
-          title="Total Courses"
-          value={stats.totalCourses}
-          icon={Book}
-          description="Across all academic years"
-        />
-        <StatCard
-          title="Carnet Requests"
-          value={stats.carnetRequests.total}
-          icon={CreditCard}
-          description={`${stats.carnetRequests.pending} pending`}
-        />
-        <StatCard
-          title="Total Sections"
-          value={stats.totalSections}
-          icon={Library}
-          description="In all available courses"
-        />
-      </div>
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7 mt-6">
-        <Card className="lg:col-span-4">
-          <CardHeader>
-            <CardTitle>User Roles Distribution</CardTitle>
-            <CardDescription>A breakdown of user roles across the platform.</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="flex flex-col space-y-2">
-                <div className="flex justify-between text-sm font-medium">
-                    <span>Students</span>
-                    <span>{stats.rolesCount.student || 0} / {stats.totalUsers}</span>
-                </div>
-                <Progress value={getPercentage(stats.rolesCount.student, stats.totalUsers)} />
-            </div>
-             <div className="flex flex-col space-y-2">
-                <div className="flex justify-between text-sm font-medium">
-                    <span>Instructors</span>
-                    <span>{stats.rolesCount.instructor || 0} / {stats.totalUsers}</span>
-                </div>
-                <Progress value={getPercentage(stats.rolesCount.instructor, stats.totalUsers)} />
-            </div>
-             <div className="flex flex-col space-y-2">
-                <div className="flex justify-between text-sm font-medium">
-                    <span>Admins</span>
-                    <span>{stats.rolesCount.admin || 0} / {stats.totalUsers}</span>
-                </div>
-                <Progress value={getPercentage(stats.rolesCount.admin, stats.totalUsers)} />
-            </div>
-          </CardContent>
-        </Card>
-        <Card className="lg:col-span-3">
-          <CardHeader>
-            <CardTitle>Carnet Status Overview</CardTitle>
-            <CardDescription>Current status of all carnet requests.</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="flex flex-col space-y-2">
-                <div className="flex justify-between text-sm font-medium">
-                    <span>Approved</span>
-                    <span className="text-chart-2">{stats.carnetRequests.approved}</span>
-                </div>
-                <Progress value={getPercentage(stats.carnetRequests.approved, stats.carnetRequests.total)} className="[&>div]:bg-chart-2" />
-            </div>
-             <div className="flex flex-col space-y-2">
-                <div className="flex justify-between text-sm font-medium">
-                    <span>Pending</span>
-                    <span className="text-chart-4">{stats.carnetRequests.pending}</span>
-                </div>
-                <Progress value={getPercentage(stats.carnetRequests.pending, stats.carnetRequests.total)} className="[&>div]:bg-chart-4" />
-            </div>
-             <div className="flex flex-col space-y-2">
-                <div className="flex justify-between text-sm font-medium">
-                    <span>Rejected</span>
-                     <span className="text-destructive">{stats.carnetRequests.rejected}</span>
-                </div>
-                <Progress value={getPercentage(stats.carnetRequests.rejected, stats.carnetRequests.total)} className="[&>div]:bg-destructive"/>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-    </>
-  );
+    return <DashboardClientPage initialStats={stats} />;
 }
