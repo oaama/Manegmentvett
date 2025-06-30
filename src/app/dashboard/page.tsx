@@ -13,7 +13,6 @@ import {
 } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { Skeleton } from '@/components/ui/skeleton';
-import api from '@/lib/api';
 
 type Stats = {
   totalUsers: number;
@@ -49,6 +48,8 @@ const mockStats: Stats = {
     totalSections: 65,
 };
 
+const API_BASE_URL = 'https://mrvet-production.up.railway.app/api';
+
 export default function DashboardPage() {
   const [stats, setStats] = React.useState<Stats | null>(null);
   const [loading, setLoading] = React.useState(true);
@@ -57,9 +58,30 @@ export default function DashboardPage() {
     const fetchStats = async () => {
       try {
         setLoading(true);
-        // The Axios interceptor in `api.ts` now handles attaching the token automatically.
-        const response = await api.get('/admin/stats');
-        setStats(response.data);
+        
+        const token = document.cookie
+          .split('; ')
+          .find((row) => row.startsWith('auth_token='))
+          ?.split('=')[1];
+        
+        if (!token) {
+            throw new Error("Authentication token not found. Please log in again.");
+        }
+
+        const response = await fetch(`${API_BASE_URL}/admin/stats`, {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json',
+            }
+        });
+
+        if (!response.ok) {
+            throw new Error(`Request failed with status ${response.status}`);
+        }
+
+        const data = await response.json();
+        setStats(data);
       } catch (error) {
         console.error("Failed to fetch dashboard stats:", error);
         console.warn("Dashboard is falling back to mock data due to API connection failure.");
