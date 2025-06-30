@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react';
+import { ThemeToggle } from './theme-toggle';
 
 type DashboardHeaderProps = {
   title: string;
@@ -11,6 +12,7 @@ export function DashboardHeader({ title, children }: DashboardHeaderProps) {
       <h1 className="text-3xl font-bold tracking-tight text-foreground">{title}</h1>
       <div className="flex items-center gap-2">
         {children}
+        <ThemeToggle />
       </div>
     </header>
   );
