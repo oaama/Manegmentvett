@@ -4,8 +4,6 @@
 import { revalidatePath } from "next/cache"
 import { cookies } from "next/headers"
 
-const API_BASE_URL = 'https://mrvet-production.up.railway.app/api';
-
 export async function updateAdminCredentials(prevState: any, formData: FormData) {
   const _id = formData.get("_id") as string;
   const email = formData.get("email") as string;
@@ -34,7 +32,7 @@ export async function updateAdminCredentials(prevState: any, formData: FormData)
     if (!token) {
         return { success: false, message: "Authentication failed. Please log in again." };
     }
-    const response = await fetch(`${API_BASE_URL}/admin/users/${_id}`, {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL || ''}/admin/users/${_id}`, {
         method: 'PUT',
         headers: { 
             'Authorization': `Bearer ${token}`,

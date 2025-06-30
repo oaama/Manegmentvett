@@ -4,8 +4,6 @@ import { LogsClientPage } from "./components/client-page"
 import type { ActivityLog } from "@/lib/types"
 import { cookies } from "next/headers"
 
-const API_BASE_URL = 'https://mrvet-production.up.railway.app/api';
-
 async function getLogs(): Promise<ActivityLog[]> {
     try {
         const token = cookies().get('auth_token')?.value;
@@ -14,7 +12,7 @@ async function getLogs(): Promise<ActivityLog[]> {
             return [];
         }
 
-        const response = await fetch(`${API_BASE_URL}/admin/logs`, {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL || ''}/admin/logs`, {
             headers: { 
                 Authorization: `Bearer ${token}`,
                 'Content-Type': 'application/json',

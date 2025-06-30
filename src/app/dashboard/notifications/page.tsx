@@ -7,8 +7,6 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { NotificationHistoryFilters } from "./components/history-filters";
 import { cookies } from "next/headers";
 
-const API_BASE_URL = 'https://mrvet-production.up.railway.app/api';
-
 async function getNotificationHistory(): Promise<Notification[]> {
     try {
         const token = cookies().get('auth_token')?.value;
@@ -17,7 +15,7 @@ async function getNotificationHistory(): Promise<Notification[]> {
             return [];
         }
 
-        const response = await fetch(`${API_BASE_URL}/notifications/my`, {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL || ''}/notifications/my`, {
              headers: { 
                  Authorization: `Bearer ${token}`,
                  'Content-Type': 'application/json',

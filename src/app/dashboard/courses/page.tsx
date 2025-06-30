@@ -6,8 +6,6 @@ import { CourseFilters } from "./components/course-filters"
 import type { Course, User } from "@/lib/types"
 import { cookies } from "next/headers"
 
-const API_BASE_URL = 'https://mrvet-production.up.railway.app/api';
-
 async function getCourses(year?: string): Promise<Course[]> {
     try {
         const token = cookies().get('auth_token')?.value;
@@ -17,7 +15,7 @@ async function getCourses(year?: string): Promise<Course[]> {
         }
         const endpoint = year ? `/courses/filter/by-year?year=${year}` : '/courses';
         
-        const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL || ''}${endpoint}`, {
              headers: { 
                  Authorization: `Bearer ${token}`,
                  'Content-Type': 'application/json',
@@ -47,7 +45,7 @@ async function getInstructors(): Promise<Pick<User, '_id' | 'name'>[]> {
             return [];
         }
 
-        const response = await fetch(`${API_BASE_URL}/user/instructors`, {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL || ''}/user/instructors`, {
              headers: { 
                  Authorization: `Bearer ${token}`,
                  'Content-Type': 'application/json',

@@ -5,8 +5,6 @@ import { AddUserDialog } from "./components/add-user-dialog"
 import type { User } from "@/lib/types"
 import { cookies } from "next/headers"
 
-const API_BASE_URL = 'https://mrvet-production.up.railway.app/api';
-
 async function getUsers(): Promise<User[]> {
     try {
         const token = cookies().get('auth_token')?.value;
@@ -15,7 +13,7 @@ async function getUsers(): Promise<User[]> {
             return [];
         }
 
-        const response = await fetch(`${API_BASE_URL}/admin/users`, {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL || ''}/admin/users`, {
             headers: { 
                 Authorization: `Bearer ${token}`,
                 'Content-Type': 'application/json',

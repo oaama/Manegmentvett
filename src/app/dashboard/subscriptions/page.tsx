@@ -5,8 +5,6 @@ import { SubscriptionsClientPage } from "./components/client-page"
 import type { Subscription } from "@/lib/types"
 import { cookies } from "next/headers"
 
-const API_BASE_URL = 'https://mrvet-production.up.railway.app/api';
-
 async function getSubscriptions(): Promise<Subscription[]> {
     try {
         const token = cookies().get('auth_token')?.value;
@@ -15,7 +13,7 @@ async function getSubscriptions(): Promise<Subscription[]> {
             return [];
         }
 
-        const response = await fetch(`${API_BASE_URL}/admin/subscriptions`, {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL || ''}/admin/subscriptions`, {
             headers: { 
                 Authorization: `Bearer ${token}`,
                 'Content-Type': 'application/json',

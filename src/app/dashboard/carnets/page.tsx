@@ -5,8 +5,6 @@ import { CarnetStatusFilter } from "./components/carnet-status-filter"
 import type { CarnetRequest, User } from "@/lib/types"
 import { cookies } from "next/headers"
 
-const API_BASE_URL = 'https://mrvet-production.up.railway.app/api';
-
 async function getCarnetRequests(): Promise<CarnetRequest[]> {
     try {
         const token = cookies().get('auth_token')?.value;
@@ -15,7 +13,7 @@ async function getCarnetRequests(): Promise<CarnetRequest[]> {
             return [];
         }
 
-        const response = await fetch(`${API_BASE_URL}/admin/users`, {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL || ''}/admin/users`, {
             headers: { 
                 Authorization: `Bearer ${token}`,
                 'Content-Type': 'application/json',

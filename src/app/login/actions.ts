@@ -11,10 +11,11 @@ export async function login(prevState: any, formData: FormData) {
   let loginSuccessful = false;
 
   try {
-    const response = await fetch('https://mrvet-production.up.railway.app/api/auth/login', {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL || ''}/auth/login`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        'Accept': 'application/json',
       },
       body: JSON.stringify({ email, password }),
     });
@@ -22,11 +23,8 @@ export async function login(prevState: any, formData: FormData) {
     const data = await response.json();
 
     if (response.ok && data.token) {
-        // The API returns the user object on successful login.
-        // We must verify the user is an admin before creating the session.
         if (data.user && data.user.role === 'admin') {
             cookies().set("auth_token", data.token, {
-                // httpOnly should be true for security. Server-side code can still access it.
                 httpOnly: true, 
                 secure: process.env.NODE_ENV === "production",
                 maxAge: 60 * 60 * 24 * 7, // 1 week
@@ -68,11 +66,12 @@ export async function logout() {
   try {
     const token = cookies().get('auth_token')?.value;
     if (token) {
-        await fetch('https://mrvet-production.up.railway.app/api/auth/logout', {
+        await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL || ''}/auth/logout`, {
             method: 'POST',
             headers: { 
                 'Authorization': `Bearer ${token}`,
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
             }
         });
     }

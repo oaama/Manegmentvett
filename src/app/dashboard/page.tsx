@@ -20,7 +20,6 @@ const mockStats: Stats = {
 };
 
 async function getStats(): Promise<Stats> {
-    const API_BASE_URL = 'https://mrvet-production.up.railway.app/api';
     try {
         const token = cookies().get('auth_token')?.value;
         if (!token) {
@@ -28,7 +27,7 @@ async function getStats(): Promise<Stats> {
             return mockStats;
         }
         
-        const response = await fetch(`${API_BASE_URL}/admin/stats`, {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL || ''}/admin/stats`, {
             headers: {
                 'Authorization': `Bearer ${token}`,
                 'Content-Type': 'application/json',
