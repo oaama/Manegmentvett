@@ -2,13 +2,21 @@ import { DashboardHeader } from "@/components/dashboard-header"
 import { AddSubscriptionDialog } from "./components/add-subscription-dialog"
 import { SubscriptionsClientPage } from "./components/client-page"
 import type { Subscription } from "@/lib/types"
+import api from "@/lib/api"
+import { cookies } from "next/headers"
 
 async function getSubscriptions() {
-    // NOTE: The provided swagger specification does not include an endpoint for fetching subscriptions (e.g., /admin/subscriptions).
-    // This feature cannot be implemented without a corresponding backend API.
-    // Returning empty data to prevent application crashes.
-    console.warn("Feature Sidelined: The API for fetching subscriptions is not available in the swagger specification. The 'Subscriptions' table will be empty.");
-    return [];
+    try {
+        const token = cookies().get('auth_token')?.value;
+        const response = await api.get('/admin/subscriptions', {
+            headers: { Authorization: `Bearer ${token}` }
+        });
+        // The API might return { subscriptions: [...] } or just an array [...]
+        return response.data.subscriptions || response.data || [];
+    } catch (error) {
+        console.error("Failed to fetch subscriptions:", error);
+        return []; // Return empty array on error
+    }
 }
 
 export default async function SubscriptionsPage() {

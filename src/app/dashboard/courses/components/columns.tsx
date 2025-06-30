@@ -68,23 +68,44 @@ const CourseActions = ({ course, instructors }: { course: Course, instructors: P
   const [instructorId, setInstructorId] = React.useState(course.instructorId)
 
   const handleEditSubmit = async () => {
-    // This endpoint does not exist in the swagger file.
-    toast({
-        title: "Feature Not Available",
-        description: "The API for updating courses is not defined in the backend. This feature is currently disabled.",
-        variant: "destructive",
-    })
-    setIsEditDialogOpen(false)
+    try {
+        await api.put(`/admin/courses/${course.id}`, {
+            name,
+            price,
+            academicYear,
+            instructorId,
+        });
+        toast({
+            title: "Course Updated",
+            description: `The course "${name}" has been successfully updated.`,
+        });
+        setIsEditDialogOpen(false);
+        router.refresh();
+    } catch (error: any) {
+        toast({
+            title: "Error Updating Course",
+            description: error.response?.data?.message || "An unexpected error occurred.",
+            variant: "destructive",
+        });
+    }
   }
 
   const handleDeleteConfirm = async () => {
-    // This endpoint does not exist in the swagger file.
-    toast({
-        title: "Feature Not Available",
-        description: "The API for deleting courses is not defined in the backend. This feature is currently disabled.",
-        variant: "destructive",
-    })
-    setIsDeleteDialogOpen(false)
+     try {
+        await api.delete(`/admin/courses/${course.id}`);
+        toast({
+            title: "Course Deleted",
+            description: `The course "${course.name}" has been permanently deleted.`,
+        });
+        setIsDeleteDialogOpen(false);
+        router.refresh();
+    } catch (error: any) {
+        toast({
+            title: "Error Deleting Course",
+            description: error.response?.data?.message || "An unexpected error occurred.",
+            variant: "destructive",
+        });
+    }
   }
   
   return (

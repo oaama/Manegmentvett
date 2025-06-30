@@ -29,6 +29,7 @@ import {
 import { Input } from "@/components/ui/input"
 import { useToast } from "@/hooks/use-toast"
 import { useRouter } from "next/navigation"
+import api from "@/lib/api"
 
 const formSchema = z.object({
   studentId: z.string().min(1, "Student ID is required"),
@@ -51,19 +52,24 @@ export function AddSubscriptionDialog() {
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsSubmitting(true)
-    
-    // This endpoint does not exist in the swagger file.
-    toast({
-        title: "Feature Not Available",
-        description: "The API for adding subscriptions is not defined in the backend. This feature is currently disabled.",
-        variant: "destructive",
-    })
-
-    setIsSubmitting(false)
-    // Keep dialog open to show the user that the action is not available.
-    // setOpen(false) 
-    // form.reset()
-    // router.refresh()
+    try {
+        await api.post('/admin/subscriptions', values);
+        toast({
+            title: "Subscription Added",
+            description: "The student has been successfully subscribed to the course.",
+        });
+        setOpen(false);
+        form.reset();
+        router.refresh();
+    } catch (error: any) {
+        toast({
+            title: "Error Adding Subscription",
+            description: error.response?.data?.message || "An unexpected error occurred.",
+            variant: "destructive",
+        });
+    } finally {
+        setIsSubmitting(false);
+    }
   }
 
   return (
