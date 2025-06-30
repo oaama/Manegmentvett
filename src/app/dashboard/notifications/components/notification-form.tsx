@@ -40,7 +40,7 @@ const formSchema = z.object({
     }
     return true;
 }, {
-    message: "Please select a user",
+    message: "Please enter a user ID",
     path: ["specificUser"],
 });
 
@@ -145,28 +145,19 @@ export function NotificationForm({ users }: NotificationFormProps) {
             />
 
             {watchTarget === "specific" && (
-                 <FormField
-                    control={form.control}
-                    name="specificUser"
-                    render={({ field }) => (
-                        <FormItem>
-                        <FormLabel>Select User</FormLabel>
-                        <Select onValueChange={field.onChange} defaultValue={field.value}>
-                            <FormControl>
-                            <SelectTrigger>
-                                <SelectValue placeholder="Select a user to notify" />
-                            </SelectTrigger>
-                            </FormControl>
-                            <SelectContent>
-                                {users.map(user => (
-                                    <SelectItem key={user.id} value={user.id}>{user.name} ({user.email})</SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
-                        <FormMessage />
-                        </FormItem>
-                    )}
-                />
+              <FormField
+                control={form.control}
+                name="specificUser"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>User ID</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Enter the user's ID" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
             )}
 
             <FormField
