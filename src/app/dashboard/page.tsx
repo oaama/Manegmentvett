@@ -70,6 +70,11 @@ export default function DashboardPage() {
     fetchStats();
   }, []);
 
+  const getPercentage = (part: number, total: number) => {
+    if (total === 0) return 0;
+    return (part / total) * 100;
+  }
+
   if (loading || !stats) {
     return (
       <>
@@ -129,21 +134,21 @@ export default function DashboardPage() {
                     <span>Students</span>
                     <span>{stats.rolesCount.student || 0} / {stats.totalUsers}</span>
                 </div>
-                <Progress value={((stats.rolesCount.student || 0) / stats.totalUsers) * 100} />
+                <Progress value={getPercentage(stats.rolesCount.student, stats.totalUsers)} />
             </div>
              <div className="flex flex-col space-y-2">
                 <div className="flex justify-between text-sm font-medium">
                     <span>Instructors</span>
                     <span>{stats.rolesCount.instructor || 0} / {stats.totalUsers}</span>
                 </div>
-                <Progress value={((stats.rolesCount.instructor || 0) / stats.totalUsers) * 100} />
+                <Progress value={getPercentage(stats.rolesCount.instructor, stats.totalUsers)} />
             </div>
              <div className="flex flex-col space-y-2">
                 <div className="flex justify-between text-sm font-medium">
                     <span>Admins</span>
                     <span>{stats.rolesCount.admin || 0} / {stats.totalUsers}</span>
                 </div>
-                <Progress value={((stats.rolesCount.admin || 0) / stats.totalUsers) * 100} />
+                <Progress value={getPercentage(stats.rolesCount.admin, stats.totalUsers)} />
             </div>
           </CardContent>
         </Card>
@@ -156,23 +161,23 @@ export default function DashboardPage() {
             <div className="flex flex-col space-y-2">
                 <div className="flex justify-between text-sm font-medium">
                     <span>Approved</span>
-                    <span className="text-green-600">{stats.carnetRequests.approved}</span>
+                    <span className="text-chart-2">{stats.carnetRequests.approved}</span>
                 </div>
-                <Progress value={(stats.carnetRequests.approved / stats.carnetRequests.total) * 100} className="[&>div]:bg-green-500" />
+                <Progress value={getPercentage(stats.carnetRequests.approved, stats.carnetRequests.total)} className="[&>div]:bg-chart-2" />
             </div>
              <div className="flex flex-col space-y-2">
                 <div className="flex justify-between text-sm font-medium">
                     <span>Pending</span>
-                    <span className="text-yellow-600">{stats.carnetRequests.pending}</span>
+                    <span className="text-chart-4">{stats.carnetRequests.pending}</span>
                 </div>
-                <Progress value={(stats.carnetRequests.pending / stats.carnetRequests.total) * 100} className="[&>div]:bg-yellow-500" />
+                <Progress value={getPercentage(stats.carnetRequests.pending, stats.carnetRequests.total)} className="[&>div]:bg-chart-4" />
             </div>
              <div className="flex flex-col space-y-2">
                 <div className="flex justify-between text-sm font-medium">
                     <span>Rejected</span>
-                     <span className="text-red-600">{stats.carnetRequests.rejected}</span>
+                     <span className="text-destructive">{stats.carnetRequests.rejected}</span>
                 </div>
-                <Progress value={(stats.carnetRequests.rejected / stats.carnetRequests.total) * 100} className="[&>div]:bg-red-500"/>
+                <Progress value={getPercentage(stats.carnetRequests.rejected, stats.carnetRequests.total)} className="[&>div]:bg-destructive"/>
             </div>
           </CardContent>
         </Card>

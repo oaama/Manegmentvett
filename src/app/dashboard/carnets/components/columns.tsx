@@ -3,7 +3,7 @@
 import * as React from "react"
 import type { CarnetRequest } from "@/lib/types"
 import { ColumnDef } from "@tanstack/react-table"
-import { ArrowUpDown, CheckCircle, XCircle, Eye } from "lucide-react"
+import { ArrowUpDown, CheckCircle, XCircle, Eye, AlertTriangle } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
@@ -21,6 +21,7 @@ import { Badge } from "@/components/ui/badge"
 import { useToast } from "@/hooks/use-toast"
 import api from "@/lib/api"
 import { useRouter } from "next/navigation"
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 
 const DateCell = ({ dateValue, formatString }: { dateValue: Date | string, formatString: string }) => {
   const [formattedDate, setFormattedDate] = React.useState("")
@@ -96,6 +97,13 @@ const ActionButtons = ({ row }: { row: { original: CarnetRequest } }) => {
                         data-ai-hint="id card"
                     />
                 </div>
+                {request.status === 'rejected' && request.rejectionReason && (
+                  <Alert variant="destructive" className="mt-4">
+                    <AlertTriangle className="h-4 w-4" />
+                    <AlertTitle>Rejection Reason</AlertTitle>
+                    <AlertDescription>{request.rejectionReason}</AlertDescription>
+                  </Alert>
+                )}
               </DialogContent>
             </Dialog>
 

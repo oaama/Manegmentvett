@@ -25,15 +25,21 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form"
-import { Input } from "@/components/ui/input"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 import { useToast } from "@/hooks/use-toast"
 import { useRouter } from "next/navigation"
 import type { User, Course } from "@/lib/types"
 import api from "@/lib/api"
 
 const formSchema = z.object({
-  studentId: z.string().min(1, "Student ID is required"),
-  courseId: z.string().min(1, "Course ID is required"),
+  studentId: z.string().min(1, "Please select a student"),
+  courseId: z.string().min(1, "Please select a course"),
 })
 
 type AddSubscriptionDialogProps = {
@@ -64,9 +70,12 @@ export function AddSubscriptionDialog({ students, courses }: AddSubscriptionDial
         courseId: values.courseId,
       });
       
+      const studentName = students.find(s => s.id === values.studentId)?.name || 'the student';
+      const courseName = courses.find(c => c.id === values.courseId)?.name || 'the course';
+
       toast({
         title: "Subscription Activated",
-        description: `Student (${values.studentId}) has been subscribed to course (${values.courseId}).`,
+        description: `${studentName} has been subscribed to ${courseName}.`,
       })
       setOpen(false)
       form.reset()
@@ -94,7 +103,7 @@ export function AddSubscriptionDialog({ students, courses }: AddSubscriptionDial
         <DialogHeader>
           <DialogTitle>Add New Subscription</DialogTitle>
           <DialogDescription>
-            Manually subscribe a student to a course using their IDs.
+            Manually subscribe a student to a course.
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
@@ -104,10 +113,25 @@ export function AddSubscriptionDialog({ students, courses }: AddSubscriptionDial
               name="studentId"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Student ID</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Enter the student's ID" {...field} />
-                  </FormControl>
+                  <FormLabel>Student</FormLabel>
+                   <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select a student" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {students.length > 0 ? (
+                        students.map((student) => (
+                          <SelectItem key={student.id} value={student.id}>
+                            {student.name}
+                          </SelectItem>
+                        ))
+                      ) : (
+                        <SelectItem value="none" disabled>No students found</SelectItem>
+                      )}
+                    </SelectContent>
+                  </Select>
                   <FormMessage />
                 </FormItem>
               )}
@@ -117,10 +141,25 @@ export function AddSubscriptionDialog({ students, courses }: AddSubscriptionDial
               name="courseId"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Course ID</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Enter the course's ID" {...field} />
-                  </FormControl>
+                  <FormLabel>Course</FormLabel>
+                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select a course" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                       {courses.length > 0 ? (
+                        courses.map((course) => (
+                          <SelectItem key={course.id} value={course.id}>
+                            {course.name}
+                          </SelectItem>
+                        ))
+                       ) : (
+                         <SelectItem value="none" disabled>No courses found</SelectItem>
+                       )}
+                    </SelectContent>
+                  </Select>
                   <FormMessage />
                 </FormItem>
               )}
