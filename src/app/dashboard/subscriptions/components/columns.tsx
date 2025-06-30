@@ -24,6 +24,7 @@ import {
 } from "@/components/ui/alert-dialog"
 import { format } from "date-fns"
 import { useToast } from "@/hooks/use-toast"
+import api from "@/lib/api"
 
 const DateCell = ({ dateValue, formatString }: { dateValue: Date | string, formatString: string }) => {
   const [formattedDate, setFormattedDate] = React.useState("")
@@ -41,15 +42,22 @@ const SubscriptionActions = ({ subscription }: { subscription: Subscription }) =
   const { toast } = useToast()
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = React.useState(false)
 
-  const handleUnsubscribe = () => {
-    // TODO: connect to /admin/subscriptions/:id (DELETE)
-    console.log("Unsubscribing from course:", subscription.id)
-    setIsDeleteDialogOpen(false)
-    toast({
-      title: "Unsubscribed",
-      description: `${subscription.user.name} has been unsubscribed from ${subscription.course.name}.`,
-      variant: "destructive",
-    })
+  const handleUnsubscribe = async () => {
+    try {
+      await api.delete(`/admin/subscriptions/${subscription.id}`);
+      toast({
+        title: "Unsubscribed",
+        description: `${subscription.user.name} has been unsubscribed from ${subscription.course.name}.`,
+        variant: "destructive",
+      })
+      setIsDeleteDialogOpen(false)
+    } catch (error) {
+       toast({
+        title: "Error Unsubscribing",
+        description: "An unexpected error occurred. Please try again.",
+        variant: "destructive",
+      })
+    }
   }
 
   return (

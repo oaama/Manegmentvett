@@ -45,6 +45,7 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { useToast } from "@/hooks/use-toast"
+import api from "@/lib/api"
 
 const DateCell = ({ dateValue, formatString }: { dateValue: Date | string, formatString: string }) => {
   const [formattedDate, setFormattedDate] = React.useState("")
@@ -74,29 +75,41 @@ const UserActions = ({ user }: { user: User }) => {
   const [email, setEmail] = React.useState(user.email)
   const [role, setRole] = React.useState<User['role']>(user.role)
 
-  const handleEditSubmit = () => {
-    // TODO: connect to /admin/users/:id (PUT)
-    // api.put(`/admin/users/${user.id}`, { name, email, role });
-    console.log("Saving user:", { id: user.id, name, email, role })
-    setIsEditDialogOpen(false)
-    toast({
-      title: "User Updated",
-      description: `${name}'s profile has been updated.`,
-    })
-    // In a real app, you would refetch the user list here to see the changes.
+  const handleEditSubmit = async () => {
+    try {
+      await api.put(`/admin/users/${user.id}`, { name, email, role });
+      toast({
+        title: "User Updated",
+        description: `${name}'s profile has been updated.`,
+      })
+      setIsEditDialogOpen(false)
+      // In a real app, you would refetch the user list here to see the changes.
+    } catch (error) {
+      toast({
+        title: "Error Updating User",
+        description: "An unexpected error occurred. Please try again.",
+        variant: "destructive",
+      })
+    }
   }
 
-  const handleDeleteConfirm = () => {
-    // TODO: connect to /admin/users/:id (DELETE)
-    // api.delete(`/admin/users/${user.id}`);
-    console.log("Deleting user:", user.id)
-    setIsDeleteDialogOpen(false)
-    toast({
-      title: "User Deleted",
-      description: `${user.name}'s account has been deleted.`,
-      variant: "destructive",
-    })
-    // In a real app, you would refetch the user list here to remove the user from the table.
+  const handleDeleteConfirm = async () => {
+    try {
+      await api.delete(`/admin/users/${user.id}`);
+      toast({
+        title: "User Deleted",
+        description: `${user.name}'s account has been deleted.`,
+        variant: "destructive",
+      })
+      setIsDeleteDialogOpen(false)
+      // In a real app, you would refetch the user list here to remove the user from the table.
+    } catch (error) {
+       toast({
+        title: "Error Deleting User",
+        description: "An unexpected error occurred. Please try again.",
+        variant: "destructive",
+      })
+    }
   }
 
   return (

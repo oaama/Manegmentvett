@@ -21,6 +21,7 @@ import { Badge } from "@/components/ui/badge"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { useToast } from "@/hooks/use-toast"
+import api from "@/lib/api"
 
 const DateCell = ({ dateValue, formatString }: { dateValue: Date | string, formatString: string }) => {
   const [formattedDate, setFormattedDate] = React.useState("")
@@ -39,17 +40,24 @@ const ActionButtons = ({ row }: { row: { original: CarnetRequest } }) => {
     const { toast } = useToast()
     const [rejectionReason, setRejectionReason] = React.useState("");
 
-    const handleApprove = () => {
-        // TODO: connect to /admin/approve-carnet (PUT) with request.id
-        console.log("Approving carnet:", request.id);
-        toast({
-            title: "Carnet Approved",
-            description: `The carnet for ${request.user.name} has been approved.`,
-        })
-        // Here you would typically refetch the data or optimistically update the UI
+    const handleApprove = async () => {
+        try {
+            await api.put(`/admin/approve-carnet/${request.id}`);
+            toast({
+                title: "Carnet Approved",
+                description: `The carnet for ${request.user.name} has been approved.`,
+            })
+            // Here you would typically refetch the data or optimistically update the UI
+        } catch (error) {
+            toast({
+                title: "Error",
+                description: "Failed to approve the carnet. Please try again.",
+                variant: "destructive",
+            })
+        }
     }
 
-    const handleReject = () => {
+    const handleReject = async () => {
         if (!rejectionReason.trim()) {
             toast({
                 title: "Rejection Failed",
@@ -58,13 +66,20 @@ const ActionButtons = ({ row }: { row: { original: CarnetRequest } }) => {
             })
             return;
         }
-        // TODO: connect to /admin/reject-carnet (PUT) with request.id and rejectionReason
-        console.log("Rejecting carnet:", request.id, "Reason:", rejectionReason);
-        toast({
-            title: "Carnet Rejected",
-            description: `The carnet for ${request.user.name} has been rejected.`,
-        })
-        // Here you would typically refetch the data or optimistically update the UI
+        try {
+            await api.put(`/admin/reject-carnet/${request.id}`, { rejectionReason });
+            toast({
+                title: "Carnet Rejected",
+                description: `The carnet for ${request.user.name} has been rejected.`,
+            })
+            // Here you would typically refetch the data or optimistically update the UI
+        } catch (error) {
+            toast({
+                title: "Error",
+                description: "Failed to reject the carnet. Please try again.",
+                variant: "destructive",
+            })
+        }
     }
 
     return (
@@ -141,8 +156,7 @@ const ActionButtons = ({ row }: { row: { original: CarnetRequest } }) => {
 
 export const columns: ColumnDef<CarnetRequest>[] = [
   {
-    id: "user.name",
-    accessorFn: (row) => row.user.name,
+    accessorKey: "user.name",
     header: ({ column }) => {
       return (
         <Button
@@ -154,7 +168,7 @@ export const columns: ColumnDef<CarnetRequest>[] = [
         </Button>
       )
     },
-    cell: ({ row }) => <div className="font-medium">{row.getValue("user.name")}</div>,
+    cell: ({ row }) => <div className="font-medium">{row.original.user.name}</div>,
   },
   {
     accessorKey: "user.email",

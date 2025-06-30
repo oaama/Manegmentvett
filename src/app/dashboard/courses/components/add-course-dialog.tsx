@@ -35,6 +35,7 @@ import {
 } from "@/components/ui/select"
 import { useToast } from "@/hooks/use-toast"
 import { User } from "@/lib/types"
+import api from "@/lib/api"
 
 const formSchema = z.object({
   name: z.string().min(3, "Course name must be at least 3 characters"),
@@ -68,29 +69,35 @@ export function AddCourseDialog({ instructors }: AddCourseDialogProps) {
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsSubmitting(true)
     
-    // TODO: connect to /admin/courses (POST) with course data
-    // const formData = new FormData();
-    // Object.entries(values).forEach(([key, value]) => {
-    //   if (key === 'coverImage' && value instanceof FileList) {
-    //     formData.append(key, value[0]);
-    //   } else {
-    //     formData.append(key, String(value));
-    //   }
-    // });
-    // await api.post('/admin/courses', formData, { headers: { 'Content-Type': 'multipart/form-data' } });
-    
-    console.log("Adding new course:", values)
+    try {
+      const formData = new FormData();
+      Object.entries(values).forEach(([key, value]) => {
+        if (key === 'coverImage' && value instanceof FileList && value.length > 0) {
+          formData.append(key, value[0]);
+        } else {
+          formData.append(key, String(value));
+        }
+      });
+      
+      await api.post('/admin/courses', formData, { 
+        headers: { 'Content-Type': 'multipart/form-data' } 
+      });
 
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
-    setIsSubmitting(false)
-    setOpen(false)
-    form.reset()
-    toast({
-      title: "Course Created",
-      description: `The course "${values.name}" has been successfully created.`,
-    })
+      toast({
+        title: "Course Created",
+        description: `The course "${values.name}" has been successfully created.`,
+      })
+      setOpen(false)
+      form.reset()
+    } catch (error) {
+      toast({
+        title: "Error Creating Course",
+        description: "An unexpected error occurred. Please try again.",
+        variant: "destructive",
+      })
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   return (
@@ -191,11 +198,11 @@ export function AddCourseDialog({ instructors }: AddCourseDialogProps) {
              <FormField
               control={form.control}
               name="coverImage"
-              render={({ field }) => (
+              render={({ field: { onChange, value, ...rest } }) => (
                 <FormItem>
                   <FormLabel>Cover Image</FormLabel>
                   <FormControl>
-                    <Input type="file" accept="image/*" onChange={(e) => field.onChange(e.target.files)} />
+                    <Input type="file" accept="image/*" onChange={(e) => onChange(e.target.files)} {...rest} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

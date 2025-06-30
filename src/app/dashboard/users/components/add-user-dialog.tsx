@@ -34,6 +34,7 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { useToast } from "@/hooks/use-toast"
+import api from "@/lib/api"
 
 const formSchema = z.object({
   name: z.string().min(3, "Name must be at least 3 characters"),
@@ -60,20 +61,25 @@ export function AddUserDialog() {
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsSubmitting(true)
     
-    // TODO: connect to /admin/users (POST) with user data
-    console.log("Adding new user:", values)
-
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
-    setIsSubmitting(false)
-    setOpen(false)
-    form.reset()
-    toast({
-      title: "User Created",
-      description: `The account for "${values.name}" has been successfully created.`,
-    })
-    // In a real app, you'd likely refetch the users list here.
+    try {
+      await api.post('/admin/users', values);
+      toast({
+        title: "User Created",
+        description: `The account for "${values.name}" has been successfully created.`,
+      })
+      setOpen(false)
+      form.reset()
+      // In a real app, you'd likely refetch the users list here.
+    } catch (error: any) {
+        const errorMessage = error.response?.data?.message || "An unexpected error occurred.";
+        toast({
+            title: "Error Creating User",
+            description: errorMessage,
+            variant: "destructive",
+        })
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   return (

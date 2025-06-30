@@ -35,6 +35,7 @@ import {
 import { useToast } from "@/hooks/use-toast"
 import type { Course } from "@/lib/types"
 import { Input } from "@/components/ui/input"
+import api from "@/lib/api"
 
 const formSchema = z.object({
   studentId: z.string().min(1, "Please enter a student ID"),
@@ -61,19 +62,23 @@ export function AddSubscriptionDialog({ courses }: AddSubscriptionDialogProps) {
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsSubmitting(true)
     
-    // TODO: connect to /admin/subscriptions (POST) with subscription data
-    console.log("Adding new subscription:", values)
-
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
-    setIsSubmitting(false)
-    setOpen(false)
-    form.reset()
-    toast({
-      title: "Subscription Created",
-      description: `The student has been successfully subscribed to the course.`,
-    })
+    try {
+      await api.post('/admin/subscriptions', values);
+      toast({
+        title: "Subscription Created",
+        description: `The student has been successfully subscribed to the course.`,
+      })
+      setOpen(false)
+      form.reset()
+    } catch (error) {
+      toast({
+        title: "Error Creating Subscription",
+        description: "An unexpected error occurred. Please check the IDs and try again.",
+        variant: "destructive",
+      })
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   return (

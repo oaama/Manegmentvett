@@ -1,7 +1,7 @@
 import { DashboardHeader } from "@/components/dashboard-header";
 import { NotificationForm } from "./components/notification-form";
 import { HistoryTable } from "./components/history-table";
-import { notifications, users } from "@/lib/data";
+import { notifications } from "@/lib/data";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { NotificationHistoryFilters } from "./components/history-filters";
 
@@ -23,7 +23,7 @@ export default function NotificationsPage({ searchParams }: NotificationsPagePro
       <DashboardHeader title="Send Notification" />
       <div className="grid gap-6 lg:grid-cols-5">
         <div className="lg:col-span-2">
-            <NotificationForm users={users.filter(u => u.role === 'student' || u.role === 'instructor')} />
+            <NotificationForm />
         </div>
         <div className="lg:col-span-3">
              <Card>

@@ -3,6 +3,7 @@
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod"
+import { Loader2, Send } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -23,9 +24,9 @@ import {
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { useToast } from "@/hooks/use-toast"
-import { User } from "@/lib/types"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
-import { Send } from "lucide-react"
+import api from "@/lib/api"
+import React from "react"
 
 const formSchema = z.object({
   target: z.string().min(1, "Target is required"),
@@ -42,12 +43,10 @@ const formSchema = z.object({
     path: ["specificUser"],
 });
 
-type NotificationFormProps = {
-    users: User[];
-}
-
-export function NotificationForm({ users }: NotificationFormProps) {
+export function NotificationForm() {
   const { toast } = useToast()
+  const [isSubmitting, setIsSubmitting] = React.useState(false)
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -60,14 +59,24 @@ export function NotificationForm({ users }: NotificationFormProps) {
 
   const watchTarget = form.watch("target")
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    // TODO: connect to /admin/notify (POST)
-    console.log(values)
-    toast({
-      title: "Notification Sent!",
-      description: `Your message "${values.title}" has been sent.`,
-    })
-    form.reset()
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    setIsSubmitting(true)
+    try {
+      await api.post('/admin/notify', values);
+      toast({
+        title: "Notification Sent!",
+        description: `Your message "${values.title}" has been sent.`,
+      })
+      form.reset()
+    } catch (error) {
+      toast({
+        title: "Error Sending Notification",
+        description: "An unexpected error occurred. Please try again.",
+        variant: "destructive",
+      })
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   return (
@@ -153,8 +162,8 @@ export function NotificationForm({ users }: NotificationFormProps) {
             />
             
             <div className="flex justify-center">
-                <Button type="submit">
-                    <Send className="mr-2 h-4 w-4" />
+                <Button type="submit" disabled={isSubmitting}>
+                    {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Send className="mr-2 h-4 w-4" />}
                     Send Notification
                 </Button>
             </div>

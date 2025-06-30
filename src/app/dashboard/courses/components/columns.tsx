@@ -54,6 +54,7 @@ import {
 import { Checkbox } from "@/components/ui/checkbox"
 import { format } from "date-fns"
 import { useToast } from "@/hooks/use-toast"
+import api from "@/lib/api"
 
 const DateCell = ({ dateValue, formatString }: { dateValue: Date | string, formatString: string }) => {
   const [formattedDate, setFormattedDate] = React.useState("")
@@ -106,29 +107,40 @@ const CourseActions = ({ course, instructors }: { course: Course, instructors: U
 
   async function onEditSubmit(values: z.infer<typeof editFormSchema>) {
     setIsSubmitting(true);
-    // TODO: connect to /admin/courses/:id (PUT) with course data
-    console.log("Updating course:", course.id, values);
-
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
-    setIsSubmitting(false)
-    setIsEditDialogOpen(false)
-    toast({
-      title: "Course Updated",
-      description: `The course "${values.name}" has been successfully updated.`,
-    })
+    try {
+      await api.put(`/admin/courses/${course.id}`, values);
+      toast({
+        title: "Course Updated",
+        description: `The course "${values.name}" has been successfully updated.`,
+      })
+      setIsEditDialogOpen(false)
+    } catch (error) {
+      toast({
+        title: "Error Updating Course",
+        description: "An unexpected error occurred. Please try again.",
+        variant: "destructive",
+      })
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
-  const handleDeleteConfirm = () => {
-    // TODO: connect to /admin/courses/:id (DELETE)
-    console.log("Deleting course:", course.id)
-    setIsDeleteDialogOpen(false)
-    toast({
-      title: "Course Deleted",
-      description: `The course "${course.name}" has been deleted.`,
-      variant: "destructive",
-    })
+  const handleDeleteConfirm = async () => {
+    try {
+      await api.delete(`/admin/courses/${course.id}`);
+      toast({
+        title: "Course Deleted",
+        description: `The course "${course.name}" has been deleted.`,
+        variant: "destructive",
+      })
+      setIsDeleteDialogOpen(false)
+    } catch (error) {
+       toast({
+        title: "Error Deleting Course",
+        description: "An unexpected error occurred. Please try again.",
+        variant: "destructive",
+      })
+    }
   }
   
   return (
