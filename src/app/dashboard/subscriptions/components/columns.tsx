@@ -104,7 +104,8 @@ const SubscriptionActions = ({ subscription }: { subscription: Subscription }) =
 
 export const columns: ColumnDef<Subscription>[] = [
   {
-    accessorKey: "user.name",
+    id: "user.name",
+    accessorFn: row => row.user.name,
     header: ({ column }) => {
       return (
         <Button
