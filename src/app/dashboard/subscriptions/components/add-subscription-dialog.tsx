@@ -1,3 +1,4 @@
+
 "use client"
 
 import * as React from "react"
@@ -28,7 +29,6 @@ import {
 import { Input } from "@/components/ui/input"
 import { useToast } from "@/hooks/use-toast"
 import { useRouter } from "next/navigation"
-import api from "@/lib/api"
 
 const formSchema = z.object({
   studentId: z.string().min(1, "Student ID is required"),
@@ -52,28 +52,18 @@ export function AddSubscriptionDialog() {
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsSubmitting(true)
     
-    try {
-      await api.post('/admin/subscriptions/activate', {
-        userId: values.studentId,
-        courseId: values.courseId,
-      });
+    // This endpoint does not exist in the swagger file.
+    toast({
+        title: "Feature Not Available",
+        description: "The API for adding subscriptions is not defined in the backend. This feature is currently disabled.",
+        variant: "destructive",
+    })
 
-      toast({
-        title: "Subscription Activated",
-        description: `The subscription has been successfully activated.`,
-      })
-      setOpen(false)
-      form.reset()
-      router.refresh()
-    } catch (error: any) {
-        toast({
-            title: "Error Activating Subscription",
-            description: error.response?.data?.message || "An unexpected error occurred.",
-            variant: "destructive",
-        })
-    } finally {
-      setIsSubmitting(false)
-    }
+    setIsSubmitting(false)
+    // Keep dialog open to show the user that the action is not available.
+    // setOpen(false) 
+    // form.reset()
+    // router.refresh()
   }
 
   return (

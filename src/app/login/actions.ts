@@ -10,7 +10,8 @@ export async function login(prevState: any, formData: FormData) {
   const password = formData.get("password") as string;
 
   try {
-    const response = await api.post('/admin/login', { email, password });
+    // CORRECTED ENDPOINT based on swagger file
+    const response = await api.post('/auth/login', { email, password });
     
     const token = response.data.token; 
 
@@ -37,7 +38,7 @@ export async function login(prevState: any, formData: FormData) {
       console.error("API Error Status:", error.response.status);
       return {
         success: false,
-        message: `Login failed. The server responded with status ${error.response.status}.`,
+        message: `Login failed. The server responded with status ${error.response.status}: ${error.response.data.message || 'Check credentials'}.`,
       };
     } else if (error.request) {
       // The request was made but no response was received
@@ -61,7 +62,8 @@ export async function logout() {
   try {
     const token = cookies().get('auth_token')?.value;
     if (token) {
-        await api.post('/admin/logout', {}, {
+        // CORRECTED ENDPOINT based on swagger file
+        await api.post('/auth/logout', {}, {
             headers: { 'Authorization': `Bearer ${token}` }
         });
     }

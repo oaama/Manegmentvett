@@ -1,3 +1,4 @@
+
 "use client"
 
 import * as React from "react"
@@ -26,7 +27,6 @@ import {
 import { format } from "date-fns"
 import { useToast } from "@/hooks/use-toast"
 import { useRouter } from "next/navigation"
-import api from "@/lib/api"
 
 const DateCell = ({ dateValue, formatString }: { dateValue: Date | string, formatString: string }) => {
   const [formattedDate, setFormattedDate] = React.useState("")
@@ -39,29 +39,17 @@ const DateCell = ({ dateValue, formatString }: { dateValue: Date | string, forma
 }
 
 const SubscriptionActions = ({ subscription }: { subscription: Subscription }) => {
-    const router = useRouter()
     const { toast } = useToast()
     const [isDeleteDialogOpen, setIsDeleteDialogOpen] = React.useState(false)
 
     const handleDelete = async () => {
-        try {
-            // NOTE: The swagger file doesn't specify an endpoint for deleting subscriptions.
-            // Assuming the endpoint is DELETE /admin/subscriptions/{id}
-            await api.delete(`/admin/subscriptions/${subscription.id}`);
-            toast({
-                title: "Subscription Removed",
-                description: `The subscription for ${subscription.user.name} has been removed.`,
-            })
-            router.refresh();
-        } catch (error: any) {
-             toast({
-                title: "Error Removing Subscription",
-                description: error.response?.data?.message || "Failed to remove subscription. The API endpoint may not be available.",
-                variant: "destructive",
-            })
-        } finally {
-            setIsDeleteDialogOpen(false)
-        }
+        // This endpoint does not exist in the swagger file.
+        toast({
+            title: "Feature Not Available",
+            description: "The API for deleting subscriptions is not defined in the backend. This feature is currently disabled.",
+            variant: "destructive",
+        })
+        setIsDeleteDialogOpen(false)
     }
 
     return (

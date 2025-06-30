@@ -1,21 +1,13 @@
 import { DashboardHeader } from "@/components/dashboard-header"
 import { LogsClientPage } from "./components/client-page"
-import api from "@/lib/api"
 import type { ActivityLog } from "@/lib/types"
-import { cookies } from "next/headers"
 
 async function getLogs(): Promise<ActivityLog[]> {
-    try {
-        const token = cookies().get('auth_token')?.value;
-        // NOTE: This assumes an endpoint /admin/logs exists to fetch activity logs.
-        const response = await api.get('/admin/logs', {
-            headers: { Authorization: `Bearer ${token}` }
-        });
-        return response.data.logs || [];
-    } catch (error) {
-        console.error("Failed to fetch activity logs. The API endpoint might not exist.", error);
-        return [];
-    }
+    // NOTE: The provided swagger specification does not include an endpoint for fetching admin activity logs (e.g., /admin/logs).
+    // This feature cannot be implemented without a corresponding backend API.
+    // Returning empty data to prevent application crashes.
+    console.warn("Feature Sidelined: The API for fetching activity logs is not available in the swagger specification. The 'Activity Logs' table will be empty.");
+    return [];
 }
 
 

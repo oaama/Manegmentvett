@@ -1,3 +1,4 @@
+
 "use client"
 
 import * as React from "react"
@@ -71,11 +72,11 @@ export function AccountForm() {
     const fetchAdminProfile = React.useCallback(async () => {
         setLoading(true);
         try {
-            // NOTE: This endpoint needs to be implemented in the backend.
-            // It should return the currently authenticated admin's user object.
-            const response = await api.get('/admin/profile');
-            if (response.data && response.data.user) {
-              const user = response.data.user;
+            // CORRECTED ENDPOINT based on swagger file
+            const response = await api.get('/user/me');
+            // The user object could be at response.data or response.data.user
+            const user = response.data?.user || response.data;
+            if (user && user.id) {
               setAdmin(user);
               form.reset({
                   id: user.id,
@@ -86,11 +87,11 @@ export function AccountForm() {
               });
               setError(null);
             } else {
-                throw new Error("Invalid data structure from /admin/profile");
+                throw new Error("Invalid data structure from /user/me");
             }
         } catch (err: any) {
             console.error("Failed to fetch admin profile", err);
-            setError("Could not load your profile data. Please ensure the API endpoint `/admin/profile` is working correctly.");
+            setError("Could not load your profile data. The API endpoint `/user/me` may be unavailable or returning an unexpected format.");
         } finally {
             setLoading(false);
         }

@@ -9,15 +9,17 @@ import api from "@/lib/api";
 
 async function getNotificationHistory() {
     try {
+        // NOTE: The swagger file specifies /notifications/my which fetches notifications for the authenticated user (admin).
+        // This might not be what's expected (i.e., all notifications sent to everyone).
+        // Using /notifications/my as it's the only available endpoint.
         const token = cookies().get('auth_token')?.value;
-        // NOTE: The swagger file doesn't specify an endpoint for fetching all sent notifications.
-        // Assuming the endpoint is GET /admin/notifications
-        const response = await api.get('/admin/notifications', {
+        const response = await api.get('/notifications/my', {
              headers: { Authorization: `Bearer ${token}` }
         });
-        return response.data.notifications || [];
+        // The API might return { notifications: [...] } or just an array [...]
+        return response.data.notifications || response.data || [];
     } catch (error) {
-        console.error("Failed to fetch notification history. The API endpoint might not exist or the server is down.", error);
+        console.warn("Could not fetch notification history. The API endpoint `/notifications/my` may be unavailable or you have no notifications.", error);
         return [];
     }
 }
