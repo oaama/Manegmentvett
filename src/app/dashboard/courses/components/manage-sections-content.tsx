@@ -4,7 +4,7 @@ import * as React from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod"
-import { PlusCircle, Loader2, Trash2 } from "lucide-react"
+import { PlusCircle, Loader2 } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -33,17 +33,6 @@ import api from "@/lib/api"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Separator } from "@/components/ui/separator"
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog"
 
 const sectionFormSchema = z.object({
   sectionTitle: z.string().min(3, "Title must be at least 3 characters"),
@@ -155,10 +144,12 @@ export function ManageSectionsContent({ course }: { course: Course }) {
   const fetchSections = React.useCallback(async () => {
     setIsLoading(true)
     try {
+      // NOTE: Swagger does not specify a GET endpoint for sections.
+      // This might fail if the endpoint doesn't exist.
       const response = await api.get(`/courses/${course.id}/sections`)
       setSections(response.data.sections || [])
     } catch (error) {
-      console.error("Failed to fetch sections:", error)
+      console.warn("Could not fetch sections. The endpoint GET /courses/:id/sections may be missing from the backend.", error)
       toast({
         title: "Could not load sections",
         description: "This course may not have sections yet, or the API endpoint is unavailable.",
@@ -173,20 +164,6 @@ export function ManageSectionsContent({ course }: { course: Course }) {
   React.useEffect(() => {
     fetchSections()
   }, [fetchSections])
-
-  const handleDelete = async (sectionId: string) => {
-    try {
-      await api.delete(`/courses/${course.id}/sections/${sectionId}`)
-      toast({ title: "Section Deleted", description: "The section has been removed." })
-      fetchSections()
-    } catch (error: any) {
-      toast({
-        title: "Error Deleting Section",
-        description: error.response?.data?.message || "This feature might not be available yet.",
-        variant: "destructive",
-      })
-    }
-  }
 
   return (
     <>
@@ -218,25 +195,6 @@ export function ManageSectionsContent({ course }: { course: Course }) {
                       <div className="font-medium">{section.sectionTitle}</div>
                       <div className="flex items-center gap-2">
                           <span className="text-sm text-muted-foreground capitalize">{section.sectionType}</span>
-                          <AlertDialog>
-                            <AlertDialogTrigger asChild>
-                                <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive hover:text-destructive">
-                                    <Trash2 className="h-4 w-4" />
-                                </Button>
-                            </AlertDialogTrigger>
-                            <AlertDialogContent>
-                                <AlertDialogHeader>
-                                <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-                                <AlertDialogDescription>
-                                    This action cannot be undone. This will permanently delete the section "{section.sectionTitle}".
-                                </AlertDialogDescription>
-                                </AlertDialogHeader>
-                                <AlertDialogFooter>
-                                <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                <AlertDialogAction onClick={() => handleDelete(section.id)} className="bg-destructive hover:bg-destructive/90">Delete</AlertDialogAction>
-                                </AlertDialogFooter>
-                            </AlertDialogContent>
-                          </AlertDialog>
                       </div>
                     </div>
                     {index < sections.length - 1 && <Separator />}
