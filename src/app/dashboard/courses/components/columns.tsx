@@ -21,6 +21,7 @@ import {
   DialogFooter,
   DialogClose,
   DialogTitle,
+  DialogTrigger
 } from "@/components/ui/dialog"
 import {
   AlertDialog,
@@ -40,6 +41,7 @@ import api from "@/lib/api"
 import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { ManageSectionsContent } from "./manage-sections-content"
 
 const DateCell = ({ dateValue, formatString }: { dateValue: Date | string, formatString: string }) => {
   const [formattedDate, setFormattedDate] = React.useState("")
@@ -174,23 +176,8 @@ const CourseActions = ({ course, instructors }: { course: Course, instructors: P
       </AlertDialog>
 
       <Dialog open={isSectionsDialogOpen} onOpenChange={setIsSectionsDialogOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Sections for {course.name}</DialogTitle>
-            <DialogDescription>
-              Here are the sections for this course. You can add or manage sections here.
-              <br/>
-              {/* TODO: Fetch sections from /courses/:id/sections */}
-            </DialogDescription>
-          </DialogHeader>
-          <div className="py-4">
-            <p className="text-sm text-muted-foreground">Section management UI will be implemented here.</p>
-          </div>
-          <DialogFooter>
-            <DialogClose asChild>
-              <Button variant="outline">Close</Button>
-            </DialogClose>
-          </DialogFooter>
+        <DialogContent className="sm:max-w-3xl">
+           <ManageSectionsContent course={course} />
         </DialogContent>
       </Dialog>
 

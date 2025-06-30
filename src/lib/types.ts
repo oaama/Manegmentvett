@@ -23,6 +23,14 @@ export type Course = {
   createdAt: Date;
 };
 
+export type Section = {
+  id: string;
+  sectionType: string;
+  sectionTitle: string;
+  videos: string; // JSON Array string
+  createdAt?: Date;
+};
+
 export type CarnetRequest = {
   id: string;
   user: Pick<User, 'id' | 'name' | 'email' | 'academicYear'>;
