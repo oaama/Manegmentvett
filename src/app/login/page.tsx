@@ -35,12 +35,6 @@ export default function LoginPage() {
           data-ai-hint="veterinarian student"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
-        <div className="absolute bottom-10 left-10 text-white p-4">
-            <h2 className="text-3xl font-bold">Empowering the next generation of veterinarians.</h2>
-            <p className="mt-2 text-lg max-w-xl text-white/80">
-                Your central hub to manage courses, students, and content with precision and ease.
-            </p>
-        </div>
       </div>
     </div>
   );
