@@ -8,15 +8,15 @@ import * as React from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { AlertCircle, Loader2, Mail, Lock, Eye, EyeOff } from "lucide-react"
+import { AlertCircle, Loader2, Mail, Lock, Eye, EyeOff, LogIn } from "lucide-react"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 
 function SubmitButton() {
   const { pending } = useFormStatus()
 
   return (
-    <Button type="submit" className="w-full" disabled={pending}>
-      {pending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : "Login to Dashboard"}
+    <Button type="submit" size="lg" className="w-full" disabled={pending}>
+      {pending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <>Sign In <LogIn className="ml-2 h-4 w-4" /></>}
     </Button>
   )
 }
