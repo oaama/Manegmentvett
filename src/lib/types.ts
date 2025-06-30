@@ -48,10 +48,9 @@ export type ActivityLog = {
   timestamp: Date;
 };
 
-// Subscription is no longer used as there's no API endpoint for it.
-// export type Subscription = {
-//   id: string;
-//   user: Pick<User, 'id' | 'name' | 'email'>;
-//   course: Pick<Course, 'id' | 'name'>;
-//   subscribedAt: Date;
-// };
+export type Subscription = {
+  id: string;
+  user: Pick<User, 'id' | 'name' | 'email'>;
+  course: Pick<Course, 'id' | 'name'>;
+  subscribedAt: Date;
+};

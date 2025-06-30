@@ -6,7 +6,8 @@ import {
   Book,
   Bell,
   FileText,
-  BookOpenCheck
+  BookOpenCheck,
+  TicketCheck,
 } from 'lucide-react';
 import {
   Sidebar,
@@ -27,6 +28,7 @@ const menuItems = [
   { href: '/dashboard/users', label: 'Users', icon: Users },
   { href: '/dashboard/carnets', label: 'Carnet Requests', icon: CreditCard },
   { href: '/dashboard/courses', label: 'Courses', icon: Book },
+  { href: '/dashboard/subscriptions', label: 'Subscriptions', icon: TicketCheck },
   { href: '/dashboard/notifications', label: 'Notifications', icon: Bell },
   { href: '/dashboard/logs', label: 'Activity Logs', icon: FileText },
 ];
