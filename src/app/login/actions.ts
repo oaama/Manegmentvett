@@ -3,63 +3,55 @@
 
 import { cookies } from "next/headers"
 import { redirect } from 'next/navigation'
-import axios from "axios"
 
 export async function login(prevState: any, formData: FormData) {
   const email = formData.get("email") as string;
   const password = formData.get("password") as string;
+  
+  let loginSuccessful = false;
 
   try {
-    const response = await axios.post(
-      'https://mrvet-production.up.railway.app/api/auth/login', 
-      { email, password },
-      { headers: { 'Content-Type': 'application/json' } }
-    );
+    const response = await fetch('https://mrvet-production.up.railway.app/api/auth/login', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ email, password }),
+    });
     
-    const data = response.data;
+    const data = await response.json();
 
-    if (data.token) {
+    if (response.ok && data.token) {
         cookies().set("auth_token", data.token, {
             httpOnly: false,
             secure: process.env.NODE_ENV === "production",
             maxAge: 60 * 60 * 24 * 7, // 1 week
             path: "/",
         });
-        redirect('/dashboard');
+        loginSuccessful = true;
     } else {
-         return {
+        return {
             success: false,
-            message: data.msg || "Login successful, but no token was provided by the server.",
+            message: data.msg || `Login failed. Server responded with status ${response.status}.`,
         }
     }
-  } catch(error: any) {
-    if (error.response) {
-      // The request was made and the server responded with a status code
-      // that falls out of the range of 2xx
-      console.error("--- LOGIN ACTION FAILED (axios) ---");
-      console.error("Response Data:", JSON.stringify(error.response.data, null, 2));
-      console.error("Response Status:", error.response.status);
-      return {
-          success: false,
-          message: `Login failed. The server responded with status ${error.response.status}: ${error.response.data.msg || 'Check credentials.'}.`,
-      };
-    } else if (error.request) {
-      // The request was made but no response was received
-      console.error("--- LOGIN ACTION FAILED (axios) ---");
-      console.error("No response received:", error.request);
-       return {
-          success: false,
-          message: "The server did not respond. Please check your network connection.",
-      };
-    } else {
-      // Something happened in setting up the request that triggered an Error
-      console.error("--- LOGIN ACTION FAILED (axios) ---");
-      console.error('Error setting up request:', error.message);
-      return {
-          success: false,
-          message: "An unexpected error occurred while preparing the login request.",
-      };
-    }
+  } catch(error) {
+    console.error("--- LOGIN ACTION FAILED ---");
+    console.error(error); // Log the full error object for debugging
+    return {
+        success: false,
+        message: "An unexpected network error occurred. Please check your connection or contact support.",
+    };
+  }
+  
+  if(loginSuccessful) {
+    redirect('/dashboard');
+  }
+  
+  // This part should not be reached if login fails and returns, but as a fallback.
+  return {
+    success: false,
+    message: "An unknown error occurred during login.",
   }
 }
 
@@ -67,7 +59,8 @@ export async function logout() {
   try {
     const token = cookies().get('auth_token')?.value;
     if (token) {
-        await axios.post('https://mrvet-production.up.railway.app/api/auth/logout', {}, {
+        await fetch('https://mrvet-production.up.railway.app/api/auth/logout', {
+            method: 'POST',
             headers: { 
                 'Authorization': `Bearer ${token}`,
                 'Content-Type': 'application/json'
