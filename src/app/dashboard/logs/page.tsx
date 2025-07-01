@@ -4,6 +4,8 @@ import { LogsClientPage } from "./components/client-page"
 import type { ActivityLog } from "@/lib/types"
 import { serverFetch } from "@/lib/server-api"
 
+export const dynamic = "force-dynamic";
+
 async function getLogs(): Promise<ActivityLog[]> {
     try {
         const response = await serverFetch('/admin/logs');

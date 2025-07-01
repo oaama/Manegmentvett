@@ -7,6 +7,8 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { NotificationHistoryFilters } from "./components/history-filters";
 import { serverFetch } from "@/lib/server-api";
 
+export const dynamic = "force-dynamic";
+
 async function getNotificationHistory(): Promise<Notification[]> {
     try {
         const response = await serverFetch('/notifications/my');

@@ -73,26 +73,23 @@ export function AddCourseDialog({ instructors }: AddCourseDialogProps) {
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsSubmitting(true)
-    
+    console.log('Submitting course values:', values);
     const formData = new FormData();
     formData.append('courseName', values.courseName);
     formData.append('instructorName', values.instructorName);
     formData.append('academicYear', String(values.academicYear));
     formData.append('sections', values.sections);
     formData.append('price', String(values.price));
-
     formData.append('category', values.category);
     if (values.coverImage && values.coverImage.length > 0) {
       formData.append('coverImage', values.coverImage[0]);
     }
-
     try {
       await api.post('/courses/upload', formData, { 
         headers: { 
             'Content-Type': 'multipart/form-data',
         } 
       });
-
       toast({
         title: "Course Created",
         description: `The course "${values.courseName}" has been successfully created.`,
@@ -101,9 +98,10 @@ export function AddCourseDialog({ instructors }: AddCourseDialogProps) {
       form.reset()
       router.refresh()
     } catch (error: any) {
+      console.error('Error creating course:', error);
       toast({
         title: "Error Creating Course",
-        description: error.response?.data?.msg || "An unexpected error occurred.",
+        description: error.response?.data?.msg || error.message || "An unexpected error occurred.",
         variant: "destructive",
       })
     } finally {
