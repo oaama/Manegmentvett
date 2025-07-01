@@ -42,10 +42,13 @@ import { useRouter } from "next/navigation"
 const formSchema = z.object({
   courseName: z.string().min(3, "Course name must be at least 3 characters"),
   instructorName: z.string().min(1, "Please select an instructor"),
-  academicYear: z.coerce.number().min(1, "Academic year is required"),
   sections: z.string().min(1, "Number of sections is required"),
   price: z.coerce.number().min(0, "Price is required"),
   category: z.enum(["general", "credit"], { required_error: "Course type is required" }),
+  academicYear: z.preprocess(
+    (val) => val === undefined || val === null || val === "" ? undefined : Number(val),
+    z.number().min(1, "Academic year is required").optional()
+  ),
   coverImage: z.instanceof(FileList).refine(files => files.length > 0, "Cover image is required."),
 })
 
@@ -192,7 +195,13 @@ export function AddCourseDialog({ instructors }: AddCourseDialogProps) {
                   <FormItem>
                     <FormLabel>Year</FormLabel>
                     <FormControl>
-                      <Input type="number" min="1" {...field} />
+                      <Input
+                        type="number"
+                        min="1"
+                        {...field}
+                        disabled={form.watch('category') === 'credit'}
+                        placeholder={form.watch('category') === 'credit' ? 'Not required for instructors' : ''}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
