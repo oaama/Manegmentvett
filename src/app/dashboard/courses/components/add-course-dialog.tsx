@@ -188,25 +188,32 @@ export function AddCourseDialog({ instructors }: AddCourseDialogProps) {
               )}
             />
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              <FormField
-                control={form.control}
-                name="academicYear"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Year</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="number"
-                        min="1"
-                        {...field}
-                        disabled={form.watch('category') === 'credit'}
-                        placeholder={form.watch('category') === 'credit' ? 'Not required for instructors' : ''}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+              {/* إخفاء السنة الدراسية إذا كان المعلم المختار هو Instructor */}
+              {(() => {
+                const selectedInstructor = form.watch('instructorName');
+                const found = instructors.find(i => i.name === selectedInstructor);
+                // إذا لم يتم اختيار معلم أو تم اختيار طالب، أظهر السنة الدراسية
+                // بافتراض أن أسماء الطلاب ليست ضمن قائمة instructors
+                return (!found || (found && found.name.toLowerCase() !== 'instructor')) ? (
+                  <FormField
+                    control={form.control}
+                    name="academicYear"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Year</FormLabel>
+                        <FormControl>
+                          <Input
+                            type="number"
+                            min="1"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                ) : null;
+              })()}
               <FormField
                 control={form.control}
                 name="sections"
