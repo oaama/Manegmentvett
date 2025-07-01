@@ -1,4 +1,4 @@
-# **App Name**: eLearn Admin Center
+# Mr Vet: eLearn Admin Center
 
 ## Core Features:
 

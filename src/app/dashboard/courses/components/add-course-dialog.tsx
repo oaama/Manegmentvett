@@ -45,6 +45,7 @@ const formSchema = z.object({
   academicYear: z.coerce.number().min(1, "Academic year is required"),
   sections: z.string().min(1, "Number of sections is required"),
   price: z.coerce.number().min(0, "Price is required"),
+  category: z.enum(["general", "credit"], { required_error: "Course type is required" }),
   coverImage: z.instanceof(FileList).refine(files => files.length > 0, "Cover image is required."),
 })
 
@@ -66,6 +67,7 @@ export function AddCourseDialog({ instructors }: AddCourseDialogProps) {
       academicYear: 1,
       sections: "10",
       price: 0,
+      category: "general",
     },
   })
 
@@ -78,6 +80,8 @@ export function AddCourseDialog({ instructors }: AddCourseDialogProps) {
     formData.append('academicYear', String(values.academicYear));
     formData.append('sections', values.sections);
     formData.append('price', String(values.price));
+
+    formData.append('category', values.category);
     if (values.coverImage && values.coverImage.length > 0) {
       formData.append('coverImage', values.coverImage[0]);
     }
@@ -155,6 +159,27 @@ export function AddCourseDialog({ instructors }: AddCourseDialogProps) {
                           {instructor.name}
                         </SelectItem>
                       ))}
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="category"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Course Type</FormLabel>
+                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select course type" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="general">General</SelectItem>
+                      <SelectItem value="credit">Credit</SelectItem>
                     </SelectContent>
                   </Select>
                   <FormMessage />

@@ -22,6 +22,7 @@ export function CourseFilters({ instructors }: CourseFiltersProps) {
   const searchParams = useSearchParams()
   const currentYear = searchParams.get("year")
   const currentInstructor = searchParams.get("instructor")
+  const currentCategory = searchParams.get("category")
 
   const handleFilterChange = (key: string, value: string) => {
     const params = new URLSearchParams(searchParams)
@@ -42,7 +43,7 @@ export function CourseFilters({ instructors }: CourseFiltersProps) {
   return (
     <div className="flex items-center gap-2">
        <Select onValueChange={(value) => handleFilterChange('year', value)} value={currentYear || 'all'}>
-          <SelectTrigger className="w-[180px]">
+          <SelectTrigger className="w-[140px]">
               <SelectValue placeholder="Filter by Year" />
           </SelectTrigger>
           <SelectContent>
@@ -52,7 +53,16 @@ export function CourseFilters({ instructors }: CourseFiltersProps) {
               ))}
           </SelectContent>
        </Select>
-       
+       <Select onValueChange={(value) => handleFilterChange('category', value)} value={currentCategory || 'all'}>
+          <SelectTrigger className="w-[140px]">
+              <SelectValue placeholder="Filter by Type" />
+          </SelectTrigger>
+          <SelectContent>
+              <SelectItem value="all">All Types</SelectItem>
+              <SelectItem value="general">General</SelectItem>
+              <SelectItem value="credit">Credit</SelectItem>
+          </SelectContent>
+       </Select>
        <Select onValueChange={(value) => handleFilterChange('instructor', value)} value={currentInstructor || 'all'}>
           <SelectTrigger className="w-[180px]">
               <SelectValue placeholder="Filter by Instructor" />
@@ -64,8 +74,7 @@ export function CourseFilters({ instructors }: CourseFiltersProps) {
               ))}
           </SelectContent>
        </Select>
-
-       {(currentYear || currentInstructor) && (
+       {(currentYear || currentInstructor || currentCategory) && (
         <Button variant="ghost" onClick={clearFilters}>Clear</Button>
        )}
     </div>
