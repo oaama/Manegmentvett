@@ -30,6 +30,12 @@ export function LoginForm() {
   const [state, formAction] = useActionState(login, initialState)
   const [showPassword, setShowPassword] = React.useState(false)
 
+  React.useEffect(() => {
+    if (state.success && state.redirect) {
+      window.location.href = state.redirect;
+    }
+  }, [state]);
+
   return (
     <form action={formAction} className="grid gap-4">
       <div className="grid gap-2 animate-in fade-in-0 slide-in-from-bottom-2 duration-500 ease-out" style={{ animationDelay: '700ms', animationFillMode: 'backwards' }}>

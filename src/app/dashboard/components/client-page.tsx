@@ -38,7 +38,25 @@ type DashboardClientPageProps = {
 
 export function DashboardClientPage({ initialStats }: DashboardClientPageProps) {
   const [stats] = React.useState<Stats | null>(initialStats);
-  
+
+  // Fallbacks for missing or malformed data
+  const safeStats: Stats = {
+    totalUsers: stats?.totalUsers ?? 0,
+    totalCourses: stats?.totalCourses ?? 0,
+    carnetRequests: {
+      total: stats?.carnetRequests?.total ?? 0,
+      pending: stats?.carnetRequests?.pending ?? 0,
+      approved: stats?.carnetRequests?.approved ?? 0,
+      rejected: stats?.carnetRequests?.rejected ?? 0,
+    },
+    rolesCount: {
+      student: stats?.rolesCount?.student ?? 0,
+      instructor: stats?.rolesCount?.instructor ?? 0,
+      admin: stats?.rolesCount?.admin ?? 0,
+    },
+    totalSections: stats?.totalSections ?? 0,
+  };
+
   const getPercentage = (part: number, total: number) => {
     if (total === 0) return 0;
     return (part / total) * 100;

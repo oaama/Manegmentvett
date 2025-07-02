@@ -2,6 +2,7 @@ import axios from 'axios';
 
 // All client-side requests will now go to our Next.js API proxy
 // which will then securely forward them to the backend with the auth token.
+// يجب أن يكون baseURL هو /api فقط ليتم تمرير كل الطلبات عبر API Routes (البروكسي)
 const api = axios.create({
   baseURL: '/api',
 });

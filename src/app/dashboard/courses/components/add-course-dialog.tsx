@@ -41,7 +41,7 @@ import { useRouter } from "next/navigation"
 
 const formSchema = z.object({
   courseName: z.string().min(3, "Course name must be at least 3 characters"),
-  instructorName: z.string().min(1, "Please select an instructor"),
+  teacherName: z.string().min(1, "Please select a teacher"),
   sections: z.string().min(1, "Number of sections is required"),
   price: z.coerce.number().min(0, "Price is required"),
   category: z.enum(["general", "credit"], { required_error: "Course type is required" }),
@@ -53,10 +53,10 @@ const formSchema = z.object({
 })
 
 type AddCourseDialogProps = {
-  instructors: Pick<User, '_id' | 'name'>[];
+  teachers: Pick<User, '_id' | 'name'>[];
 }
 
-export function AddCourseDialog({ instructors }: AddCourseDialogProps) {
+export function AddCourseDialog({ teachers }: AddCourseDialogProps) {
   const router = useRouter()
   const [open, setOpen] = React.useState(false)
   const [isSubmitting, setIsSubmitting] = React.useState(false)
@@ -66,7 +66,7 @@ export function AddCourseDialog({ instructors }: AddCourseDialogProps) {
     resolver: zodResolver(formSchema),
     defaultValues: {
       courseName: "",
-      instructorName: "",
+      teacherName: "",
       academicYear: 1,
       sections: "10",
       price: 0,
@@ -79,7 +79,7 @@ export function AddCourseDialog({ instructors }: AddCourseDialogProps) {
     console.log('Submitting course values:', values);
     const formData = new FormData();
     formData.append('courseName', values.courseName);
-    formData.append('instructorName', values.instructorName);
+    formData.append('teacherName', values.teacherName);
     formData.append('academicYear', String(values.academicYear));
     formData.append('sections', values.sections);
     formData.append('price', String(values.price));
@@ -144,20 +144,20 @@ export function AddCourseDialog({ instructors }: AddCourseDialogProps) {
             />
             <FormField
               control={form.control}
-              name="instructorName"
-              render={({ field }) => (
+            name="teacherName"
+            render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Instructor</FormLabel>
+                  <FormLabel>Teacher</FormLabel>
                   <Select onValueChange={field.onChange} defaultValue={field.value}>
                     <FormControl>
                       <SelectTrigger>
-                        <SelectValue placeholder="Select an instructor" />
+                        <SelectValue placeholder="Select a teacher" />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      {instructors.map((instructor) => (
-                        <SelectItem key={instructor._id} value={instructor.name}>
-                          {instructor.name}
+                      {teachers.map((teacher) => (
+                        <SelectItem key={teacher._id} value={teacher.name}>
+                          {teacher.name}
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -190,11 +190,11 @@ export function AddCourseDialog({ instructors }: AddCourseDialogProps) {
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               {/* إخفاء السنة الدراسية إذا كان المعلم المختار هو Instructor */}
               {(() => {
-                const selectedInstructor = form.watch('instructorName');
-                const found = instructors.find(i => i.name === selectedInstructor);
+                const selectedTeacher = form.watch('teacherName');
+                const found = teachers.find((t: any) => t.name === selectedTeacher);
                 // إذا لم يتم اختيار معلم أو تم اختيار طالب، أظهر السنة الدراسية
-                // بافتراض أن أسماء الطلاب ليست ضمن قائمة instructors
-                return (!found || (found && found.name.toLowerCase() !== 'instructor')) ? (
+                // بافتراض أن أسماء الطلاب ليست ضمن قائمة teachers
+                return (!found || (found && found.name.toLowerCase() !== 'teacher')) ? (
                   <FormField
                     control={form.control}
                     name="academicYear"

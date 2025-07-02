@@ -32,8 +32,10 @@ type NotificationsPageProps = {
   }
 }
 
-export default async function NotificationsPage({ searchParams }: NotificationsPageProps) {
-  const target = searchParams.target || 'all';
+export default async function NotificationsPage(props: NotificationsPageProps) {
+  // Next.js 14+ dynamic route searchParams is async
+  const params = typeof props.searchParams?.then === 'function' ? await props.searchParams : props.searchParams;
+  const target = params?.target || 'all';
 
   const allNotifications: Notification[] = await getNotificationHistory();
 

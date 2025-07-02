@@ -142,7 +142,7 @@ const ActionButtons = ({ row }: { row: { original: CarnetRequest } }) => {
 
 export const columns: ColumnDef<CarnetRequest>[] = [
   {
-    accessorKey: "user.name",
+    id: "user.name",
     header: ({ column }) => {
       return (
         <Button
@@ -154,7 +154,8 @@ export const columns: ColumnDef<CarnetRequest>[] = [
         </Button>
       )
     },
-    cell: ({ row }) => <div className="font-medium">{row.original.user.name}</div>,
+    accessorFn: row => row.user?.name || "",
+    cell: ({ row }) => <div className="font-medium">{row.original.user?.name || ''}</div>,
   },
   {
     accessorKey: "user.email",

@@ -1,8 +1,9 @@
+
 export type User = {
   _id: string;
   name: string;
   email: string;
-  role: 'student' | 'instructor' | 'admin';
+  role: 'student' | 'teacher' | 'admin';
   phone: string;
   academicYear: number;
   carnetStatus: 'pending' | 'approved' | 'rejected';
@@ -14,10 +15,10 @@ export type User = {
 
 export type Course = {
   _id: string;
-  name:string;
-  instructorName: string; // Changed from 'instructor' to match API
-  instructorId: string;
-  academicYear: number; // Changed from 'year'
+  name: string;
+  teacherName: string;
+  teacherId: string;
+  academicYear: number;
   sections: number;
   price: number;
   coverImage?: string;
@@ -45,7 +46,7 @@ export type Notification = {
   _id: string;
   title: string;
   message: string;
-  target: 'all' | 'students' | 'instructors' | string; // user id
+  target: 'all' | 'students' | 'teachers' | string; // user id
   sentAt: Date;
 };
 

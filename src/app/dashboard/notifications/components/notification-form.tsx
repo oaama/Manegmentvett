@@ -25,7 +25,7 @@ import { useRouter } from "next/navigation"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 
 const formSchema = z.object({
-  targetGroup: z.enum(["specific", "all", "students", "instructors"]),
+  targetGroup: z.enum(["specific", "all", "students", "teachers"]),
   targetUserId: z.string().optional(),
   title: z.string().min(1, "Title is required"),
   message: z.string().min(10, "Message must be at least 10 characters"),
@@ -111,7 +111,7 @@ export function NotificationForm() {
                       <SelectItem value="specific">Specific User</SelectItem>
                       <SelectItem value="all">All Users</SelectItem>
                       <SelectItem value="students">All Students</SelectItem>
-                      <SelectItem value="instructors">All Instructors</SelectItem>
+                      <SelectItem value="teachers">All Teachers</SelectItem>
                     </SelectContent>
                   </Select>
                   <FormMessage />

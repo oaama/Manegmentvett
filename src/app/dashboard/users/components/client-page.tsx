@@ -80,7 +80,7 @@ export function UserClientPage<TData extends User, TValue>({
                 </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-                {['student', 'instructor', 'admin'].map((role) => {
+                {['student', 'teacher', 'admin'].map((role) => {
                 const column = table.getColumn("role");
                 const isSelected = column?.getFilterValue() === role;
                 return (

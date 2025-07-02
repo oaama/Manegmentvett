@@ -54,7 +54,7 @@ const DateCell = ({ dateValue, formatString }: { dateValue: Date | string, forma
   return <>{formattedDate || null}</>
 }
 
-const CourseActions = ({ course, instructors }: { course: Course, instructors: Pick<User, '_id' | 'name'>[] }) => {
+const CourseActions = ({ course, teachers }: { course: Course, teachers: Pick<User, '_id' | 'name'>[] }) => {
   const { toast } = useToast()
   const router = useRouter()
   const [isEditDialogOpen, setIsEditDialogOpen] = React.useState(false)
@@ -64,7 +64,7 @@ const CourseActions = ({ course, instructors }: { course: Course, instructors: P
   const [name, setName] = React.useState(course.name)
   const [price, setPrice] = React.useState(course.price)
   const [academicYear, setAcademicYear] = React.useState(course.academicYear)
-  const [instructorId, setInstructorId] = React.useState(course.instructorId)
+  const [teacherId, setTeacherId] = React.useState(course.teacherId)
 
   const handleEditSubmit = async () => {
     try {
@@ -72,7 +72,7 @@ const CourseActions = ({ course, instructors }: { course: Course, instructors: P
             name,
             price,
             academicYear,
-            instructorId,
+            teacherId,
         });
         toast({
             title: "Course Updated",
@@ -130,16 +130,16 @@ const CourseActions = ({ course, instructors }: { course: Course, instructors: P
               <Label htmlFor="academicYear" className="text-right">Year</Label>
               <Input id="academicYear" type="number" value={academicYear} onChange={(e) => setAcademicYear(Number(e.target.value))} className="col-span-3" />
             </div>
-             <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="instructor" className="text-right">Instructor</Label>
-              <Select value={instructorId} onValueChange={setInstructorId}>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="teacher" className="text-right">Teacher</Label>
+              <Select value={teacherId} onValueChange={setTeacherId}>
                 <SelectTrigger className="col-span-3">
-                  <SelectValue placeholder="Select an instructor" />
+                  <SelectValue placeholder="Select a teacher" />
                 </SelectTrigger>
                 <SelectContent>
-                  {instructors.map((instructor) => (
-                    <SelectItem key={instructor._id} value={instructor._id}>
-                      {instructor.name}
+                  {Array.isArray(teachers) && teachers.map((teacher: any) => (
+                    <SelectItem key={teacher._id} value={teacher._id}>
+                      {teacher.name}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -204,7 +204,7 @@ const CourseActions = ({ course, instructors }: { course: Course, instructors: P
   )
 }
 
-export const getColumns = ({ instructors }: { instructors: Pick<User, '_id' | 'name'>[] }): ColumnDef<Course>[] => [
+export const getColumns = ({ teachers }: { teachers: Pick<User, '_id' | 'name'>[] }): ColumnDef<Course>[] => [
   {
     id: "select",
     header: ({ table }) => (
@@ -243,8 +243,8 @@ export const getColumns = ({ instructors }: { instructors: Pick<User, '_id' | 'n
     cell: ({ row }) => <div className="font-medium">{row.getValue("name")}</div>,
   },
   {
-    accessorKey: "instructorName",
-    header: "Instructor",
+    accessorKey: "teacherName",
+    header: "Teacher",
   },
   {
     accessorKey: "price",
@@ -278,7 +278,7 @@ export const getColumns = ({ instructors }: { instructors: Pick<User, '_id' | 'n
   {
     id: "actions",
     cell: ({ row }) => {
-      return <CourseActions course={row.original} instructors={instructors} />
+      return <CourseActions course={row.original} teachers={teachers} />
     },
   },
 ]

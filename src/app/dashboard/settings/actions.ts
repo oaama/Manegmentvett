@@ -36,11 +36,11 @@ export async function updateAdminCredentials(prevState: any, formData: FormData)
 
   try {
     const apiUrl = await getApiUrl();
-    const token = cookies().get('auth_token')?.value;
+    const token = (await cookies()).get('auth_token')?.value;
     if (!token) {
         return { success: false, message: "Authentication failed. Please log in again." };
     }
-    const response = await fetch(`${apiUrl}/admin/users/${_id}`, {
+    const response = await fetch(`${apiUrl}/api/admin/users/${_id}`, {
         method: 'PUT',
         headers: { 
             ...(token ? { 'Authorization': `Bearer ${token}` } : {}),

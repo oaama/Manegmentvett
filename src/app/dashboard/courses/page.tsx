@@ -8,19 +8,25 @@ import { serverFetch } from "@/lib/server-api"
 
 
 
-async function getInstructors(): Promise<Pick<User, '_id' | 'name'>[]> {
+async function getTeachers(): Promise<Pick<User, '_id' | 'name'>[]> {
     try {
-        const response = await serverFetch('/user/instructors');
-        
+        const response = await serverFetch('/users');
+        let data: any = null;
+        try {
+            data = await response.json();
+        } catch {
+            data = null;
+        }
         if (!response.ok) {
-            const errorBody = await response.json().catch(() => response.text());
-            console.error("API Error fetching instructors:", errorBody);
+            console.error("API Error fetching users:", data);
             return [];
         }
-        const data = await response.json();
-        return data.instructors || [];
+        // فلترة المعلمين فقط بناءً على خاصية role === 'teacher' أو type === 'instructor'
+        return Array.isArray(data?.users)
+            ? data.users.filter((u: any) => u.role === 'teacher' || u.type === 'instructor').map((u: any) => ({ _id: u._id, name: u.name }))
+            : [];
     } catch (error: any) {
-        console.error("Failed to fetch instructors:", error.message);
+        console.error("Failed to fetch users:", error.message);
         return [];
     }
 }
@@ -29,13 +35,13 @@ async function getInstructors(): Promise<Pick<User, '_id' | 'name'>[]> {
 type CoursesPageProps = {
   searchParams: {
     year?: string;
-    instructor?: string;
+    teacher?: string;
     category?: string;
   }
 }
 
 export default async function CoursesPage({ searchParams }: CoursesPageProps) {
-  const instructors: Pick<User, '_id'|'name'>[] = await getInstructors();
+  const teachers: Pick<User, '_id'|'name'>[] = await getTeachers();
   // بناء endpoint حسب الفلاتر
   let endpoint = '/courses';
   if (searchParams.year && searchParams.category) {
@@ -55,19 +61,19 @@ export default async function CoursesPage({ searchParams }: CoursesPageProps) {
   } catch (e) {
     // ignore
   }
-  if (searchParams.instructor) {
-    data = data.filter(course => course.instructorId === searchParams.instructor);
+  if (searchParams.teacher) {
+    data = data.filter(course => course.teacherId === searchParams.teacher);
   }
   return (
     <>
       <DashboardHeader title="Courses Management">
         <div className="flex flex-wrap items-center gap-2">
-          <CourseFilters instructors={instructors} />
-          <AddCourseDialog instructors={instructors} />
+          <CourseFilters teachers={teachers} />
+          <AddCourseDialog teachers={teachers} />
         </div>
       </DashboardHeader>
       <div className="p-1">
-        <CourseClientPage data={data} instructors={instructors} />
+        <CourseClientPage data={data} teachers={teachers} />
       </div>
     </>
   )

@@ -1,8 +1,21 @@
 import { DashboardHeader } from "@/components/dashboard-header";
 import { AccountForm } from "./components/account-form";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { serverFetch } from "@/lib/server-api";
+import type { User } from "@/lib/types";
 
-export default function SettingsPage() {
+async function getAdminProfile(): Promise<User | null> {
+  try {
+    const response = await serverFetch('/users/me');
+    const data = await response.json();
+    return data.user || data;
+  } catch {
+    return null;
+  }
+}
+
+export default async function SettingsPage() {
+  const admin = await getAdminProfile();
   return (
     <>
       <DashboardHeader title="Account Settings" />
@@ -15,7 +28,7 @@ export default function SettingsPage() {
                 </CardDescription>
             </CardHeader>
             <CardContent>
-                <AccountForm />
+                <AccountForm admin={admin} />
             </CardContent>
           </Card>
       </div>

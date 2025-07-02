@@ -10,7 +10,8 @@ function getApiUrl() {
 
 export async function serverFetch(path: string, options: RequestInit = {}) {
     const apiUrl = getApiUrl();
-    const token = cookies().get('auth_token')?.value;
+    // Use await cookies() for Next.js 14+ compatibility
+    const token = (await cookies()).get('auth_token')?.value;
 
     const headers = new Headers(options.headers);
     if (token) {
@@ -22,9 +23,13 @@ export async function serverFetch(path: string, options: RequestInit = {}) {
     if (!headers.has('Accept')) {
         headers.set('Accept', 'application/json');
     }
-    
-    const url = `${apiUrl}${path}`;
-    
+
+
+    // أضف /api تلقائياً إذا لم يكن موجودًا في المسار
+    let fullPath = path.startsWith('/api/') ? path : path.startsWith('/api') ? path : `/api${path.startsWith('/') ? '' : '/'}${path}`;
+    // إزالة أي دبل سلاش في الرابط النهائي
+    let url = `${apiUrl.replace(/\/+$/, '')}/${fullPath.replace(/^\/+/, '')}`;
+
     return fetch(url, {
         ...options,
         headers,

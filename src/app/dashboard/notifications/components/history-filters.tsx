@@ -26,7 +26,7 @@ export function NotificationHistoryFilters() {
     router.replace(`${pathname}?${params.toString()}`)
   }
   
-  const targets = ['all', 'students', 'instructors'];
+  const targets = ['all', 'students', 'teachers'];
 
   return (
     <div className="flex items-center gap-2">

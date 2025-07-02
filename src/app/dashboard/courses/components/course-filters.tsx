@@ -13,15 +13,15 @@ import {
 import type { User } from "@/lib/types"
 
 type CourseFiltersProps = {
-  instructors: Pick<User, '_id' | 'name'>[]
+  teachers: Pick<User, '_id' | 'name'>[]
 }
 
-export function CourseFilters({ instructors }: CourseFiltersProps) {
+export function CourseFilters({ teachers }: CourseFiltersProps) {
   const router = useRouter()
   const pathname = usePathname()
   const searchParams = useSearchParams()
   const currentYear = searchParams.get("year")
-  const currentInstructor = searchParams.get("instructor")
+  const currentTeacher = searchParams.get("teacher")
   const currentCategory = searchParams.get("category")
 
   const handleFilterChange = (key: string, value: string) => {
@@ -63,18 +63,18 @@ export function CourseFilters({ instructors }: CourseFiltersProps) {
               <SelectItem value="credit">Credit</SelectItem>
           </SelectContent>
        </Select>
-       <Select onValueChange={(value) => handleFilterChange('instructor', value)} value={currentInstructor || 'all'}>
+       <Select onValueChange={(value) => handleFilterChange('teacher', value)} value={currentTeacher || 'all'}>
           <SelectTrigger className="w-[180px]">
-              <SelectValue placeholder="Filter by Instructor" />
+              <SelectValue placeholder="Filter by Teacher" />
           </SelectTrigger>
           <SelectContent>
-              <SelectItem value="all">All Instructors</SelectItem>
-              {instructors.map(instructor => (
-                  <SelectItem key={instructor._id} value={instructor._id}>{instructor.name}</SelectItem>
+              <SelectItem value="all">All Teachers</SelectItem>
+              {teachers.map(teacher => (
+                  <SelectItem key={teacher._id} value={teacher._id}>{teacher.name}</SelectItem>
               ))}
           </SelectContent>
        </Select>
-       {(currentYear || currentInstructor || currentCategory) && (
+       {(currentYear || currentTeacher || currentCategory) && (
         <Button variant="ghost" onClick={clearFilters}>Clear</Button>
        )}
     </div>

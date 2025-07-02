@@ -145,7 +145,7 @@ const UserActions = ({ user }: { user: User }) => {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="student">Student</SelectItem>
-                  <SelectItem value="instructor">Instructor</SelectItem>
+                  <SelectItem value="teacher">Teacher</SelectItem>
                   <SelectItem value="admin">Admin</SelectItem>
                 </SelectContent>
               </Select>
@@ -254,7 +254,7 @@ export const columns: ColumnDef<User>[] = [
         const role = row.getValue("role") as User["role"]
         const variant: Record<User["role"], "default" | "outline"> = {
             admin: "default",
-            instructor: "default",
+            teacher: "default",
             student: "outline"
         }
         return <Badge variant={variant[role]}>{role}</Badge>

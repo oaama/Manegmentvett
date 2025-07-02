@@ -15,7 +15,7 @@ import { useToast } from "@/hooks/use-toast"
 import { Loader2, Save, AlertCircle } from "lucide-react"
 import { updateAdminCredentials } from "../actions"
 import type { User } from "@/lib/types"
-import api from "@/lib/api"
+// import { serverFetch } from "@/lib/server-api"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 
@@ -51,55 +51,25 @@ const initialState = {
   message: "",
 }
 
-export function AccountForm() {
+export function AccountForm({ admin }: { admin: User | null }) {
+
     const { toast } = useToast();
     const [state, formAction] = useActionState(updateAdminCredentials, initialState);
-    const [admin, setAdmin] = React.useState<User | null>(null);
-    const [loading, setLoading] = React.useState(true);
     const [error, setError] = React.useState<string | null>(null);
-
+    // حذف أي استخدام أو تعريف لـ setLoading نهائياً
+    // تم نقل جلب بيانات الحساب للسيرفر فقط، لا تستخدم أي جلب بيانات هنا
+    const loading = !admin;
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
-        defaultValues: {
-            _id: "",
-            email: "",
+        defaultValues: React.useMemo(() => ({
+            _id: admin?._id || "",
+            email: admin?.email || "",
             currentPassword: "",
             newPassword: "",
             confirmPassword: "",
-        },
+        }), [admin]),
     });
-
-    const fetchAdminProfile = React.useCallback(async () => {
-        setLoading(true);
-        try {
-            // استخدم المسار الصحيح كما في الباك اند
-            const response = await api.get('/users/me');
-            // الباك اند يرجع { user: {...} }
-            const user = response.data?.user || response.data;
-            if (user && user._id) {
-              setAdmin(user);
-              form.reset({
-                  _id: user._id,
-                  email: user.email,
-                  currentPassword: "",
-                  newPassword: "",
-                  confirmPassword: "",
-              });
-              setError(null);
-            } else {
-                throw new Error("Invalid data structure from /users/me");
-            }
-        } catch (err: any) {
-            console.error("Failed to fetch admin profile", err);
-            setError("Could not load your profile data. The API endpoint `/users/me` may be unavailable or returning an unexpected format.");
-        } finally {
-            setLoading(false);
-        }
-    }, [form]);
-
-    React.useEffect(() => {
-        fetchAdminProfile();
-    }, [fetchAdminProfile]);
+    // لا داعي لأي useEffect أو fetchAdminProfile هنا
 
     React.useEffect(() => {
         if (state.message) {
@@ -109,10 +79,8 @@ export function AccountForm() {
                 variant: state.success ? "default" : "destructive",
             })
         }
-        if (state.success) {
-            fetchAdminProfile(); 
-        }
-    }, [state, toast, fetchAdminProfile]);
+        // لا داعي لإعادة جلب البيانات هنا
+    }, [state, toast]);
 
     if (loading) {
       return (

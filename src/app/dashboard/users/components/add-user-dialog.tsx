@@ -36,7 +36,6 @@ const formSchema = z.object({
   email: z.string().email("Please enter a valid email address"),
   password: z.string().min(8, "Password must be at least 8 characters"),
   phone: z.string().min(10, "Please enter a valid phone number"),
-  academicYear: z.coerce.number().min(0, "Academic year is required"),
   profileImage: z.any().optional(),
 })
 
@@ -53,7 +52,6 @@ export function AddUserDialog() {
       email: "",
       password: "",
       phone: "",
-      academicYear: 0,
     },
   })
 
@@ -65,7 +63,7 @@ export function AddUserDialog() {
     formData.append('email', values.email);
     formData.append('password', values.password);
     formData.append('phone', values.phone);
-    formData.append('academicYear', String(values.academicYear));
+    // لا ترسل academicYear
     if (values.profileImage && values.profileImage.length > 0) {
       formData.append('profileImage', values.profileImage[0]);
     }
@@ -164,19 +162,7 @@ export function AddUserDialog() {
                 </FormItem>
               )}
             />
-             <FormField
-              control={form.control}
-              name="academicYear"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Academic Year</FormLabel>
-                  <FormControl>
-                     <Input type="number" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+
              <FormField
               control={form.control}
               name="profileImage"

@@ -28,18 +28,18 @@ import type { Course, User } from "@/lib/types"
 
 interface DataTableProps<TData, TValue> {
   data: TData[],
-  instructors: Pick<User, '_id' | 'name'>[],
+  teachers: Pick<User, '_id' | 'name'>[],
 }
 
 export function CourseClientPage<TData extends Course, TValue>({
   data,
-  instructors,
+  teachers,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = React.useState<SortingState>([])
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
   const [rowSelection, setRowSelection] = React.useState({})
 
-  const columns = React.useMemo(() => getColumns({ instructors }), [instructors])
+  const columns = React.useMemo(() => getColumns({ teachers }), [teachers])
 
   const table = useReactTable({
     data,
