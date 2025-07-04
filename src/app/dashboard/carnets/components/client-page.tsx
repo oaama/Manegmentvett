@@ -35,9 +35,24 @@ export function CarnetClientPage<TData extends CarnetRequest, TValue>({
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = React.useState<SortingState>([])
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
+  const [statusFilter, setStatusFilter] = React.useState<string | null>(null)
+
+  // Sync status filter from URL (searchParams)
+  React.useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search)
+      setStatusFilter(params.get('status'))
+    }
+  }, [])
+
+  // Filter data by status on the client (for extra safety)
+  const filteredData = React.useMemo(() => {
+    if (!statusFilter || statusFilter === 'all') return data
+    return data.filter((item: any) => item.status === statusFilter)
+  }, [data, statusFilter])
 
   const table = useReactTable({
-    data,
+    data: filteredData,
     columns: columns as ColumnDef<TData, TValue>[],
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),

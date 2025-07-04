@@ -77,7 +77,10 @@ const UserActions = ({ user }: { user: User }) => {
 
   const handleEditSubmit = async () => {
     try {
-        await api.put(`/admin/users/${user._id}`, { name, email, role });
+        // Debug: اطبع البيانات والرد
+        console.log('PUT /api/admin/users/', user._id, { name, email, role });
+        const response = await api.put(`/api/admin/users/${user._id}`, { name, email, role });
+        console.log('API response:', response.data);
         toast({
             title: "User Updated",
             description: `${name}'s profile has been updated.`,

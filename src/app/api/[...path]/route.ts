@@ -21,7 +21,7 @@ async function handler(req: NextRequest) {
     url.searchParams.append(key, value);
   });
 
-  const token = cookies().get('auth_token')?.value;
+  const token = (await cookies()).get('auth_token')?.value;
 
   // Create a new Headers object, selectively forwarding only necessary headers.
   // This prevents forwarding potentially problematic headers from the browser (like User-Agent, etc)

@@ -160,25 +160,39 @@ export const columns: ColumnDef<CarnetRequest>[] = [
   {
     accessorKey: "user.email",
     header: "Email",
+    cell: ({ row }) => {
+      const user = row.original.user;
+      if (!user || typeof user !== 'object' || typeof user.email !== 'string') return '';
+      return user.email;
+    },
   },
   {
     accessorKey: "user.academicYear",
     header: "Year",
-    cell: ({ row }) => `Year ${row.original.user.academicYear}`,
+    cell: ({ row }) => {
+      const user = row.original.user;
+      if (!user || typeof user !== 'object' || typeof user.academicYear === 'undefined' || user.academicYear === null) return '';
+      return `Year ${user.academicYear}`;
+    },
   },
   {
     accessorKey: "requestedAt",
     header: "Request Date",
     cell: ({ row }) => {
-      const date = row.getValue("requestedAt") as Date
-      return <DateCell dateValue={date} formatString="MMM d, yyyy" />
+      const date = row.getValue("requestedAt") as Date;
+      if (!date || isNaN(new Date(date).getTime())) return '';
+      return <DateCell dateValue={date} formatString="MMM d, yyyy" />;
     },
   },
-   {
+  {
     accessorKey: "status",
     header: "Status",
     cell: ({ row }) => {
-      return <Badge variant="secondary" className="capitalize">{row.getValue("status")}</Badge>
+      // إظهار الحالة فقط إذا كان role === 'student' بشكل صريح
+      const user = row.original.user as { role?: string };
+      const status = row.getValue("status");
+      if (!user || typeof user !== 'object' || user.role !== 'student') return null;
+      return <Badge variant="secondary" className="capitalize">{String(status)}</Badge>;
     }
   },
   {

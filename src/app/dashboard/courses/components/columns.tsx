@@ -48,7 +48,18 @@ const DateCell = ({ dateValue, formatString }: { dateValue: Date | string, forma
   const [formattedDate, setFormattedDate] = React.useState("")
 
   React.useEffect(() => {
-    setFormattedDate(format(new Date(dateValue), formatString))
+    let dateObj: Date | null = null;
+    if (dateValue instanceof Date && !isNaN(dateValue.getTime())) {
+      dateObj = dateValue;
+    } else if (typeof dateValue === 'string') {
+      const parsed = new Date(dateValue);
+      if (!isNaN(parsed.getTime())) dateObj = parsed;
+    }
+    if (dateObj) {
+      setFormattedDate(format(dateObj, formatString));
+    } else {
+      setFormattedDate("");
+    }
   }, [dateValue, formatString])
 
   return <>{formattedDate || null}</>
@@ -60,15 +71,16 @@ const CourseActions = ({ course, teachers }: { course: Course, teachers: Pick<Us
   const [isEditDialogOpen, setIsEditDialogOpen] = React.useState(false)
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = React.useState(false)
   const [isSectionsDialogOpen, setIsSectionsDialogOpen] = React.useState(false)
-  
+  const [isSaving, setIsSaving] = React.useState(false)
   const [name, setName] = React.useState(course.name)
   const [price, setPrice] = React.useState(course.price)
   const [academicYear, setAcademicYear] = React.useState(course.academicYear)
   const [teacherId, setTeacherId] = React.useState(course.teacherId)
 
   const handleEditSubmit = async () => {
+    setIsSaving(true)
     try {
-        await api.put(`/admin/courses/${course._id}`, {
+        await api.put(`/api/admin/courses/${course._id}`, {
             name,
             price,
             academicYear,
@@ -76,7 +88,7 @@ const CourseActions = ({ course, teachers }: { course: Course, teachers: Pick<Us
         });
         toast({
             title: "Course Updated",
-            description: `The course "${name}" has been successfully updated.`,
+            description: `The course \"${name}\" has been successfully updated.`,
         });
         setIsEditDialogOpen(false);
         router.refresh();
@@ -86,12 +98,14 @@ const CourseActions = ({ course, teachers }: { course: Course, teachers: Pick<Us
             description: error.response?.data?.msg || "An unexpected error occurred.",
             variant: "destructive",
         });
+    } finally {
+      setIsSaving(false)
     }
   }
 
   const handleDeleteConfirm = async () => {
      try {
-        await api.delete(`/admin/courses/${course._id}`);
+        await api.delete(`/api/admin/courses/${course._id}`);
         toast({
             title: "Course Deleted",
             description: `The course "${course.name}" has been permanently deleted.`,
@@ -110,47 +124,62 @@ const CourseActions = ({ course, teachers }: { course: Course, teachers: Pick<Us
   return (
     <>
       <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-        <DialogContent>
+        <DialogContent className="max-w-lg w-full sm:max-w-xl md:max-w-2xl lg:max-w-3xl">
           <DialogHeader>
             <DialogTitle>Edit Course: {course.name}</DialogTitle>
             <DialogDescription>
               Make changes to the course details below.
             </DialogDescription>
           </DialogHeader>
-          <div className="grid gap-4 py-4">
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="name" className="text-right">Name</Label>
-              <Input id="name" value={name} onChange={(e) => setName(e.target.value)} className="col-span-3" />
-            </div>
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="price" className="text-right">Price</Label>
-              <Input id="price" type="number" value={price} onChange={(e) => setPrice(Number(e.target.value))} className="col-span-3" />
-            </div>
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="academicYear" className="text-right">Year</Label>
-              <Input id="academicYear" type="number" value={academicYear} onChange={(e) => setAcademicYear(Number(e.target.value))} className="col-span-3" />
-            </div>
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="teacher" className="text-right">Teacher</Label>
-              <Select value={teacherId} onValueChange={setTeacherId}>
-                <SelectTrigger className="col-span-3">
-                  <SelectValue placeholder="Select a teacher" />
-                </SelectTrigger>
-                <SelectContent>
-                  {Array.isArray(teachers) && teachers.map((teacher: any) => (
-                    <SelectItem key={teacher._id} value={teacher._id}>
-                      {teacher.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
+          <div className="grid gap-4 py-4 grid-cols-1 sm:grid-cols-2">
+            {isSaving ? (
+              <div className="space-y-2 col-span-full">
+                <div className="h-4 w-1/2 bg-muted rounded animate-pulse" />
+                <div className="h-10 w-full bg-muted rounded animate-pulse" />
+                <div className="h-4 w-1/3 bg-muted rounded animate-pulse" />
+                <div className="h-10 w-full bg-muted rounded animate-pulse" />
+                <div className="h-4 w-1/4 bg-muted rounded animate-pulse" />
+                <div className="h-10 w-full bg-muted rounded animate-pulse" />
+                <div className="h-4 w-1/4 bg-muted rounded animate-pulse" />
+                <div className="h-10 w-full bg-muted rounded animate-pulse" />
+              </div>
+            ) : (
+              <>
+                <div className="flex flex-col gap-2">
+                  <Label htmlFor="name" className="text-right">Name</Label>
+                  <Input id="name" value={name} onChange={(e) => setName(e.target.value)} />
+                </div>
+                <div className="flex flex-col gap-2">
+                  <Label htmlFor="price" className="text-right">Price</Label>
+                  <Input id="price" type="number" value={price} onChange={(e) => setPrice(Number(e.target.value))} />
+                </div>
+                <div className="flex flex-col gap-2">
+                  <Label htmlFor="academicYear" className="text-right">Year</Label>
+                  <Input id="academicYear" type="number" value={academicYear} onChange={(e) => setAcademicYear(Number(e.target.value))} />
+                </div>
+                <div className="flex flex-col gap-2">
+                  <Label htmlFor="teacher" className="text-right">Teacher</Label>
+                  <Select value={teacherId} onValueChange={setTeacherId}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select a teacher" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {Array.isArray(teachers) && teachers.map((teacher: any) => (
+                        <SelectItem key={teacher._id} value={teacher._id}>
+                          {teacher.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </>
+            )}
           </div>
-          <DialogFooter>
+          <DialogFooter className="flex flex-col sm:flex-row gap-2 sm:gap-4">
              <DialogClose asChild>
-              <Button type="button" variant="outline">Cancel</Button>
+              <Button type="button" variant="outline" className="w-full sm:w-auto">Cancel</Button>
             </DialogClose>
-            <Button onClick={handleEditSubmit}>Save Changes</Button>
+            <Button onClick={handleEditSubmit} disabled={isSaving} className="w-full sm:w-auto">{isSaving ? 'Saving...' : 'Save Changes'}</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

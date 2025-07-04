@@ -43,13 +43,13 @@ type CoursesPageProps = {
 export default async function CoursesPage({ searchParams }: CoursesPageProps) {
   const teachers: Pick<User, '_id'|'name'>[] = await getTeachers();
   // بناء endpoint حسب الفلاتر
-  let endpoint = '/courses';
+  let endpoint = '/api/courses';
   if (searchParams.year && searchParams.category) {
-    endpoint = `/courses/filter/by-year?year=${searchParams.year}&category=${searchParams.category}`;
+    endpoint = `/api/courses/filter/by-year?year=${searchParams.year}&category=${searchParams.category}`;
   } else if (searchParams.year) {
-    endpoint = `/courses/filter/by-year?year=${searchParams.year}`;
+    endpoint = `/api/courses/filter/by-year?year=${searchParams.year}`;
   } else if (searchParams.category) {
-    endpoint = `/courses?category=${searchParams.category}`;
+    endpoint = `/api/courses?category=${searchParams.category}`;
   }
   let data: Course[] = [];
   try {

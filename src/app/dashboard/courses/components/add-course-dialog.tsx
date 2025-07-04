@@ -39,6 +39,7 @@ import type { User } from "@/lib/types"
 import api from "@/lib/api"
 import { useRouter } from "next/navigation"
 
+// Avoid using FileList in SSR, use a custom validation
 const formSchema = z.object({
   courseName: z.string().min(3, "Course name must be at least 3 characters"),
   teacherName: z.string().min(1, "Please select a teacher"),
@@ -49,7 +50,10 @@ const formSchema = z.object({
     (val) => val === undefined || val === null || val === "" ? undefined : Number(val),
     z.number().min(1, "Academic year is required").optional()
   ),
-  coverImage: z.instanceof(FileList).refine(files => files.length > 0, "Cover image is required."),
+  coverImage: z.any().refine(
+    (file) => typeof window === 'undefined' || (file && file.length && file[0]),
+    "Cover image is required."
+  ),
 })
 
 type AddCourseDialogProps = {
@@ -88,7 +92,7 @@ export function AddCourseDialog({ teachers }: AddCourseDialogProps) {
       formData.append('coverImage', values.coverImage[0]);
     }
     try {
-      await api.post('/courses/upload', formData, { 
+      await api.post('/api/courses/upload', formData, { 
         headers: { 
             'Content-Type': 'multipart/form-data',
         } 

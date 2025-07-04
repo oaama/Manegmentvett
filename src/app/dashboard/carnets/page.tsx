@@ -50,7 +50,7 @@ export default async function CarnetsPage({ searchParams }: CarnetsPageProps) {
   
   const data = status === 'all'
     ? allRequests
-    : allRequests.filter(c => c.status === status);
+    : allRequests.filter(c => (c.status || '').toLowerCase().trim() === status);
 
   return (
     <>

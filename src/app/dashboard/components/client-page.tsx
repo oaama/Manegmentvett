@@ -36,8 +36,63 @@ type DashboardClientPageProps = {
     initialStats: Stats | null;
 }
 
+import api from '@/lib/api';
+
 export function DashboardClientPage({ initialStats }: DashboardClientPageProps) {
-  const [stats] = React.useState<Stats | null>(initialStats);
+  const [stats, setStats] = React.useState<Stats | null>(initialStats);
+  const [loading, setLoading] = React.useState(false);
+
+  React.useEffect(() => {
+    async function fetchStats() {
+      setLoading(true);
+      try {
+        // جلب كل المستخدمين
+        const usersRes = await api.get('/users');
+        const users = usersRes.data.users || [];
+        // جلب كل الكورسات
+        const coursesRes = await api.get('/api/courses');
+        const courses = coursesRes.data.courses || coursesRes.data || [];
+        // جلب كل طلبات الكارنيهات (لو فيه endpoint)
+        let carnetRequests: any[] = [];
+        try {
+          const carnetRes = await api.get('/api/carnets');
+          carnetRequests = carnetRes.data.carnets || carnetRes.data || [];
+        } catch {}
+        // حساب الإحصائيات
+        const rolesCount = { student: 0, instructor: 0, admin: 0 };
+        users.forEach((u: any) => {
+          if (u.role === 'student') rolesCount.student++;
+          else if (u.role === 'teacher' || u.role === 'instructor') rolesCount.instructor++;
+          else if (u.role === 'admin') rolesCount.admin++;
+        });
+        const carnetStats = { total: 0, pending: 0, approved: 0, rejected: 0 };
+        carnetStats.total = carnetRequests.length;
+        carnetRequests.forEach((c: any) => {
+          if (c.status === 'pending') carnetStats.pending++;
+          else if (c.status === 'approved') carnetStats.approved++;
+          else if (c.status === 'rejected') carnetStats.rejected++;
+        });
+        // حساب عدد السيكشنات
+        let totalSections = 0;
+        courses.forEach((c: any) => {
+          if (Array.isArray(c.sections)) totalSections += c.sections.length;
+          else if (typeof c.sections === 'number') totalSections += c.sections;
+        });
+        setStats({
+          totalUsers: users.length,
+          totalCourses: courses.length,
+          carnetRequests: carnetStats,
+          rolesCount,
+          totalSections,
+        });
+      } catch (err) {
+        // fallback: لا تعدل stats
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchStats();
+  }, []);
 
   // Fallbacks for missing or malformed data
   const safeStats: Stats = {
@@ -62,7 +117,7 @@ export function DashboardClientPage({ initialStats }: DashboardClientPageProps) 
     return (part / total) * 100;
   }
 
-  if (!stats) {
+  if (!stats || loading) {
     return (
       <>
         <DashboardHeader title="Dashboard" />
